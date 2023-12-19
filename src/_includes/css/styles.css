@@ -755,7 +755,7 @@ h6 {
 }
 
 .site-nav-button {
-  display: inline-block;
+  display: flex;
   padding: 5px 10px;
   border: #fff 1px solid;
   color: #fff;
