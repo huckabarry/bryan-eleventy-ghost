@@ -4,8 +4,8 @@ const ghostContentAPI = require("@tryghost/content-api");
 
 // Init Ghost API
 const api = new ghostContentAPI({
-  url: https://writings.bryan.lv,
-  key: 163c276b880508bfa84bc64438,
+  url: process.env.GHOST_API_URL,
+  key: process.env.GHOST_CONTENT_API_KEY,
   version: "v2"
 });
 
