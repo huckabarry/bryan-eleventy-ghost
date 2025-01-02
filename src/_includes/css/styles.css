@@ -1,3 +1,80 @@
+/* Heading */
+.site-head .site-banner h1{
+ line-height:4em;
+ word-spacing:4.8px;
+ letter-spacing:-2.4px;
+ text-align:center;
+ font-weight:700;
+ font-style:normal;
+}
+
+/* Link */
+.site-nav .site-nav-left a{
+ font-weight:600;
+}
+
+/* Site main */
+.viewport .viewport-top .site-main{
+ background-attachment:fixed;
+}
+
+/* Site head */
+.viewport .viewport-top .site-head{
+ background-color:transparent;
+ transform:translatex(0px) translatey(0px);
+ background-image:url("https://images.unsplash.com/photo-1734389481041-fa26afc1267c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNTc5fDB8MXxhbGx8MTc0fHx8fHx8fHwxNzM1ODU5ODE2fA&ixlib=rb-4.0.3&q=80&w=2560") !important;
+}
+
+/* Container */
+.viewport-top .site-main .container{
+ transform:translatex(0px) translatey(0px);
+ max-width:775px;
+ min-height:0px;
+ max-height:1250px;
+}
+
+/* Post feed */
+.site-main .post-feed{
+ min-width:0px;
+ color:#c5c7c8;
+ display:inline;
+}
+
+/* Post feed */
+.viewport .viewport-top .site-main .container .post-feed{
+ width:100% !important;
+}
+
+/* Image */
+.post-feed .post-card-header img{
+ flex:1 1 0%;
+}
+
+@media (max-width:680px){
+
+ /* Container */
+ .viewport-top .site-main .container{
+  transform:translatex(0px) translatey(0px);
+ }
+ 
+ /* Image */
+ .post-feed .post-card-header img{
+  display:inline;
+  flex:1 1 0%;
+ }
+ 
+}
+
+@media (min-width:501px){
+
+ /* Heading */
+ .site-head .site-banner h1{
+  font-size:27px;
+ }
+ 
+}
+
+
 /* App.css
 /* ---------------------------------------------------------- /*
 
