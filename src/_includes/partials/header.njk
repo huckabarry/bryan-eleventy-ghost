@@ -10,21 +10,6 @@
                     </a>
                 </div>
             {% endif %}
-            <div class="site-mast-right">
-                {% if site.twitter %}
-                    <a href="https://twitter.com/{{ site.twitter | replace("@", "") }}" class="site-nav-item" target="_blank" rel="noopener noreferrer">
-                        {{ icon({ id: 'twitter' }) }}
-                    </a>
-                {% endif %}
-                {% if site.facebook %}
-                    <a href="https://www.facebook.com/{{ site.facebook }}" class="site-nav-item" target="_blank" rel="noopener noreferrer">
-                        {{ icon({ id: 'facebook' }) }}
-                    </a>
-                {% endif %}
-                <a class="site-nav-item" href="{{ site.url }}/feed.xml" target="_blank" rel="noopener noreferrer">
-                    {{ icon({ id: 'rss' }) }}
-                </a>
-            </div>
         </div>
         {% if page.url == '/' %}
             <div class="site-banner">
