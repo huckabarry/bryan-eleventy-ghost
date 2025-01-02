@@ -781,15 +781,35 @@ h6 {
 /* Index
 /* ---------------------------------------------------------- */
 
-/* Masonry Layout for Post Feed */
 .post-feed {
-  column-count: 3; /* Number of columns */
-  column-gap: 20px; /* Space between columns */
+  display: block; /* Switch from grid to block layout */
 }
 
 .post-card {
-  break-inside: avoid; /* Prevent breaking cards across columns */
-  margin-bottom: 20px; /* Space between rows */
+  margin-bottom: 2rem; /* Add spacing between posts */
+}
+
+.post-card-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.post-card-title {
+  font-size: 2.2rem;
+  font-weight: 700; /* Make titles stand out */
+  margin-bottom: 0.5rem;
+}
+
+.post-card-excerpt {
+  font-size: 1.6rem;
+  line-height: 1.4;
+  color: var(--color-secondary);
+}
+
+.post-card-footer {
+  margin-top: 1rem;
+  font-size: 1.4rem;
+  color: var(--color-secondary);
 }
 
 /* Responsive Adjustments */
@@ -814,26 +834,11 @@ h6 {
   text-decoration: none;
 }
 
-.post-card-header {
-  display: flex;
-  flex-direction: column;
-}
-
 .post-card-tags {
   margin: 0 0 5px 0;
   font-size: 1.4rem;
   line-height: 1.15em;
   color: var(--color-secondary);
-}
-
-.post-card-title {
-  margin: 0 0 10px 0;
-  padding: 0;
-}
-
-.post-card-excerpt {
-  font-size: 1.6rem;
-  line-height: 1.55em;
 }
 
 .post-card-image {
@@ -845,12 +850,7 @@ h6 {
   object-fit: cover;
 }
 
-.post-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 10px 0 0 0;
-  color: var(--color-secondary);
+color: var(--color-secondary);
 }
 
 .post-card-footer-left {
