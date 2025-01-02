@@ -789,21 +789,27 @@ h6 {
 /* Index
 /* ---------------------------------------------------------- */
 
+/* Masonry Layout for Post Feed */
 .post-feed {
-  display: grid;
-  justify-content: space-between;
-  grid-gap: 30px;
-  grid-template-columns: 1fr 1fr 1fr;
+  column-count: 3; /* Number of columns */
+  column-gap: 20px; /* Space between columns */
 }
 
+.post-card {
+  break-inside: avoid; /* Prevent breaking cards across columns */
+  margin-bottom: 20px; /* Space between rows */
+}
+
+/* Responsive Adjustments */
 @media (max-width: 980px) {
   .post-feed {
-    grid-template-columns: 1fr 1fr;
+    column-count: 2;
   }
 }
+
 @media (max-width: 680px) {
   .post-feed {
-    grid-template-columns: 1fr;
+    column-count: 1;
   }
 }
 
