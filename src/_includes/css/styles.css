@@ -731,18 +731,18 @@ h6 {
 
 /* Align Title and Subtitle to the Left */
 .site-banner-title {
-  text-align: left;
+  text-align: center;
   margin-left: 0; /* Ensure no extra margin pushes it to the right */
 }
 
 .site-banner-desc {
-  text-align: left;
+  text-align: center;
   margin-left: 0; /* Ensure no extra margin pushes it to the right */
 }
 
 /* Optional: Adjust parent container alignment */
 .site-banner {
-  text-align: left; /* Align everything in the banner section to the left */
+  text-align: center; /* Align everything in the banner section to the left */
 }
 
 .site-nav {
@@ -782,7 +782,7 @@ h6 {
 /* ---------------------------------------------------------- */
 
 .post-feed {
-  display: block; /* Switch from grid to block layout */
+  display: grid; /* Switch from grid to block layout */
 }
 
 .post-card {
