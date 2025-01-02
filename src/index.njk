@@ -5,18 +5,17 @@ pagination:
   alias: posts
 ---
 
-{% extends "layouts/default.njk" %}
+{% extends 'layouts/default.njk' %}
+{% from "partials/card.njk" import card %}
+
+{% set title = "Posts" %}
 
 {% block content %}
-<main id="site-main" class="site-main outer">
-    <div class="inner posts">
-        <div class="single-column-grid">
-            {% include "partials/pagination.njk" %}
-            {% for post in collections.posts %}
-                {% include "partials/post-card.njk" with post %}
-            {% endfor %}
-            {% include "partials/pagination.njk" %}
-        </div>
-    </div>
-</main>
-{% endblock %}
+    <section class="post-feed">
+        {% for post in posts %}
+            {{ card(post) }}
+        {% endfor %}
+    </section>
+
+    {% include "partials/pagination.njk" %}
+{% endblock%}
