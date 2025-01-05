@@ -18,11 +18,42 @@
  background-attachment:fixed;
 }
 
+/* Image */
+.post-feed .post-card-header img{
+ font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;
+ position:relative;
+ bottom:-8px;
+}
+
 /* Site head */
 .viewport .viewport-top .site-head{
- background-color:transparent;
+ background-image:url("https://images.unsplash.com/photo-1517921684659-7d5b995aaa44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNTc5fDB8MXxzZWFyY2h8MTQ1fHxkYXJrfGVufDB8fHx8MTczNjA2NjkyN3ww&ixlib=rb-4.0.3&q=80&w=2560") !important;
+}
+
+/* Image */
+.post-feed .post-card-footer img{
  transform:translatex(0px) translatey(0px);
- background-image:url("https://images.unsplash.com/photo-1734389481041-fa26afc1267c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzNTc5fDB8MXxhbGx8MTc0fHx8fHx8fHwxNzM1ODU5ODE2fA&ixlib=rb-4.0.3&q=80&w=2560") !important;
+}
+
+/* Heading */
+.post-feed .post-card h2{
+ transform:translatex(0px) translatey(0px);
+}
+
+/* Container */
+.viewport-top .site-main .container{
+ padding-bottom:0px;
+ height:894px;
+ padding-right:40px;
+}
+
+@media (min-width:681px){
+
+ /* Container */
+ .viewport-top .site-main .container{
+  transform:translatex(0px) translatey(0px);
+ }
+ 
 }
 
 /* Container */
