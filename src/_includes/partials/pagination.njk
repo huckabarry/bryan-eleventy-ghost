@@ -1,14 +1,15 @@
 {% if pagination.previousPageHref or pagination.nextPageHref %}
-    <nav class="pagination" role="pagination">
-        {% if page.permalink != pagination.previousPageHref %}
-            <a href="{{ pagination.previousPageHref }}">Prev page</a>
+    <nav class="pagination" role="navigation" aria-label="Pagination">
+        <span>Page {{ pagination.pageNumber + 1 }} of {{ pagination.pages.length }}</span>
+        {% if pagination.previousPageHref %}
+            <a href="{{ pagination.previousPageHref }}" aria-label="Previous page">Prev page</a>
         {% else %}
-            <span>Prev page</span>
+            <span class="disabled" aria-disabled="true">Prev page</span>
         {% endif %}
-        {% if page.permalink != pagination.nextPageHref %}
-            <a href="{{ pagination.nextPageHref }}">Next page</a>
+        {% if pagination.nextPageHref %}
+            <a href="{{ pagination.nextPageHref }}" aria-label="Next page">Next page</a>
         {% else %}
-            <span>Next page</span>
+            <span class="disabled" aria-disabled="true">Next page</span>
         {% endif %}
     </nav>
 {% endif %}
