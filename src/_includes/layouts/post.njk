@@ -17,13 +17,29 @@
                 {{ content | safe }}
             </section>
         </section>
+        <nav class="post-navigation">
+            {% set previousPost = collections.ghostPosts | getPreviousCollectionItem(page) %}
+            {% set nextPost = collections.ghostPosts | getNextCollectionItem(page) %}
+            <ul>
+                <li>
+                    {% if previousPost %}
+                    <a href="{{ previousPost.url }}">← {{ previousPost.title }}</a>
+                    {% endif %}
+                </li>
+                <li>
+                    {% if nextPost %}
+                    <a href="{{ nextPost.url }}">{{ nextPost.title }} →</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </nav>
     </article>
 {% endblock %}
 
 {%- block seo -%}
     <!--Twitter Card-->
     <meta name="twitter:site" content="{{ site.twitter }}">
-    <meta name="twitter:creator" content="{{ post.primary_author.twitter }}">
+    <meta name="twitter:creator" content="{{ post.primary_author.twitter | default(site.twitter) }}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ site.url + page.url }}">
     <meta name="twitter:title" content="{{ title }} – {{ site.title }}">
@@ -31,7 +47,7 @@
     <meta name="twitter:image" content="{{ post.feature_image }}">
 
     <!--Schema-->
-    <link rel="author" href="{{ post.primary_author.website }}">
+    <link rel="author" href="{{ post.primary_author.website | default(site.url) }}">
     <link rel="publisher" href="{{ site.url }}">
     <meta itemprop="name" content="{{ title }} – {{ site.title }}">
     <meta itemprop="description" content="{{ post.excerpt }}">
@@ -44,6 +60,6 @@
     <meta property="og:image" content="{{ post.feature_image }}">
     <meta property="og:description" content="{{ post.excerpt }}">
     <meta property="og:site_name" content="{{ site.title }}">
-    <meta property="og:locale" content="{{ site.lang }}">
+    <meta property="og:locale" content="{{ site.lang | default('en_US') }}">
     <meta property="article:author" content="{{ site.url }}">
 {%- endblock -%}
