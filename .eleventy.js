@@ -32,6 +32,20 @@ module.exports = function (eleventyConfig) {
     return new CleanCSS({}).minify(code).styles;
   });
 
+    // Add filters
+  eleventyConfig.addFilter("dateReadable", (date) => {
+    return new Date(date).toDateString();
+  });
+
+  eleventyConfig.addFilter("cssmin", function(code) {
+    return new CleanCSS({}).minify(code).styles;
+  });
+
+  // ADD THIS FILTER:
+  eleventyConfig.addFilter("htmlDateString", (dateObj) => {
+    return new Date(dateObj).toISOString().split('T')[0];
+  });
+
   // Collections - Filtered for "now" tag
   eleventyConfig.addCollection("posts", async () => {
     return await ghostApi.posts.browse({
