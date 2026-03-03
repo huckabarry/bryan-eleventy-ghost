@@ -11,9 +11,7 @@ const ghostApi = new GhostContentAPI({
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.addPlugin(rssPlugin);
-
-  // FIX: Maps 'layout: base' to the actual file location [Line 111 fix]
-  eleventyConfig.addLayoutAlias("base", "layouts/base.njk");
+  eleventyConfig.addLayoutAlias("base", "layouts/default.njk");
 
   eleventyConfig.addPassthroughCopy("assets");
   eleventyConfig.addPassthroughCopy("css");
