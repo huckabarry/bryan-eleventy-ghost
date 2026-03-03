@@ -1,36 +1,33 @@
-// Import required modules
-
 const GhostContentAPI = require("@tryghost/content-api");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const rssPlugin = require("@11ty/eleventy-plugin-rss");
 
-// Initialize Ghost API
 const ghostApi = new GhostContentAPI({
   url: process.env.GHOST_URL,
   key: process.env.GHOST_CONTENT_API_KEY,
-  version: "v5.0"
+  version: "v5.71" // Matches the v{major}.{minor} format required by Ghost 6
 });
 
 module.exports = function (eleventyConfig) {
-  // Plugins
   eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.addPlugin(rssPlugin);
 
-  // Passthrough copy
+  // FIX: Maps 'layout: base' to the actual file location [Line 111 fix]
+  eleventyConfig.addLayoutAlias("base", "layouts/base.njk");
+
   eleventyConfig.addPassthroughCopy("assets");
   eleventyConfig.addPassthroughCopy("css");
   eleventyConfig.addPassthroughCopy("js");
 
-  // Add filters
   eleventyConfig.addFilter("dateReadable", (date) => {
     return new Date(date).toDateString();
   });
 
-  // Collections
+  // Collections - Filtered for "now" tag
   eleventyConfig.addCollection("posts", async () => {
     return await ghostApi.posts.browse({
       include: "tags,authors",
-      limit: "all",
+      limit: 100, // Ghost 6 max limit per request
       filter: "tag:now",
     });
   });
@@ -38,7 +35,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("taggedPosts", async (collectionApi) => {
     const posts = await ghostApi.posts.browse({
       include: "tags,authors",
-      limit: "all",
+      limit: 100, // Update from "all" to 100
       filter: "tag:now",
     });
 
@@ -55,59 +52,31 @@ module.exports = function (eleventyConfig) {
     return tags;
   });
 
-  // ActivityPub Route
+  // ActivityPub Route - Customized for your static domain identity
   eleventyConfig.addCollection("activitypub", async () => {
     const posts = await ghostApi.posts.browse({
       include: "tags,authors",
-      limit: 10
+      limit: 20,
+      filter: "tag:now"
     });
 
-    return posts.map((post) => {
-      return {
-        "@context": "https://www.w3.org/ns/activitystreams",
-        type: "Article",
-        id: `${process.env.SITE_URL}/posts/${post.slug}`,
-        name: post.title,
-        url: `${process.env.SITE_URL}/posts/${post.slug}`,
-        content: post.html,
-        published: post.published_at,
-        author: {
-          type: "Person",
-          id: `${process.env.SITE_URL}/author/${post.primary_author.slug}`,
-          name: post.primary_author.name,
-          url: `${process.env.SITE_URL}/author/${post.primary_author.slug}`
-        }
-      };
-    });
+    return posts.map((post) => ({
+      "@context": "https://www.w3.org",
+      type: "Article",
+      id: `${process.env.SITE_URL}/posts/${post.slug}`,
+      name: post.title,
+      url: `${process.env.SITE_URL}/posts/${post.slug}`,
+      content: post.html,
+      published: post.published_at,
+      author: {
+        type: "Person",
+        id: `${process.env.SITE_URL}/author/${post.primary_author.slug}`,
+        name: post.primary_author.name,
+        url: `${process.env.SITE_URL}/author/${post.primary_author.slug}`
+      }
+    }));
   });
 
-  // JSON Feed
-  eleventyConfig.addCollection("jsonFeed", async () => {
-    const posts = await ghostApi.posts.browse({
-      include: "tags,authors",
-      limit: 20
-    });
-
-    return {
-      version: "https://jsonfeed.org/version/1",
-      title: "My Eleventy-Ghost Blog",
-      home_page_url: process.env.SITE_URL,
-      feed_url: `${process.env.SITE_URL}/feed.json`,
-      items: posts.map((post) => ({
-        id: post.id,
-        url: `${process.env.SITE_URL}/posts/${post.slug}`,
-        title: post.title,
-        content_html: post.html,
-        date_published: post.published_at,
-        author: {
-          name: post.primary_author.name,
-          url: `${process.env.SITE_URL}/author/${post.primary_author.slug}`
-        }
-      }))
-    };
-  });
-
-  // Base config
   return {
     dir: {
       input: "src",
