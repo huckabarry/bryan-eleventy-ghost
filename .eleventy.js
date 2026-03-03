@@ -30,16 +30,16 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("posts", async () => {
     return await ghostApi.posts.browse({
       include: "tags,authors",
-      limit: "all"
-      filter: "tag:now"
+      limit: "all",
+      filter: "tag:now",
     });
   });
 
   eleventyConfig.addCollection("taggedPosts", async (collectionApi) => {
     const posts = await ghostApi.posts.browse({
       include: "tags,authors",
-      limit: "all"
-      filter: "tag:now"
+      limit: "all",
+      filter: "tag:now",
     });
 
     const tags = {};
