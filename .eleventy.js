@@ -1,5 +1,5 @@
 // Import required modules
-const { EleventyServerlessBundlerPlugin } = require("@11ty/eleventy");
+
 const GhostContentAPI = require("@tryghost/content-api");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const rssPlugin = require("@11ty/eleventy-plugin-rss");
@@ -105,12 +105,6 @@ module.exports = function (eleventyConfig) {
         }
       }))
     };
-  });
-
-  // Eleventy Serverless for Dynamic Rendering
-  eleventyConfig.addPlugin(EleventyServerlessBundlerPlugin, {
-    name: "serverless", // The name of the serverless function
-    functionsDir: "netlify/functions/"
   });
 
   // Base config
