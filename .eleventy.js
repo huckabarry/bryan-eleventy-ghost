@@ -31,6 +31,7 @@ module.exports = function (eleventyConfig) {
     return await ghostApi.posts.browse({
       include: "tags,authors",
       limit: "all"
+      filter: "tag:now"
     });
   });
 
@@ -38,6 +39,7 @@ module.exports = function (eleventyConfig) {
     const posts = await ghostApi.posts.browse({
       include: "tags,authors",
       limit: "all"
+      filter: "tag:now"
     });
 
     const tags = {};
