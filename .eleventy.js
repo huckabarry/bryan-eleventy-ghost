@@ -1,6 +1,7 @@
 const GhostContentAPI = require("@tryghost/content-api");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const rssPlugin = require("@11ty/eleventy-plugin-rss");
+const CleanCSS = require("clean-css");
 
 const ghostApi = new GhostContentAPI({
   url: process.env.GHOST_URL,
@@ -19,6 +20,16 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("dateReadable", (date) => {
     return new Date(date).toDateString();
+  });
+
+    // Add filters
+  eleventyConfig.addFilter("dateReadable", (date) => {
+    return new Date(date).toDateString();
+  });
+
+  // Add the missing cssmin filter
+  eleventyConfig.addFilter("cssmin", function(code) {
+    return new CleanCSS({}).minify(code).styles;
   });
 
   // Collections - Filtered for "now" tag
