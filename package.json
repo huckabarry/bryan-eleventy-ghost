@@ -33,15 +33,14 @@
     "@11ty/eleventy": "^0.11.0",
     "@11ty/eleventy-plugin-rss": "^1.1.1",
     "@11ty/eleventy-plugin-syntaxhighlight": "^3.0.1",
-    "@tryghost/content-api": "^1.4.4",
+    "@tryghost/content-api": "^1.11.0",
     "@tryghost/helpers": "^1.1.6",
-    "clean-css": "^4.2.1",
+    "clean-css": "^5.0.0",
     "cross-env": "^7.0.0",
     "dotenv": "^8.0.0",
     "eleventy-plugin-lazyimages": "liamfiddler/eleventy-plugin-lazyimages",
     "eleventy-plugin-local-images": "^0.4.0",
     "eslint-utils": "3.0.0",
-    "clean-css": "^5.0.0"
     "html-minifier": "^4.0.0"
   },
   "devDependencies": {
