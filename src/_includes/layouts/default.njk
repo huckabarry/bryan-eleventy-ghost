@@ -12,7 +12,7 @@
     <header>{% include "partials/header.njk" %}</header>
     <hr class="site-rule">
     <main class="site-main">
-        {% block content %}{% endblock %}
+        {% block content %}{{ content | safe }}{% endblock %}
     </main>
     <hr class="site-rule">
     <footer>{% include "partials/footer.njk" %}</footer>
