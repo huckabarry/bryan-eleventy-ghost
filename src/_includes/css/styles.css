@@ -729,8 +729,8 @@ h6 {
 
 .photo-card-image {
   width: 100%;
-  opacity: 0.72;
-  filter: saturate(0.82) contrast(0.88) brightness(0.94);
+  opacity: 0.84;
+  filter: saturate(0.9) contrast(0.94) brightness(0.97);
   transition: opacity 180ms ease, filter 180ms ease;
 }
 
