@@ -10,7 +10,7 @@ permalink: "{% if pagination.pageNumber > 0 %}/{{ pagination.pageNumber + 1 }}{%
 
 <div class="post-list">
   <ul>
-  {% for post in pagedPosts %}
+  {% for post in pagedPosts %} # <-- Match the name here
     <li>
       <a href="/{{ post.slug }}/">
         <h2>{{ post.title }}</h2>
