@@ -9,7 +9,7 @@ const ghostApi = new GhostContentAPI({
 });
 
 let nowPostsPromise;
-const INCLUDED_SITE_TAGS = ["afterword", "status", "now-playing", "now-reading", "photos"];
+const INCLUDED_SITE_TAGS = ["afterword", "status", "now-playing", "now-reading", "photos", "now"];
 
 function extractFirstImage(post) {
   const html = String(post && post.html ? post.html : "");
@@ -51,6 +51,17 @@ function extractFirstImage(post) {
 
 function postHasTag(post, slug) {
   return (post.tags || []).some((tag) => tag && tag.slug === slug);
+}
+
+function parseTagSlugs(value) {
+  if (Array.isArray(value)) {
+    return value.filter(Boolean);
+  }
+
+  return String(value || "")
+    .split(",")
+    .map((slug) => slug.trim())
+    .filter(Boolean);
 }
 
 function slugify(value) {
@@ -201,8 +212,22 @@ module.exports = function (eleventyConfig) {
     return (posts || []).filter((post) => postHasTag(post, slug));
   });
 
+  eleventyConfig.addFilter("withAnyTagSlugs", (posts, slugs) => {
+    const tagSlugs = parseTagSlugs(slugs);
+    return (posts || []).filter((post) =>
+      tagSlugs.some((slug) => postHasTag(post, slug))
+    );
+  });
+
   eleventyConfig.addFilter("withoutTagSlug", (posts, slug) => {
     return (posts || []).filter((post) => !postHasTag(post, slug));
+  });
+
+  eleventyConfig.addFilter("withoutAnyTagSlugs", (posts, slugs) => {
+    const tagSlugs = parseTagSlugs(slugs);
+    return (posts || []).filter(
+      (post) => !tagSlugs.some((slug) => postHasTag(post, slug))
+    );
   });
 
   eleventyConfig.addFilter("hasTagSlug", (post, slug) => {
@@ -251,7 +276,7 @@ module.exports = function (eleventyConfig) {
 
     posts.forEach((post) => {
       (post.tags || []).forEach((tag) => {
-        if (!tag || !tag.slug || tag.visibility === "internal") {
+        if (!tag || !tag.slug || tag.slug === "now" || tag.visibility === "internal") {
           return;
         }
 
