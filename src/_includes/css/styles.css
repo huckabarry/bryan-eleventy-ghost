@@ -234,6 +234,9 @@ h6 {
   grid-template-areas: "body media";
   align-items: start;
   gap: 1rem;
+  padding: 0.9rem;
+  border-radius: 0.7rem;
+  background: #2c2f30;
 }
 
 .home-stream-media-reading {
@@ -250,6 +253,11 @@ h6 {
 .home-stream-body-reading {
   grid-area: body;
   min-width: 0;
+  font-size: 0.9rem;
+}
+
+.home-stream-body-reading .home-stream-meta {
+  font-size: 0.8rem;
 }
 
 .home-stream-body p:last-child {
@@ -268,6 +276,11 @@ h6 {
   gap: 0.45rem;
 }
 
+.home-stream-tags {
+  margin: 0.7rem 0 0.45rem;
+  padding-left: 0;
+}
+
 .tag-pill {
   display: inline-flex;
   align-items: center;
@@ -275,7 +288,7 @@ h6 {
   border-radius: 0.45rem;
   background: #2c2f30;
   color: var(--text);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 500;
   line-height: 1.2;
   text-decoration: none;
@@ -290,6 +303,16 @@ h6 {
 .tag-pill:hover {
   color: #ffffff;
   background: #343738;
+}
+
+.site-home .section-block:last-of-type .tag-pill,
+.home-stream-item-reading .tag-pill {
+  background: var(--bg);
+}
+
+.site-home .section-block:last-of-type .tag-pill:hover,
+.home-stream-item-reading .tag-pill:hover {
+  background: #26292a;
 }
 
 .home-title,
@@ -343,6 +366,12 @@ h6 {
   margin-top: 0.9rem;
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+.content-page .section-block {
+  margin-top: 2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(235, 235, 235, 0.14);
 }
 
 .post-feed {
