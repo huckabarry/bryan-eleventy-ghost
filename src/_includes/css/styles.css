@@ -135,7 +135,7 @@ h6 {
 .site-title {
   margin: 0 0 0.3rem;
   font-style: italic;
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #ffffff;
 }
@@ -169,11 +169,12 @@ h6 {
   display: inline-block;
   padding: 0.05rem 0;
   color: var(--accent);
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 .site-nav-item[aria-current="page"] {
-  color: #ffffff;
+  color: var(--accent);
 }
 
 .site-main > * + * {
@@ -211,7 +212,7 @@ h6 {
 
 .section-title {
   margin: 0;
-  color: var(--accent);
+  color: #ffffff;
   font-size: 1.35rem;
   font-weight: 700;
   font-style: italic;
