@@ -212,9 +212,10 @@ h6 {
 .section-title {
   margin: 0;
   color: var(--accent);
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -0.02em;
 }
 
 .post-feed {
@@ -233,16 +234,19 @@ h6 {
   display: grid;
   grid-template-columns: minmax(7rem, 8.5rem) minmax(0, 1fr);
   gap: 1rem;
+  align-items: baseline;
   padding: 0.45rem 0 0.95rem;
-  border-bottom: 1px solid var(--border);
 }
 
 .site-list-date {
   color: var(--muted);
   font-size: 0.8rem;
+  line-height: 1.35;
 }
 
 .site-list-link {
+  color: var(--accent);
+  line-height: 1.35;
   text-decoration: none;
 }
 
