@@ -44,7 +44,7 @@ module.exports = async function() {
   };
   data.relMe = [
     "https://urbanists.social/@bryan",
-    "https://bsky.app/profile/bryanrobb.bsky.social"
+    "https://bsky.app/profile/afterword.blog"
   ];
   data.albumWhaleUrl = "https://albumwhale.com/bryan/listening-now";
   data.navigation = [
