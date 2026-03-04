@@ -8,7 +8,7 @@ layout: base
 ---
 
 <section class="section-block tag-archive">
-  <h1 class="section-title">{% if tagPage.slug == "status" %}Status Archive{% else %}{{ tagPage.name }}{% endif %}</h1>
+  <h1 class="section-title">{% if tagPage.slug == "status" %}Status Archive{% elif tagPage.slug == "listening" or tagPage.slug == "now-playing" %}Listening History{% else %}{{ tagPage.name }}{% endif %}</h1>
   {% if tagPage.description %}
     <p class="home-description">{{ tagPage.description }}</p>
   {% endif %}

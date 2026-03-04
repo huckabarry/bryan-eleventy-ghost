@@ -700,6 +700,10 @@ h6 {
   gap: 0.9rem 0.8rem;
 }
 
+.cover-grid-listening {
+  margin-top: 0.55rem;
+}
+
 .cover-card {
   min-width: 0;
 }
