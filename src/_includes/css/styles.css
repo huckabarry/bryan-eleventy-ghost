@@ -135,7 +135,7 @@ h6 {
 .site-title {
   margin: 0 0 0.3rem;
   font-style: italic;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #ffffff;
 }
@@ -169,7 +169,7 @@ h6 {
   display: inline-block;
   padding: 0.05rem 0;
   color: var(--accent);
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: underline;
   text-decoration-color: currentColor;
 }
@@ -242,15 +242,15 @@ h6 {
 
 .site-list-date {
   color: var(--muted);
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 600;
   line-height: 1.35;
 }
 
 .site-list-link {
   color: var(--accent);
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.05rem;
+  font-weight: 600;
   line-height: 1.35;
   text-decoration: none;
 }
