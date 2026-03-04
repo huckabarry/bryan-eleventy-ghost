@@ -6,7 +6,7 @@ permalink: /index.html
 
 {% set statusPosts = collections.posts | withTagSlug("status") | withoutAnyTagSlugs("listening,now-playing") %}
 {% set listeningPosts = collections.posts | withAnyTagSlugs("listening,now-playing") %}
-{% set latestPosts = collections.posts | withAnyTagSlugs("afterword,now") | withoutAnyTagSlugs("status,listening,now-playing,books,now-reading,gallery,photos") %}
+{% set latestPosts = collections.posts | withoutAnyTagSlugs("status,listening,now-playing,books,now-reading,gallery,photos") %}
 {% set statusPost = statusPosts[0] %}
 {% set listeningPost = listeningPosts[0] %}
 

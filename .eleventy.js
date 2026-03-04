@@ -229,7 +229,7 @@ async function fetchNowPosts() {
       formats: "html",
       include: "tags,authors",
       limit: 100,
-      filter: `status:published+tag:[${INCLUDED_SITE_TAGS.join(",")}]`
+      filter: `status:published+visibility:[public,members,paid]+tag:[${INCLUDED_SITE_TAGS.join(",")}]`
     });
   }
 
@@ -245,7 +245,7 @@ async function fetchNowPosts() {
     console.log(
       `[afterword] sample posts: ${posts
         .slice(0, 5)
-        .map((post) => post.slug)
+        .map((post) => `${post.slug}(${post.visibility || "unknown"})`)
         .join(", ")}`
     );
   }
