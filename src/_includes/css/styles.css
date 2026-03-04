@@ -378,6 +378,62 @@ h6 {
   font-size: 0.85rem;
 }
 
+.music-journal {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.music-journal-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.music-journal-era {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.music-journal-era:first-of-type {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.music-journal-era h2,
+.music-journal-note h2 {
+  margin-bottom: 0.7rem;
+}
+
+.music-journal-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.music-journal-list li {
+  margin: 0;
+  padding: 0.32rem 0;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.music-journal-list li + li {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.music-journal-legend,
+.music-journal-note {
+  padding: 0.9rem 1rem;
+  border-radius: 0.7rem;
+  background: #2c2f30;
+}
+
+.music-journal-legend p,
+.music-journal-note p {
+  margin: 0;
+}
+
 .content-page .section-block {
   margin-top: 2rem;
   padding-top: 1.2rem;
