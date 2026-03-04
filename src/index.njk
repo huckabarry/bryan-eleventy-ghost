@@ -26,11 +26,7 @@ permalink: /index.html
           </a>
         {% endif %}
         <div class="home-stream-body e-content">
-          {% if post.excerpt %}
-            <p>{{ post.excerpt }}</p>
-          {% else %}
-            <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ post.html | striptags | truncate(220, true, "…") }}</a></p>
-          {% endif %}
+          <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ post | statusPreview }}</a></p>
           <p class="home-stream-meta">
             <a class="u-url" href="/{{ post.slug }}/">
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>

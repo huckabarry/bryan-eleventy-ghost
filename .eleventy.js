@@ -65,6 +65,40 @@ function getLocalPostUrl(post) {
   return `/${post.slug || ""}/`;
 }
 
+function getPlainTextPreview(post, maxLength = 220) {
+  const text = String(post && post.html ? post.html : "")
+    .replace(/<figcaption[\s\S]*?<\/figcaption>/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!text) {
+    return "";
+  }
+
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(0, maxLength).trimEnd()}…`;
+}
+
+function getStatusPreview(post) {
+  const excerpt = String(post && post.excerpt ? post.excerpt : "").trim();
+
+  if (excerpt) {
+    return excerpt;
+  }
+
+  const preview = getPlainTextPreview(post);
+
+  if (preview) {
+    return preview;
+  }
+
+  return String(post && post.title ? post.title : "").trim();
+}
+
 async function fetchNowPosts() {
   if (!nowPostsPromise) {
     nowPostsPromise = ghostApi.posts.browse({
@@ -152,6 +186,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("localPostUrl", (post) => {
     return getLocalPostUrl(post);
+  });
+
+  eleventyConfig.addFilter("statusPreview", (post) => {
+    return getStatusPreview(post);
   });
 
   eleventyConfig.addFilter("firstImage", (post) => {
