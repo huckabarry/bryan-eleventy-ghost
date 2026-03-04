@@ -37,8 +37,12 @@ module.exports = function (eleventyConfig) {
     return new Date(date).toDateString();
   });
 
+  // Add the missing cssmin filter with a safety check
   eleventyConfig.addFilter("cssmin", function(code) {
-    return new CleanCSS({}).minify(code).styles;
+    if (!code) return ""; // If CSS is missing, return empty string instead of crashing
+    const minified = new CleanCSS({}).minify(code);
+    if (minified.styles) return minified.styles;
+    return code; // Fallback to unminified if minification fails
   });
 
   // ADD THIS FILTER:
