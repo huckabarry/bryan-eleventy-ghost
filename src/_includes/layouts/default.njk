@@ -1,12 +1,17 @@
----
-layout: base
-eleventyExcludeFromCollections: true
-pagination:
-  data: collections.posts
-  size: 10
-  alias: pagedPosts
-permalink: "{% if pagination.pageNumber > 0 %}/{{ pagination.pageNumber + 1 }}{% endif %}/index.html"
----
+<!DOCTYPE html>
+<html lang="{{ site.lang }}">
+<head>
+    <title>{{ title or site.title }}</title>
+    <style>{{ css | cssmin | safe }}</style>
+</head>
+<body>
+    <header>{% include "partials/header.njk" %}</header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>{% include "partials/footer.njk" %}</footer>
+</body>
+</html>
 
 {% block content %}
 <div class="post-list">
