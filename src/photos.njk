@@ -1,0 +1,32 @@
+---
+layout: base
+permalink: /photos/index.html
+title: Photos
+description: "A masonry-style gallery built from the first image in each post."
+---
+
+<section class="section-block photo-page">
+  <h1 class="section-title">Photos</h1>
+  <div class="photo-grid">
+    {% for post in collections.photoPosts %}
+      <article class="photo-card h-entry">
+        <a class="photo-card-link u-url" href="/{{ post.slug }}/">
+          <img
+            class="photo-card-image u-photo"
+            src="{{ post.firstImage.src }}"
+            alt="{{ post.firstImage.alt }}"
+            loading="lazy"
+          >
+        </a>
+        <div class="photo-card-meta">
+          <time class="photo-card-date dt-published" datetime="{{ post.published_at | htmlDateString }}">
+            {{ post.published_at | dateDisplay }}
+          </time>
+          <a class="photo-card-title p-name" href="/{{ post.slug }}/">{{ post.title }}</a>
+        </div>
+      </article>
+    {% else %}
+      <p>No photo posts are available yet.</p>
+    {% endfor %}
+  </div>
+</section>

@@ -1,0 +1,30 @@
+---
+pagination:
+  data: collections.tagPages
+  size: 1
+  alias: tagPage
+permalink: "{{ tagPage.url }}"
+layout: base
+---
+
+<section class="section-block tag-archive">
+  <h1 class="section-title">{{ tagPage.name }}</h1>
+  {% if tagPage.description %}
+    <p class="home-description">{{ tagPage.description }}</p>
+  {% endif %}
+  <ul class="site-list-of-posts h-feed">
+    {% for post in tagPage.posts %}
+      <li class="site-list-of-posts-item h-entry">
+        <time class="site-list-date dt-published" datetime="{{ post.published_at | htmlDateString }}">
+          {{ post.published_at | dateDisplay }}
+        </time>
+        <div>
+          <a class="site-list-link p-name u-url" href="/{{ post.slug }}/">{{ post.title }}</a>
+          <span class="site-visually-hidden p-author h-card">
+            <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
+          </span>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+</section>

@@ -48,7 +48,7 @@ module.exports = async function() {
     },
     {
       label: "Photos",
-      url: "https://afterword.blog/photos"
+      url: "/photos/"
     },
     {
       label: "Now",
