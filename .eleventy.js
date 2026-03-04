@@ -30,7 +30,7 @@ module.exports = function (eleventyConfig) {
     return await ghostApi.posts.browse({
       include: "tags,authors",
       limit: 100,
-      filter: "tag:hash-now"
+      filter: "tag:now"
     });
   });
 
