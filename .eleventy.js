@@ -9,6 +9,7 @@ const ghostApi = new GhostContentAPI({
 });
 
 let nowPostsPromise;
+const INCLUDED_SITE_TAGS = ["afterword", "status", "now-playing", "now-reading", "photos"];
 
 function extractFirstImage(post) {
   const html = String(post && post.html ? post.html : "");
@@ -69,14 +70,16 @@ async function fetchNowPosts() {
     nowPostsPromise = ghostApi.posts.browse({
       include: "tags,authors",
       limit: 100,
-      filter: "tag:now"
+      filter: `tag:[${INCLUDED_SITE_TAGS.join(",")}]`
     });
   }
 
   const posts = await nowPostsPromise;
 
   console.log(
-    `[afterword] fetched ${posts.length} Ghost posts for filter tag:now`
+    `[afterword] fetched ${posts.length} Ghost posts for filter ${INCLUDED_SITE_TAGS
+      .map((tag) => `tag:${tag}`)
+      .join(" OR ")}`
   );
 
   if (posts.length > 0) {
@@ -163,6 +166,7 @@ module.exports = function (eleventyConfig) {
     const posts = await fetchNowPosts();
 
     return posts
+      .filter((post) => postHasTag(post, "photos"))
       .map((post) => ({
         ...post,
         firstImage: extractFirstImage(post)
@@ -176,7 +180,7 @@ module.exports = function (eleventyConfig) {
 
     posts.forEach((post) => {
       (post.tags || []).forEach((tag) => {
-        if (!tag || !tag.slug || tag.slug === "now" || tag.visibility === "internal") {
+        if (!tag || !tag.slug || tag.visibility === "internal") {
           return;
         }
 

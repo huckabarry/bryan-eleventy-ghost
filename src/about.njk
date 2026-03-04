@@ -5,6 +5,8 @@ title: About
 description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place where I write short status updates about what’s going on in my life, post photos, and occasionally shout into the void."
 ---
 
+{% set readingPosts = collections.posts | withTagSlug("now-reading") %}
+
 <article class="content content-page h-entry">
   <header class="post-header">
     <h1 class="content-title">
@@ -33,4 +35,34 @@ description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place w
       <p>You can reach me by email, follow my RSS feed, or subscribe to the newsletter for this blog.</p>
     </div>
   </section>
+
+  {% if readingPosts.length %}
+  <section class="section-block">
+    <h2 class="section-title">Reading</h2>
+    <div class="home-stream">
+      {% for post in readingPosts | slice(0, 1) %}
+        {% set streamImage = post | firstImage %}
+        <article class="home-stream-item h-entry">
+          {% if streamImage %}
+            <a class="home-stream-media u-url" href="/{{ post.slug }}/">
+              <img class="home-stream-image u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
+            </a>
+          {% endif %}
+          <div class="home-stream-body e-content">
+            {% if post.excerpt %}
+              <p>{{ post.excerpt }}</p>
+            {% else %}
+              <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ post.title }}</a></p>
+            {% endif %}
+            <p class="home-stream-meta">
+              <a class="u-url" href="/{{ post.slug }}/">
+                <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+              </a>
+            </p>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 </article>

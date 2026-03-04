@@ -6,7 +6,7 @@ permalink: /index.html
 
 {% set statusPosts = collections.posts | withTagSlug("status") | withoutTagSlug("now-playing") %}
 {% set listeningPosts = collections.posts | withTagSlug("now-playing") %}
-{% set latestPosts = collections.posts | withoutTagSlug("status") | withoutTagSlug("now-playing") %}
+{% set latestPosts = collections.posts | withTagSlug("afterword") | withoutTagSlug("status") | withoutTagSlug("now-playing") %}
 
 <section class="home-intro">
   {% if site.description %}
@@ -60,7 +60,7 @@ permalink: /index.html
         </div>
       </li>
     {% else %}
-      <p>No `#now` posts are available yet.</p>
+      <p>No posts are available yet.</p>
     {% endfor %}
   </ul>
 </section>
