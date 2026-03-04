@@ -220,17 +220,19 @@ h6 {
 
 .home-stream-image-listening {
   width: min(100%, 300px);
-  margin: 0 auto;
+  margin: 0;
 }
 
 .home-stream-item-reading {
   display: grid;
-  grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 180px);
+  grid-template-areas: "body media";
   align-items: start;
   gap: 1rem;
 }
 
 .home-stream-media-reading {
+  grid-area: media;
   width: 100%;
 }
 
@@ -241,6 +243,7 @@ h6 {
 }
 
 .home-stream-body-reading {
+  grid-area: body;
   min-width: 0;
 }
 
@@ -829,6 +832,9 @@ body.photo-lightbox-open {
 
   .home-stream-item-reading {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "media"
+      "body";
   }
 
   .home-stream-media-reading .home-stream-image-listening {
