@@ -2,15 +2,15 @@
 layout: base
 eleventyExcludeFromCollections: true
 pagination:
-  data: collections.posts  # Change this from ghostPosts to posts
+  data: collections.posts
   size: 10
-  alias: posts
+  alias: pagedPosts
 permalink: "{% if pagination.pageNumber > 0 %}/{{ pagination.pageNumber + 1 }}{% endif %}/index.html"
 ---
 
 <div class="post-list">
   <ul>
-  {% for post in posts %}
+  {% for post in pagedPosts %}
     <li>
       <a href="/{{ post.slug }}/">
         <h2>{{ post.title }}</h2>
@@ -20,3 +20,4 @@ permalink: "{% if pagination.pageNumber > 0 %}/{{ pagination.pageNumber + 1 }}{%
   {% endfor %}
   </ul>
 </div>
+
