@@ -7,6 +7,29 @@ const ghostApi = new GhostContentAPI({
   version: "v5.71"
 });
 
+async function fetchNowPosts() {
+  const posts = await ghostApi.posts.browse({
+    include: "tags,authors",
+    limit: 100,
+    filter: "tag:now"
+  });
+
+  console.log(
+    `[afterword] fetched ${posts.length} Ghost posts for filter tag:now`
+  );
+
+  if (posts.length > 0) {
+    console.log(
+      `[afterword] sample posts: ${posts
+        .slice(0, 5)
+        .map((post) => post.slug)
+        .join(", ")}`
+    );
+  }
+
+  return posts;
+}
+
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.addPlugin(rssPlugin);
@@ -27,11 +50,7 @@ module.exports = function (eleventyConfig) {
   });
 
   eleventyConfig.addCollection("posts", async () => {
-    return await ghostApi.posts.browse({
-      include: "tags,authors",
-      limit: 100,
-      filter: "tag:now"
-    });
+    return await fetchNowPosts();
   });
 
   return {
