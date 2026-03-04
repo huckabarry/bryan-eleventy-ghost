@@ -39,6 +39,7 @@ module.exports = async function() {
   data.webmentions = {
     username: data.domain,
     endpoint: `https://webmention.io/${data.domain}/webmention`,
+    pingback: `https://webmention.io/${data.domain}/xmlrpc`,
     api: "https://webmention.io/api/mentions.jf2"
   };
   data.relMe = [

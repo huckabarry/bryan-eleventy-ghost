@@ -18,7 +18,7 @@
     <link rel="me" href="{{ profile }}">
     {% endfor %}
     <link rel="webmention" href="{{ site.webmentions.endpoint }}">
-    <link rel="pingback" href="{{ site.webmentions.endpoint }}">
+    <link rel="pingback" href="{{ site.webmentions.pingback }}">
     <style>{% include "css/styles.css" %}</style>
 </head>
 <body class="site-shell{% if page.url == '/' %} site-home{% endif %}{% if post %} site-post{% endif %}">
