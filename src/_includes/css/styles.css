@@ -268,10 +268,15 @@ h6 {
 .home-stream-meta {
   color: var(--muted);
   font-size: 0.85rem;
+  margin: 0;
 }
 
-.site-home .home-stream-item:not(.home-stream-item-reading) .home-stream-meta {
-  margin-left: 0.55rem;
+.home-stream-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 1rem;
 }
 
 .home-stream-tags,
@@ -282,7 +287,7 @@ h6 {
 }
 
 .home-stream-tags {
-  margin: 1rem 0 0.45rem;
+  margin: 0;
   padding-left: 0;
 }
 
@@ -1040,15 +1045,14 @@ body.photo-lightbox-open {
   }
 
   .home-stream-item-reading {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "media"
-      "body";
+    grid-template-columns: minmax(0, 1fr) minmax(110px, 130px);
+    grid-template-areas: "body media";
+    gap: 0.85rem;
   }
 
   .home-stream-media-reading .home-stream-image-listening {
-    max-width: 300px;
-    margin: 0 auto;
+    max-width: 130px;
+    margin: 0 0 0 auto;
   }
 
   .home-stream-media-listening {
