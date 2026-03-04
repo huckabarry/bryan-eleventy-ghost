@@ -8,7 +8,7 @@
   --accent: #f2f7b7;
   --accent-soft: rgba(242, 247, 183, 0.14);
   --border: rgba(235, 235, 235, 0.2);
-  --column: 600px;
+  --column: 550px;
   --gutter: 1rem;
   --avatar: 4.75rem;
   --radius: 0.85rem;
@@ -135,7 +135,7 @@ h6 {
 .site-title {
   margin: 0 0 0.3rem;
   font-style: italic;
-  font-size: 1.2rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: #ffffff;
 }
