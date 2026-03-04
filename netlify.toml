@@ -2,5 +2,8 @@
   command = "npm run build"
   publish = "_site"
 
+[functions]
+  directory = "netlify/functions"
+
 [template]
   incoming-hooks = ["Ghost"]
