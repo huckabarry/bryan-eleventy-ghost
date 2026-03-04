@@ -720,7 +720,12 @@ h6 {
 
 .tag-archive-status .section-title + .site-list-of-posts,
 .tag-archive-listening .section-title + .cover-grid-listening {
-  margin-top: 1.35rem;
+  margin-top: 1.6rem;
+}
+
+.tag-archive-status .site-list-of-posts + .tag-feed-note,
+.tag-archive-listening .cover-grid-listening + .tag-feed-note {
+  margin-top: 1.5rem;
 }
 
 .cover-card {
