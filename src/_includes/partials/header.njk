@@ -1,15 +1,18 @@
-<header class="site-header">
-    <a class="site-header-avatar-link" {% if page.url == "/" %}aria-current="page"{% endif %} href="{{ site.url }}">
+<header class="site-header h-card">
+    <a class="site-header-avatar-link u-url" {% if page.url == "/" %}aria-current="page"{% endif %} href="{{ site.url }}">
         {% if site.logo %}
-            <img class="avatar site-logo" src="{{ site.logo }}" alt="{{ site.title }}">
+            <img class="avatar site-logo u-photo" src="{{ site.logo }}" alt="{{ site.title }}">
         {% else %}
             <span class="avatar avatar-fallback" aria-hidden="true">{{ (site.title or "S") | first }}</span>
         {% endif %}
     </a>
     <div class="site-header-copy">
         <div class="site-title">
-            <a {% if page.url == "/" %}aria-current="page"{% endif %} href="{{ site.url }}">{{ site.title }}</a>
+            <a class="p-name" {% if page.url == "/" %}aria-current="page"{% endif %} href="{{ site.url }}">{{ site.title }}</a>
         </div>
+        {% if site.description %}
+            <p class="site-visually-hidden p-note">{{ site.description }}</p>
+        {% endif %}
         {% include 'partials/navigation.njk' %}
     </div>
 </header>

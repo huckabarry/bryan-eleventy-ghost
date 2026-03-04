@@ -8,7 +8,7 @@
   --accent: #f2f7b7;
   --accent-soft: rgba(242, 247, 183, 0.14);
   --border: rgba(235, 235, 235, 0.2);
-  --column: 40rem;
+  --column: 650px;
   --gutter: 1rem;
   --avatar: 4.75rem;
   --radius: 0.85rem;
@@ -82,7 +82,7 @@ h6 {
   margin: 0 0 0.8rem;
   font-size: inherit;
   line-height: 1.35;
-  font-style: normal;
+  font-style: italic;
   font-weight: 600;
 }
 
@@ -124,7 +124,7 @@ h6 {
   background: var(--surface);
   color: var(--accent);
   font-size: 1.6rem;
-  font-style: normal;
+  font-style: italic;
   font-weight: 700;
 }
 
@@ -134,13 +134,25 @@ h6 {
 
 .site-title {
   margin: 0 0 0.3rem;
-  font-style: normal;
+  font-style: italic;
   font-size: 1.2rem;
   font-weight: 700;
 }
 
 .site-title a {
   text-decoration: none;
+}
+
+.site-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .site-nav-list {
@@ -286,6 +298,11 @@ h6 {
   flex-wrap: wrap;
   gap: 0.8rem;
   align-items: center;
+}
+
+.post-author a {
+  color: var(--muted);
+  text-decoration: none;
 }
 
 .post-tag {

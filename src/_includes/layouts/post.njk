@@ -5,26 +5,31 @@
 {% set codeinjection_foot = post.codeinjection_foot %}
 
 {% block content %}
-    <article class="content content-post">
+    <article class="content content-post h-entry">
         <header class="post-header">
             <div class="post-meta-row">
                 {% if post.primary_tag %}
-                    <span class="post-tag">{{ post.primary_tag.name }}</span>
+                    <span class="post-tag p-category">{{ post.primary_tag.name }}</span>
                 {% endif %}
-                <time class="post-date" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateReadable }}</time>
+                <time class="post-date dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateReadable }}</time>
+                <span class="post-author p-author h-card">
+                    <a class="p-name u-url" href="{{ post.primary_author.website | default(site.url) }}">{{ post.primary_author.name | default(site.title) }}</a>
+                </span>
             </div>
-            <h1 class="content-title">{{ title }}</h1>
+            <h1 class="content-title">
+                <a class="p-name u-url" href="{{ site.url }}{{ page.url }}">{{ title }}</a>
+            </h1>
             {% if post.excerpt %}
-                <p class="post-dek">{{ post.excerpt }}</p>
+                <p class="post-dek p-summary">{{ post.excerpt }}</p>
             {% endif %}
         </header>
         {% if post.feature_image %}
             <figure class="post-feature-image">
-                <img src="{{ post.feature_image }}" alt="{{ title }}">
+                <img class="u-photo" src="{{ post.feature_image }}" alt="{{ title }}">
             </figure>
         {% endif %}
         <section class="post-full-content">
-            <section class="content-body load-external-scripts">
+            <section class="content-body load-external-scripts e-content">
                 {{ content | safe }}
             </section>
         </section>
