@@ -430,13 +430,13 @@ h6 {
 }
 
 .photo-grid {
-  column-count: 2;
-  column-gap: 0.8rem;
+  column-count: 3;
+  column-gap: 0.5rem;
 }
 
 .photo-card {
   break-inside: avoid;
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.5rem;
 }
 
 .photo-card-link {
@@ -725,7 +725,7 @@ body.photo-lightbox-open {
   }
 
   .photo-grid {
-    column-count: 1;
+    column-count: 2;
   }
 
   .photo-lightbox {
@@ -735,6 +735,10 @@ body.photo-lightbox-open {
 
   .photo-lightbox-nav {
     font-size: 1.5rem;
+  }
+
+  .photo-card {
+    margin-bottom: 0.4rem;
   }
 
   .site-list-of-posts-item {

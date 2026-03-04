@@ -12,16 +12,25 @@ let nowPostsPromise;
 
 function extractFirstImage(post) {
   const html = String(post && post.html ? post.html : "");
+  const cleanedHtml = html
+    .replace(/<figure[^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][\s\S]*?<\/figure>/gi, "")
+    .replace(/<div[^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][\s\S]*?<\/div>/gi, "");
   const preferredMatches = [
     /<figure[^>]*class=["'][^"']*kg-image-card[^"']*["'][\s\S]*?<img[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
     /<figure[^>]*class=["'][^"']*kg-gallery-card[^"']*["'][\s\S]*?<img[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
-    /<img(?![^>]*class=["'][^"']*kg-bookmark-thumbnail[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
-    /<img(?![^>]*class=["'][^"']*kg-bookmark-thumbnail[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*>/i
+    /<img(?![^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
+    /<img(?![^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*>/i
   ];
 
   for (const pattern of preferredMatches) {
-    const match = html.match(pattern);
+    const match = cleanedHtml.match(pattern);
     if (match && match[1]) {
+      if (/\.(png)(\?|$)/i.test(match[1])) {
+        continue;
+      }
+      if (/favicon|bookwyrm|avatar|screenshot|screen-shot|screen_shot/i.test(match[1])) {
+        continue;
+      }
       return {
         src: match[1],
         alt: match[2] || post.title || ""
