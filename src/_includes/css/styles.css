@@ -701,7 +701,20 @@ h6 {
 }
 
 .cover-grid-listening {
+  margin-top: 0;
+}
+
+.tag-archive .section-title {
+  margin-bottom: 0.35rem;
+}
+
+.tag-archive .cover-grid-listening + .tag-feed-note,
+.tag-archive .site-list-of-posts + .tag-feed-note {
   margin-top: 1rem;
+}
+
+.tag-archive .section-title + .cover-grid-listening {
+  margin-top: 1.2rem;
 }
 
 .cover-card {
