@@ -209,6 +209,29 @@ h6 {
   gap: 1.4rem;
 }
 
+.site-list-of-posts {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-list-of-posts-item {
+  display: grid;
+  grid-template-columns: minmax(7rem, 8.5rem) minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.45rem 0 0.95rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.site-list-date {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.site-list-link {
+  text-decoration: none;
+}
+
 .stream-item {
   display: grid;
   grid-template-columns: minmax(7rem, 8.5rem) minmax(0, 1fr);
@@ -466,6 +489,11 @@ h6 {
   .stream-item {
     grid-template-columns: 1fr;
     gap: 0.45rem;
+  }
+
+  .site-list-of-posts-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
   }
 
   .post-navigation ul,

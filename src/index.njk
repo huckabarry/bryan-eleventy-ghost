@@ -4,8 +4,6 @@ eleventyExcludeFromCollections: true
 permalink: /index.html
 ---
 
-{% from "partials/card.njk" import card %}
-
 <section class="home-intro">
   <h1 class="home-title">{{ site.title }}</h1>
   {% if site.description %}
@@ -15,11 +13,16 @@ permalink: /index.html
 
 <section class="section-block">
   <h2 class="section-title">Latest Posts</h2>
-  <section class="post-feed">
+  <ul class="site-list-of-posts">
     {% for post in collections.posts.slice(0, 10) %}
-      {{ card(post) }}
+      <li class="site-list-of-posts-item">
+        <time class="site-list-date" datetime="{{ post.published_at | htmlDateString }}">
+          {{ post.published_at | dateReadable }}
+        </time>
+        <a class="site-list-link" href="/{{ post.slug }}/">{{ post.title }}</a>
+      </li>
     {% else %}
       <p>No `#now` posts are available yet.</p>
     {% endfor %}
-  </section>
+  </ul>
 </section>
