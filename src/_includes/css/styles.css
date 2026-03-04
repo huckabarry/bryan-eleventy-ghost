@@ -464,6 +464,10 @@ body.photo-lightbox-open {
   background: rgba(20, 21, 22, 0.92);
 }
 
+.photo-lightbox[hidden] {
+  display: none;
+}
+
 .photo-lightbox-stage {
   display: flex;
   flex-direction: column;
