@@ -6,10 +6,11 @@ pagination:
   alias: post
 permalink: "/{{ post.slug }}/index.html"
 ---
+
 {% block content %}
-  <article>
+<article class="post-content">
     <h1>{{ post.title }}</h1>
     {{ post.html | safe }}
-  </article>
+</article>
 {% endblock %}
 
