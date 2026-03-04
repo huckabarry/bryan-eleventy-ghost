@@ -50,8 +50,8 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("posts", async () => {
     return await ghostApi.posts.browse({
       include: "tags,authors",
-      limit: 100, // Ghost 6 max limit per request
-      filter: "tag:Now",
+      limit: 100,
+      filter: "tag:now", // Always use the slug here
     });
   });
 
@@ -59,7 +59,7 @@ module.exports = function (eleventyConfig) {
     const posts = await ghostApi.posts.browse({
       include: "tags,authors",
       limit: 100, // Update from "all" to 100
-      filter: "tag:Now",
+      filter: "tag:now",
     });
 
     const tags = {};
