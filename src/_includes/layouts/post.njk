@@ -13,11 +13,11 @@
                 {% endif %}
                 <time class="post-date dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateReadable }}</time>
                 <span class="post-author p-author h-card">
-                    <a class="p-name u-url" href="{{ post.primary_author.website | default(site.url) }}">{{ post.primary_author.name | default(site.title) }}</a>
+                    <a class="p-name u-url" href="/">{{ post.primary_author.name | default(site.title) }}</a>
                 </span>
             </div>
             <h1 class="content-title">
-                <a class="p-name u-url" href="{{ site.url }}{{ page.url }}">{{ title }}</a>
+                <a class="p-name u-url" href="{{ page.url }}">{{ title }}</a>
             </h1>
             {% if post.excerpt %}
                 <p class="post-dek p-summary">{{ post.excerpt }}</p>
