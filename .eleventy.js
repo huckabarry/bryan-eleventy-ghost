@@ -191,6 +191,19 @@ function getLocalPostUrl(post) {
   return `/${getLocalPostSlug(post)}/`;
 }
 
+function xmlEscape(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function cdataSafe(value) {
+  return String(value == null ? "" : value).replace(/]]>/g, "]]]]><![CDATA[>");
+}
+
 function getCollectionIndex(posts, currentPost) {
   const items = Array.isArray(posts) ? posts : [];
   const currentId = currentPost && currentPost.id;
@@ -271,6 +284,14 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("rfc822Date", (dateObj) => {
     return new Date(dateObj).toUTCString();
+  });
+
+  eleventyConfig.addFilter("xmlEscape", (value) => {
+    return xmlEscape(value);
+  });
+
+  eleventyConfig.addFilter("cdataSafe", (value) => {
+    return cdataSafe(value);
   });
 
   eleventyConfig.addFilter("getReadingTime", (html) => {

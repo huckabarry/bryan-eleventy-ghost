@@ -1,8 +1,8 @@
 {% macro atomFeed(title, description, feedUrl, siteUrl, posts, pageUrl) -%}
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>{{ title }}</title>
-  <subtitle>{{ description }}</subtitle>
+  <title>{{ title | xmlEscape | safe }}</title>
+  <subtitle>{{ description | xmlEscape | safe }}</subtitle>
   <link href="{{ feedUrl }}" rel="self"/>
   <link href="{{ siteUrl }}"/>
   {%- for post in posts.slice(0,1) | sort(true, false, 'updated_at') %}
@@ -14,11 +14,11 @@
   </author>
   {%- for post in posts %}
   <entry>
-    <title>{{ post | feedTitle }}</title>
+    <title>{{ (post | feedTitle) | xmlEscape | safe }}</title>
     <link href="{{ siteUrl + (post | localPostUrl) }}"/>
     <updated>{{ post.updated_at | rfc3339Date }}</updated>
     <id>{{ siteUrl + (post | localPostUrl) }}</id>
-    <content type="html">{{ post.html | htmlToAbsoluteUrls(pageUrl) }}</content>
+    <content type="html">{{ post.html | htmlToAbsoluteUrls(pageUrl) | xmlEscape | safe }}</content>
   </entry>
   {%- endfor %}
 </feed>
@@ -28,9 +28,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
   <channel>
-    <title>{{ title }}</title>
+    <title>{{ title | xmlEscape | safe }}</title>
     <link>{{ siteUrl }}/</link>
-    <description>{{ description }}</description>
+    <description>{{ description | xmlEscape | safe }}</description>
     {%- for post in posts.slice(0,1) | sort(true, false, 'updated_at') %}
     <lastBuildDate>{{ post.updated_at | rfc822Date }}</lastBuildDate>
     {%- endfor %}
@@ -38,12 +38,12 @@
     {%- for post in posts %}
     <item>
       {%- if post | feedTitle %}
-      <title>{{ post | feedTitle }}</title>
+      <title>{{ (post | feedTitle) | xmlEscape | safe }}</title>
       {%- endif %}
       <link>{{ siteUrl + (post | localPostUrl) }}</link>
       <guid>{{ siteUrl + (post | localPostUrl) }}</guid>
       <pubDate>{{ post.published_at | rfc822Date }}</pubDate>
-      <description><![CDATA[{{ post.html | htmlToAbsoluteUrls(pageUrl) }}]]></description>
+      <description><![CDATA[{{ post.html | htmlToAbsoluteUrls(pageUrl) | cdataSafe | safe }}]]></description>
     </item>
     {%- endfor %}
   </channel>
