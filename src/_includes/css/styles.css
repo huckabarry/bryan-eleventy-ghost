@@ -136,7 +136,7 @@ h6 {
   margin: 0 0 0.3rem;
   font-style: italic;
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 900;
   color: #ffffff;
 }
 
@@ -242,14 +242,14 @@ h6 {
 
 .site-list-date {
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.35;
 }
 
 .site-list-link {
   color: var(--accent);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
   line-height: 1.35;
   text-decoration: none;
