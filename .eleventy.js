@@ -43,15 +43,13 @@ module.exports = function (eleventyConfig) {
     const parts = new Intl.DateTimeFormat("en-US", {
       day: "2-digit",
       month: "short",
-      year: "numeric",
       timeZone: "UTC"
     }).formatToParts(new Date(date));
 
     const day = parts.find((part) => part.type === "day")?.value || "";
     const month = (parts.find((part) => part.type === "month")?.value || "").toUpperCase();
-    const year = parts.find((part) => part.type === "year")?.value || "";
 
-    return `${day} ${month} ${year}`.trim();
+    return `${day} ${month}`.trim();
   });
 
   eleventyConfig.addFilter("htmlDateString", (dateObj) => {
