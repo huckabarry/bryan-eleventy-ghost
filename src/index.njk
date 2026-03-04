@@ -30,6 +30,9 @@ permalink: /index.html
         {% endif %}
         <div class="home-stream-body e-content">
           <div class="content-body">{{ post.html | safe }}</div>
+          <span class="site-visually-hidden p-author h-card">
+            <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
+          </span>
           <p class="home-stream-meta">
             <a class="u-url" href="{{ post | localPostUrl }}">
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
@@ -82,6 +85,9 @@ permalink: /index.html
           {% else %}
             <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
           {% endif %}
+          <span class="site-visually-hidden p-author h-card">
+            <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
+          </span>
           <p class="home-stream-meta">
             <a class="u-url" href="{{ post | localPostUrl }}">
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>

@@ -7,8 +7,12 @@
 {% block content %}
     <article class="content content-post h-entry">
         <header class="post-header">
+            <a class="site-visually-hidden u-uid" href="{{ site.url }}{{ page.url }}">{{ site.url }}{{ page.url }}</a>
             <div class="post-meta-row">
                 <time class="post-date dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+                {% if post.updated_at and post.updated_at != post.published_at %}
+                <time class="site-visually-hidden dt-updated" datetime="{{ post.updated_at | htmlDateString }}">{{ post.updated_at | dateDisplay }}</time>
+                {% endif %}
                 <span class="post-author p-author h-card">
                     <a class="p-name u-url" href="/">{{ post.primary_author.name | default(site.title) }}</a>
                 </span>

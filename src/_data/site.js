@@ -41,6 +41,10 @@ module.exports = async function() {
     endpoint: `https://webmention.io/${data.domain}/webmention`,
     api: "https://webmention.io/api/mentions.jf2"
   };
+  data.relMe = [
+    "https://urbanists.social/@bryan",
+    "https://bsky.app/profile/bryanrobb.bsky.social"
+  ];
   data.albumWhaleUrl = "https://albumwhale.com/bryan/listening-now";
   data.navigation = [
     {

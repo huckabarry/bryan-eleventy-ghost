@@ -14,6 +14,9 @@
     <link rel="alternate" type="application/rss+xml" title="{{ tagPage.name }} RSS Feed" href="{{ site.url }}/tags/{{ tagPage.slug }}/rss.xml">
     <link rel="alternate" type="application/feed+json" title="{{ tagPage.name }} JSON Feed" href="{{ site.url }}/tags/{{ tagPage.slug }}/feed.json">
     {% endif %}
+    {% for profile in site.relMe or [] %}
+    <link rel="me" href="{{ profile }}">
+    {% endfor %}
     <link rel="webmention" href="{{ site.webmentions.endpoint }}">
     <link rel="pingback" href="{{ site.webmentions.endpoint }}">
     <style>{% include "css/styles.css" %}</style>
