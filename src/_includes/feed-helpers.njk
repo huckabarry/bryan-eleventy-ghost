@@ -43,7 +43,7 @@
       <link>{{ siteUrl + (post | localPostUrl) }}</link>
       <guid>{{ siteUrl + (post | localPostUrl) }}</guid>
       <pubDate>{{ post.published_at | rfc822Date }}</pubDate>
-      <description><![CDATA[{{ post.html | htmlToAbsoluteUrls(pageUrl) | cdataSafe | safe }}]]></description>
+      <description>{{ (post | rssDescription) | xmlEscape | safe }}</description>
     </item>
     {%- endfor %}
   </channel>

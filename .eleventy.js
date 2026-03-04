@@ -342,6 +342,16 @@ module.exports = function (eleventyConfig) {
     return getStatusPreview(post);
   });
 
+  eleventyConfig.addFilter("rssDescription", (post) => {
+    const excerpt = String(post && post.excerpt ? post.excerpt : "").trim();
+
+    if (excerpt) {
+      return excerpt;
+    }
+
+    return getPlainTextPreview(post, 400);
+  });
+
   eleventyConfig.addFilter("getPreviousPost", (posts, currentPost) => {
     const index = getCollectionIndex(posts, currentPost);
     return index >= 0 ? posts[index + 1] || null : null;
