@@ -1,0 +1,29 @@
+---
+permalink: /.well-known/webfinger
+eleventyExcludeFromCollections: true
+---
+{
+  "subject": "acct:{{ site.webfinger.username }}@{{ site.domain }}",
+  "aliases": [
+    "{{ site.url }}/",
+    "{{ site.webfinger.profileUrl }}",
+    "{{ site.webfinger.actorUrl }}"
+  ],
+  "links": [
+    {
+      "rel": "http://webfinger.net/rel/profile-page",
+      "type": "text/html",
+      "href": "{{ site.webfinger.profileUrl }}"
+    },
+    {
+      "rel": "self",
+      "type": "application/activity+json",
+      "href": "{{ site.webfinger.actorUrl }}"
+    },
+    {
+      "rel": "self",
+      "type": "application/ld+json; profile=\"https://www.w3.org/ns/activitystreams\"",
+      "href": "{{ site.webfinger.actorUrl }}"
+    }
+  ]
+}

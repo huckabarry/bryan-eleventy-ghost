@@ -25,6 +25,18 @@ module.exports = async function() {
   data.title = "Afterword";
   data.description = "Hey! I’m Bryan, an urban planner and design thinker living in the Pacific Northwest with my wife and two young kids. Afterword is a blog where I post about everyday life.";
   data.logo = "https://cdn.u.pika.page/2S770Bf-Ta8Bf_SF3tDUa-2fIeZocDjl3ewqMmBvJSk/fn:IMG_8710/plain/s3://pika-production/aj4090bxube83j7rhj151mum2ssn";
+  data.domain = new URL(data.url).hostname;
+  data.atprotoDid = process.env.ATPROTO_DID || "did:plc:vt4k6d3e5rjw65cuzaf3nufq";
+  data.webfinger = {
+    username: "bryan",
+    profileUrl: "https://urbanists.social/@bryan",
+    actorUrl: "https://urbanists.social/users/bryan"
+  };
+  data.webmentions = {
+    username: data.domain,
+    endpoint: `https://webmention.io/${data.domain}/webmention`,
+    api: "https://webmention.io/api/mentions.jf2"
+  };
   data.navigation = [
     {
       label: "Home",

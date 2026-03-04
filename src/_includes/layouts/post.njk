@@ -49,6 +49,136 @@
                 </li>
             </ul>
         </nav>
+        <section
+            class="webmentions"
+            data-webmentions
+            data-target="{{ site.url }}{{ page.url }}"
+            data-api="{{ site.webmentions.api }}"
+        >
+            <h2 class="section-title">Responses</h2>
+            <div class="webmentions-likes" data-likes hidden>
+                <h3 class="webmentions-subtitle">Likes</h3>
+                <div class="webmentions-facepile" data-like-list></div>
+            </div>
+            <div class="webmentions-comments" data-comments hidden>
+                <h3 class="webmentions-subtitle">Comments</h3>
+                <ol class="webmentions-comment-list" data-comment-list></ol>
+            </div>
+        </section>
+        <script>
+            (function () {
+                const root = document.querySelector("[data-webmentions]");
+                if (!root) return;
+
+                const target = root.getAttribute("data-target");
+                const api = root.getAttribute("data-api");
+                const likesSection = root.querySelector("[data-likes]");
+                const likeList = root.querySelector("[data-like-list]");
+                const commentsSection = root.querySelector("[data-comments]");
+                const commentList = root.querySelector("[data-comment-list]");
+
+                fetch(`${api}?target=${encodeURIComponent(target)}&per-page=100&sort-by=published&sort-dir=up`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        const children = Array.isArray(data.children) ? data.children : [];
+                        const likes = children.filter((entry) => entry["wm-property"] === "like-of");
+                        const comments = children.filter((entry) => {
+                            const prop = entry["wm-property"];
+                            return prop === "in-reply-to" || prop === "mention-of";
+                        });
+
+                        likes.forEach((entry) => {
+                            const author = entry.author || {};
+                            const link = document.createElement("a");
+                            link.className = "webmentions-like";
+                            link.href = entry.url || author.url || "#";
+                            link.target = "_blank";
+                            link.rel = "nofollow noopener noreferrer";
+                            link.title = author.name || "Like";
+
+                            if (author.photo) {
+                                const img = document.createElement("img");
+                                img.src = author.photo;
+                                img.alt = author.name || "Like";
+                                img.loading = "lazy";
+                                link.appendChild(img);
+                            } else {
+                                link.textContent = (author.name || "?").slice(0, 1).toUpperCase();
+                            }
+
+                            likeList.appendChild(link);
+                        });
+
+                        comments.forEach((entry) => {
+                            const author = entry.author || {};
+                            const item = document.createElement("li");
+                            item.className = "webmentions-comment";
+
+                            const header = document.createElement("div");
+                            header.className = "webmentions-comment-header";
+
+                            if (author.photo) {
+                                const img = document.createElement("img");
+                                img.className = "webmentions-comment-avatar";
+                                img.src = author.photo;
+                                img.alt = author.name || "Comment avatar";
+                                img.loading = "lazy";
+                                header.appendChild(img);
+                            }
+
+                            const meta = document.createElement("div");
+                            meta.className = "webmentions-comment-meta";
+
+                            const name = document.createElement(author.url ? "a" : "span");
+                            name.className = "webmentions-comment-author";
+                            name.textContent = author.name || "Someone";
+                            if (author.url) {
+                                name.href = author.url;
+                                name.target = "_blank";
+                                name.rel = "nofollow noopener noreferrer";
+                            }
+                            meta.appendChild(name);
+
+                            if (entry.published || entry["wm-received"]) {
+                                const time = document.createElement("time");
+                                time.className = "webmentions-comment-date";
+                                const raw = entry.published || entry["wm-received"];
+                                time.dateTime = raw;
+                                time.textContent = new Date(raw).toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric"
+                                });
+                                meta.appendChild(time);
+                            }
+
+                            header.appendChild(meta);
+                            item.appendChild(header);
+
+                            if (entry.content && (entry.content.html || entry.content.text)) {
+                                const body = document.createElement("div");
+                                body.className = "webmentions-comment-body";
+                                body.innerHTML = entry.content.html || entry.content.text;
+                                item.appendChild(body);
+                            } else if (entry.url) {
+                                const link = document.createElement("a");
+                                link.className = "webmentions-comment-link";
+                                link.href = entry.url;
+                                link.target = "_blank";
+                                link.rel = "nofollow noopener noreferrer";
+                                link.textContent = "View mention";
+                                item.appendChild(link);
+                            }
+
+                            commentList.appendChild(item);
+                        });
+
+                        if (likes.length) likesSection.hidden = false;
+                        if (comments.length) commentsSection.hidden = false;
+                    })
+                    .catch(() => {});
+            })();
+        </script>
     </article>
 {% endblock %}
 

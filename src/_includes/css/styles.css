@@ -239,7 +239,7 @@ h6 {
 .site-list-of-posts-item {
   display: grid;
   grid-template-columns: minmax(7rem, 8.5rem) minmax(0, 1fr);
-  gap: 0.55rem;
+  gap: 0.28rem;
   align-items: baseline;
   padding: 0.2rem 0 0.45rem;
 }
@@ -456,6 +456,100 @@ h6 {
 
 .post-navigation a {
   text-decoration: none;
+}
+
+.webmentions {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.webmentions-likes,
+.webmentions-comments {
+  margin-top: 1rem;
+}
+
+.webmentions-subtitle {
+  margin: 0 0 0.65rem;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.webmentions-facepile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.webmentions-like,
+.webmentions-comment-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+}
+
+.webmentions-like {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.webmentions-like img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.webmentions-comment-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.webmentions-comment + .webmentions-comment {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(235, 235, 235, 0.12);
+}
+
+.webmentions-comment-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.webmentions-comment-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.webmentions-comment-author,
+.webmentions-comment-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.webmentions-comment-date {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.webmentions-comment-body {
+  margin-top: 0.55rem;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.webmentions-comment-body p:last-child {
+  margin-bottom: 0;
 }
 
 .site-foot-nav {
