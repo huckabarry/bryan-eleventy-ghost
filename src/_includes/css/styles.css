@@ -234,6 +234,7 @@ h6 {
   grid-template-columns: minmax(0, 1fr) minmax(0, 180px);
   grid-template-areas:
     "meta meta"
+    "title title"
     "body media";
   align-items: start;
   gap: 0.8rem 1rem;
@@ -250,6 +251,20 @@ h6 {
 .home-stream-media-reading {
   grid-area: media;
   width: 100%;
+}
+
+.home-stream-title-reading {
+  grid-area: title;
+  margin: 0;
+}
+
+.home-stream-title-reading a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.home-stream-title-reading a:hover {
+  color: #ffffff;
 }
 
 .home-stream-media-reading .home-stream-image-listening {
@@ -1269,6 +1284,7 @@ body.photo-lightbox-open {
     grid-template-columns: minmax(0, 1fr) minmax(110px, 130px);
     grid-template-areas:
       "meta meta"
+      "title title"
       "body media";
     gap: 0.85rem;
   }
