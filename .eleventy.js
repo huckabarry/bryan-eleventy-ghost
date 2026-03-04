@@ -136,6 +136,11 @@ function getStatusLabel(post) {
   return post.title || "";
 }
 
+function isUntitledPost(post) {
+  const title = String(post && post.title ? post.title : "").trim().toLowerCase();
+  return !title || title === "untitled";
+}
+
 function getPlainTextPreview(post, maxLength = 220) {
   const text = String(post && post.html ? post.html : "")
     .replace(/<figcaption[\s\S]*?<\/figcaption>/gi, " ")
@@ -229,7 +234,7 @@ async function fetchNowPosts() {
       formats: "html",
       include: "tags,authors",
       limit: 100,
-      filter: `status:published+visibility:[public,members,paid]+tag:[${INCLUDED_SITE_TAGS.join(",")}]`
+      filter: `status:published+tag:[${INCLUDED_SITE_TAGS.join(",")}]`
     });
   }
 
@@ -242,6 +247,14 @@ async function fetchNowPosts() {
   );
 
   if (posts.length > 0) {
+    const visibilityCounts = posts.reduce((acc, post) => {
+      const key = post && post.visibility ? post.visibility : "unknown";
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+
+    console.log(`[afterword] visibility counts: ${JSON.stringify(visibilityCounts)}`);
+
     console.log(
       `[afterword] sample posts: ${posts
         .slice(0, 5)
@@ -321,6 +334,14 @@ module.exports = function (eleventyConfig) {
     return (posts || []).filter(
       (post) => !tagSlugs.some((slug) => postHasTag(post, slug))
     );
+  });
+
+  eleventyConfig.addFilter("onlyUntitledPosts", (posts) => {
+    return (posts || []).filter((post) => isUntitledPost(post));
+  });
+
+  eleventyConfig.addFilter("onlyTitledPosts", (posts) => {
+    return (posts || []).filter((post) => !isUntitledPost(post));
   });
 
   eleventyConfig.addFilter("hasTagSlug", (post, slug) => {

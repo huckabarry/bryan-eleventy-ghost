@@ -4,9 +4,9 @@ eleventyExcludeFromCollections: true
 permalink: /index.html
 ---
 
-{% set statusPosts = collections.posts | withTagSlug("status") | withoutAnyTagSlugs("listening,now-playing") %}
+{% set statusPosts = collections.posts | withTagSlug("status") | onlyUntitledPosts | withoutAnyTagSlugs("listening,now-playing") %}
 {% set listeningPosts = collections.posts | withAnyTagSlugs("listening,now-playing") %}
-{% set latestPosts = collections.posts | withoutAnyTagSlugs("status,listening,now-playing,books,now-reading,gallery,photos") %}
+{% set latestPosts = collections.posts | onlyTitledPosts | withoutAnyTagSlugs("listening,now-playing,books,now-reading,gallery,photos") %}
 {% set statusPost = statusPosts[0] %}
 {% set listeningPost = listeningPosts[0] %}
 
@@ -66,12 +66,16 @@ permalink: /index.html
   <h2 class="section-title">Latest Posts</h2>
   <ul class="site-list-of-posts h-feed">
     {% for post in latestPosts %}
+      {% set listTitle = post.title | trim %}
+      {% if not listTitle %}
+        {% set listTitle = post | statusPreview %}
+      {% endif %}
       <li class="site-list-of-posts-item h-entry">
         <time class="site-list-date dt-published" datetime="{{ post.published_at | htmlDateString }}">
           {{ post.published_at | dateDisplay }}
         </time>
         <div>
-          <a class="site-list-link p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a>
+          <a class="site-list-link p-name u-url" href="{{ post | localPostUrl }}">{{ listTitle or "Untitled" }}</a>
           <span class="site-visually-hidden p-author h-card">
             <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
           </span>
