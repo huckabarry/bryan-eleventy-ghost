@@ -1,11 +1,7 @@
 ---
 layout: base
 eleventyExcludeFromCollections: true
-pagination:
-  data: collections.posts
-  size: 10
-  alias: pagedPosts
-permalink: "{% if pagination.pageNumber > 0 %}/{{ pagination.pageNumber + 1 }}{% endif %}/index.html"
+permalink: /index.html
 ---
 
 {% from "partials/card.njk" import card %}
@@ -20,10 +16,10 @@ permalink: "{% if pagination.pageNumber > 0 %}/{{ pagination.pageNumber + 1 }}{%
 <section class="section-block">
   <h2 class="section-title">Latest Posts</h2>
   <section class="post-feed">
-    {% for post in pagedPosts %}
+    {% for post in collections.posts.slice(0, 10) %}
       {{ card(post) }}
+    {% else %}
+      <p>No `#now` posts are available yet.</p>
     {% endfor %}
   </section>
 </section>
-
-{% include "partials/pagination.njk" %}
