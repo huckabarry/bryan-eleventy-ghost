@@ -21,42 +21,65 @@ const INCLUDED_SITE_TAGS = [
   "now"
 ];
 
-function extractFirstImage(post) {
+function isUsablePhotoUrl(url) {
+  const value = String(url || "");
+
+  if (!value) {
+    return false;
+  }
+
+  if (/\.(png)(\?|$)/i.test(value)) {
+    return false;
+  }
+
+  if (/favicon|bookwyrm|avatar|screenshot|screen-shot|screen_shot/i.test(value)) {
+    return false;
+  }
+
+  return true;
+}
+
+function getImageAlt(fragment, fallback = "") {
+  const match = String(fragment || "").match(/\salt=["']([^"']*)["']/i);
+  return match ? match[1] : fallback;
+}
+
+function extractAllImages(post) {
   const html = String(post && post.html ? post.html : "");
   const cleanedHtml = html
     .replace(/<figure[^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][\s\S]*?<\/figure>/gi, "")
     .replace(/<div[^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][\s\S]*?<\/div>/gi, "");
-  const preferredMatches = [
-    /<figure[^>]*class=["'][^"']*kg-image-card[^"']*["'][\s\S]*?<img[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
-    /<figure[^>]*class=["'][^"']*kg-gallery-card[^"']*["'][\s\S]*?<img[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
-    /<img(?![^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
-    /<img(?![^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*>/i
-  ];
+  const matches = [];
+  const seen = new Set();
+  const imagePattern = /<img(?![^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*>/gi;
+  let match;
 
-  for (const pattern of preferredMatches) {
-    const match = cleanedHtml.match(pattern);
-    if (match && match[1]) {
-      if (/\.(png)(\?|$)/i.test(match[1])) {
-        continue;
-      }
-      if (/favicon|bookwyrm|avatar|screenshot|screen-shot|screen_shot/i.test(match[1])) {
-        continue;
-      }
-      return {
-        src: match[1],
-        alt: match[2] || post.title || ""
-      };
+  while ((match = imagePattern.exec(cleanedHtml))) {
+    const src = match[1];
+
+    if (!isUsablePhotoUrl(src) || seen.has(src)) {
+      continue;
     }
+
+    seen.add(src);
+    matches.push({
+      src,
+      alt: getImageAlt(match[0], post.title || "")
+    });
   }
 
-  if (post && post.feature_image) {
-    return {
+  if (!matches.length && post && post.feature_image && isUsablePhotoUrl(post.feature_image)) {
+    matches.push({
       src: post.feature_image,
       alt: post.title || ""
-    };
+    });
   }
 
-  return null;
+  return matches;
+}
+
+function extractFirstImage(post) {
+  return extractAllImages(post)[0] || null;
 }
 
 function stripFirstImage(html) {
@@ -325,6 +348,20 @@ module.exports = function (eleventyConfig) {
 
     return posts
       .filter((post) => postHasTag(post, "gallery") || postHasTag(post, "photos"))
+      .flatMap((post) =>
+        extractAllImages(post).map((image, index) => ({
+          ...post,
+          image,
+          imageIndex: index
+        }))
+      );
+  });
+
+  eleventyConfig.addCollection("bookPosts", async () => {
+    const posts = await fetchNowPosts();
+
+    return posts
+      .filter((post) => postHasTag(post, "books") || postHasTag(post, "now-reading"))
       .map((post) => ({
         ...post,
         firstImage: extractFirstImage(post)

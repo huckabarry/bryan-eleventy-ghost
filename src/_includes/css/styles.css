@@ -269,6 +269,10 @@ h6 {
   font-size: 0.85rem;
 }
 
+.site-home .home-stream-item:not(.home-stream-item-reading) .home-stream-meta {
+  margin-left: 0.55rem;
+}
+
 .home-stream-tags,
 .post-tag-list {
   display: flex;
@@ -389,7 +393,7 @@ h6 {
 .site-list-of-posts-item {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
-  gap: 0.72rem;
+  gap: 0.86rem;
   align-items: baseline;
   padding: 0.2rem 0 0.45rem;
 }
@@ -573,10 +577,15 @@ h6 {
 
 .content-body img + img,
 .content-body figure + figure,
+.content-body .kg-card + .kg-card,
 .content-body .kg-image-card + .kg-image-card,
 .content-body .kg-gallery-card + .kg-gallery-card,
 .content-body .kg-image-card + .kg-gallery-card,
 .content-body .kg-gallery-card + .kg-image-card,
+.content-body .kg-card + figure,
+.content-body figure + .kg-card,
+.content-body p + .kg-card,
+.content-body .kg-card + p,
 .content-body p + figure,
 .content-body figure + p {
   margin-top: 0.45rem;
@@ -603,6 +612,10 @@ h6 {
   column-gap: 0.5rem;
 }
 
+.books-grid {
+  column-count: 4;
+}
+
 .photo-card {
   break-inside: avoid;
   margin: 0 0 0.5rem;
@@ -615,6 +628,10 @@ h6 {
 
 .photo-card-image {
   width: 100%;
+}
+
+.books-card-image {
+  border-radius: 0.4rem;
 }
 
 body.photo-lightbox-open {
@@ -929,6 +946,12 @@ body.photo-lightbox-open {
   margin-bottom: 1.25rem;
 }
 
+.content-body .kg-card:last-child,
+.content-body figure:last-child,
+.content-body p:last-child {
+  margin-bottom: 0;
+}
+
 .kg-bookmark-container {
   display: flex;
   gap: 1rem;
@@ -995,6 +1018,10 @@ body.photo-lightbox-open {
     column-count: 2;
   }
 
+  .books-grid {
+    column-count: 3;
+  }
+
   .photo-lightbox {
     padding: 1rem;
     gap: 0.4rem;
@@ -1006,6 +1033,10 @@ body.photo-lightbox-open {
 
   .photo-card {
     margin-bottom: 0.4rem;
+  }
+
+  .books-grid {
+    column-count: 2;
   }
 
   .post-navigation ul,

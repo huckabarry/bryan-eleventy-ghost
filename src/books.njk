@@ -1,0 +1,30 @@
+---
+layout: base
+permalink: /books/index.html
+title: Reading
+description: "Book covers from posts tagged books."
+---
+
+<section class="section-block photo-page">
+  <h1 class="section-title">Reading</h1>
+  <div class="photo-grid books-grid">
+    {% for post in collections.bookPosts %}
+      <article class="photo-card h-entry">
+        <a class="photo-card-link u-url" href="{{ post | localPostUrl }}">
+          <img
+            class="photo-card-image books-card-image u-photo"
+            src="{{ post.firstImage.src }}"
+            alt="{{ post.firstImage.alt }}"
+            loading="lazy"
+          >
+        </a>
+        <span class="site-visually-hidden p-name">{{ post.title }}</span>
+        <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">
+          {{ post.published_at | dateDisplay }}
+        </time>
+      </article>
+    {% else %}
+      <p>No reading posts are available yet.</p>
+    {% endfor %}
+  </div>
+</section>

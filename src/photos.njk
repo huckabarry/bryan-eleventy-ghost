@@ -2,33 +2,33 @@
 layout: base
 permalink: /photos/index.html
 title: Photos
-description: "A masonry-style gallery built from the first image in each post."
+description: "A masonry-style gallery built from all images in gallery posts."
 ---
 
 <section class="section-block photo-page">
   <h1 class="section-title">Photos</h1>
   <div class="photo-grid">
-    {% for post in collections.photoPosts %}
+    {% for photo in collections.photoPosts %}
       <article class="photo-card h-entry">
         <a
           class="photo-card-link u-url"
-          href="{{ post | localPostUrl }}"
+          href="{{ photo | localPostUrl }}"
           data-photo-trigger
-          data-photo-src="{{ post.firstImage.src }}"
-          data-photo-alt="{{ post.firstImage.alt }}"
-          data-photo-post-url="{{ post | localPostUrl }}"
-          data-photo-post-title="{{ post.title }}"
+          data-photo-src="{{ photo.image.src }}"
+          data-photo-alt="{{ photo.image.alt }}"
+          data-photo-post-url="{{ photo | localPostUrl }}"
+          data-photo-post-title="{{ photo.title }}"
         >
           <img
             class="photo-card-image u-photo"
-            src="{{ post.firstImage.src }}"
-            alt="{{ post.firstImage.alt }}"
+            src="{{ photo.image.src }}"
+            alt="{{ photo.image.alt }}"
             loading="lazy"
           >
         </a>
-        <span class="site-visually-hidden p-name">{{ post.title }}</span>
-        <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">
-          {{ post.published_at | dateDisplay }}
+        <span class="site-visually-hidden p-name">{{ photo.title }}</span>
+        <time class="site-visually-hidden dt-published" datetime="{{ photo.published_at | htmlDateString }}">
+          {{ photo.published_at | dateDisplay }}
         </time>
       </article>
     {% else %}
