@@ -10,7 +10,15 @@ description: "A masonry-style gallery built from the first image in each post."
   <div class="photo-grid">
     {% for post in collections.photoPosts %}
       <article class="photo-card h-entry">
-        <a class="photo-card-link u-url" href="/{{ post.slug }}/">
+        <a
+          class="photo-card-link u-url"
+          href="/{{ post.slug }}/"
+          data-photo-trigger
+          data-photo-src="{{ post.firstImage.src }}"
+          data-photo-alt="{{ post.firstImage.alt }}"
+          data-photo-post-url="/{{ post.slug }}/"
+          data-photo-post-title="{{ post.title }}"
+        >
           <img
             class="photo-card-image u-photo"
             src="{{ post.firstImage.src }}"
@@ -18,15 +26,97 @@ description: "A masonry-style gallery built from the first image in each post."
             loading="lazy"
           >
         </a>
-        <div class="photo-card-meta">
-          <time class="photo-card-date dt-published" datetime="{{ post.published_at | htmlDateString }}">
-            {{ post.published_at | dateDisplay }}
-          </time>
-          <a class="photo-card-title p-name" href="/{{ post.slug }}/">{{ post.title }}</a>
-        </div>
+        <span class="site-visually-hidden p-name">{{ post.title }}</span>
+        <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">
+          {{ post.published_at | dateDisplay }}
+        </time>
       </article>
     {% else %}
       <p>No photo posts are available yet.</p>
     {% endfor %}
   </div>
 </section>
+
+<div class="photo-lightbox" data-photo-lightbox hidden>
+  <button class="photo-lightbox-close" type="button" aria-label="Close photos" data-photo-close>&times;</button>
+  <button class="photo-lightbox-nav photo-lightbox-prev" type="button" aria-label="Previous photo" data-photo-prev>&larr;</button>
+  <div class="photo-lightbox-stage">
+    <img class="photo-lightbox-image" src="" alt="" data-photo-image>
+    <a class="photo-lightbox-post-link" href="#" data-photo-post-link hidden>View post</a>
+  </div>
+  <button class="photo-lightbox-nav photo-lightbox-next" type="button" aria-label="Next photo" data-photo-next>&rarr;</button>
+</div>
+
+<script>
+  (function () {
+    const triggers = Array.from(document.querySelectorAll("[data-photo-trigger]"));
+    const lightbox = document.querySelector("[data-photo-lightbox]");
+    if (!triggers.length || !lightbox) return;
+
+    const image = lightbox.querySelector("[data-photo-image]");
+    const postLink = lightbox.querySelector("[data-photo-post-link]");
+    const closeButton = lightbox.querySelector("[data-photo-close]");
+    const prevButton = lightbox.querySelector("[data-photo-prev]");
+    const nextButton = lightbox.querySelector("[data-photo-next]");
+    let currentIndex = 0;
+
+    function render(index) {
+      const trigger = triggers[index];
+      if (!trigger) return;
+
+      currentIndex = index;
+      image.src = trigger.getAttribute("data-photo-src") || "";
+      image.alt = trigger.getAttribute("data-photo-alt") || "";
+
+      const url = trigger.getAttribute("data-photo-post-url");
+      const title = trigger.getAttribute("data-photo-post-title") || "View post";
+      if (url) {
+        postLink.href = url;
+        postLink.textContent = title;
+        postLink.hidden = false;
+      } else {
+        postLink.hidden = true;
+      }
+    }
+
+    function open(index) {
+      render(index);
+      lightbox.hidden = false;
+      document.body.classList.add("photo-lightbox-open");
+    }
+
+    function close() {
+      lightbox.hidden = true;
+      document.body.classList.remove("photo-lightbox-open");
+      image.src = "";
+      image.alt = "";
+    }
+
+    function step(direction) {
+      const nextIndex = (currentIndex + direction + triggers.length) % triggers.length;
+      render(nextIndex);
+    }
+
+    triggers.forEach((trigger, index) => {
+      trigger.addEventListener("click", (event) => {
+        event.preventDefault();
+        open(index);
+      });
+    });
+
+    closeButton.addEventListener("click", close);
+    prevButton.addEventListener("click", () => step(-1));
+    nextButton.addEventListener("click", () => step(1));
+
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) close();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (lightbox.hidden) return;
+      if (event.key === "Escape") close();
+      if (event.key === "ArrowLeft") step(-1);
+      if (event.key === "ArrowRight") step(1);
+    });
+  })();
+</script>

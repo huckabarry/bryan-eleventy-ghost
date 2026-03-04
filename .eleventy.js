@@ -12,14 +12,21 @@ let nowPostsPromise;
 
 function extractFirstImage(post) {
   const html = String(post && post.html ? post.html : "");
-  const imgMatch = html.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
-  const altMatch = html.match(/<img[^>]+alt=["']([^"']*)["'][^>]*>/i);
+  const preferredMatches = [
+    /<figure[^>]*class=["'][^"']*kg-image-card[^"']*["'][\s\S]*?<img[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
+    /<figure[^>]*class=["'][^"']*kg-gallery-card[^"']*["'][\s\S]*?<img[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
+    /<img(?![^>]*class=["'][^"']*kg-bookmark-thumbnail[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*alt=["']([^"']*)["'][^>]*>/i,
+    /<img(?![^>]*class=["'][^"']*kg-bookmark-thumbnail[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*>/i
+  ];
 
-  if (imgMatch) {
-    return {
-      src: imgMatch[1],
-      alt: altMatch ? altMatch[1] : post.title || ""
-    };
+  for (const pattern of preferredMatches) {
+    const match = html.match(pattern);
+    if (match && match[1]) {
+      return {
+        src: match[1],
+        alt: match[2] || post.title || ""
+      };
+    }
   }
 
   if (post && post.feature_image) {
