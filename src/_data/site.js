@@ -28,7 +28,7 @@ module.exports = async function() {
   data.navigation = [
     {
       label: "Home",
-      url: "https://bryan.pika.page"
+      url: "/"
     },
     {
       label: "Photos",
@@ -40,7 +40,7 @@ module.exports = async function() {
     },
     {
       label: "About",
-      url: "https://afterword.blog/about"
+      url: "/about/"
     }
   ];
   return data;
