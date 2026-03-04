@@ -20,6 +20,11 @@ description: "The latest now post."
           <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
         </span>
       </div>
+      <div class="post-full-content">
+        <section class="content-body e-content">
+          {{ nowPost.html | safe }}
+        </section>
+      </div>
       {% if nowPost.tags %}
         <div class="post-tag-list">
           {% for tag in nowPost.tags %}
@@ -29,11 +34,6 @@ description: "The latest now post."
           {% endfor %}
         </div>
       {% endif %}
-      <div class="post-full-content">
-        <section class="content-body e-content">
-          {{ nowPost.html | safe }}
-        </section>
-      </div>
       <p class="home-stream-meta">
         <a class="u-url" href="{{ nowPost | localPostUrl }}">Permalink</a>
       </p>
