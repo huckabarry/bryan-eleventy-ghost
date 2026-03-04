@@ -20,6 +20,12 @@ module.exports = function (eleventyConfig) {
     return new Date(dateObj).toISOString().split("T")[0];
   });
 
+  eleventyConfig.addFilter("getReadingTime", (html) => {
+    const text = String(html || "").replace(/<[^>]*>/g, " ");
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.ceil(words / 200));
+  });
+
   eleventyConfig.addCollection("posts", async () => {
     return await ghostApi.posts.browse({
       include: "tags,authors",
