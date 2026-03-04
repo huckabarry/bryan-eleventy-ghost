@@ -1,23 +1,15 @@
-{% from "partials/icon.njk" import icon %}
-
-<header class="site-head"{% if site.cover_image %} style="background-image: url('{{ site.cover_image }}')"{% endif %}>
-    <div class="container">
-        <div class="site-mast">
-            {% if site.logo %}
-                <div class="site-mast-left">
-                    <a {% if page.url == "/" %}aria-current="page"{% endif %} href="{{ site.url }}">
-                        <img class="site-logo" src="{{ site.logo }}" alt="{{ site.title }}">
-                    </a>
-                </div>
-            {% endif %}
-        </div>
-        {% if page.url == '/' %}
-            <div class="site-banner">
-                <h1 class="site-banner-title">{{ site.title }}</h1>
-                <p class="site-banner-desc">{{ site.description }}</p>
-            </div>
+<header class="site-header">
+    <a class="site-header-avatar-link" {% if page.url == "/" %}aria-current="page"{% endif %} href="{{ site.url }}">
+        {% if site.logo %}
+            <img class="avatar site-logo" src="{{ site.logo }}" alt="{{ site.title }}">
+        {% else %}
+            <span class="avatar avatar-fallback" aria-hidden="true">{{ (site.title or "S") | first }}</span>
         {% endif %}
-
+    </a>
+    <div class="site-header-copy">
+        <div class="site-title">
+            <a {% if page.url == "/" %}aria-current="page"{% endif %} href="{{ site.url }}">{{ site.title }}</a>
+        </div>
         {% include 'partials/navigation.njk' %}
     </div>
 </header>

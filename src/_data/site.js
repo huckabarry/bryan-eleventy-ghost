@@ -22,7 +22,27 @@ module.exports = async function() {
   if (process.env.SITE_URL) {
     data.url = process.env.SITE_URL;
   }
+  data.title = "Afterword";
+  data.description = "Hey! I’m Bryan, an urban planner and design thinker living in the Pacific Northwest with my wife and two young kids. Afterword is a blog where I post about everyday life.";
+  data.logo = "https://cdn.u.pika.page/2S770Bf-Ta8Bf_SF3tDUa-2fIeZocDjl3ewqMmBvJSk/fn:IMG_8710/plain/s3://pika-production/aj4090bxube83j7rhj151mum2ssn";
+  data.navigation = [
+    {
+      label: "Home",
+      url: "https://bryan.pika.page"
+    },
+    {
+      label: "Photos",
+      url: "https://afterword.blog/photos"
+    },
+    {
+      label: "Now",
+      url: "https://afterword.blog/now"
+    },
+    {
+      label: "About",
+      url: "https://afterword.blog/about"
+    }
+  ];
   return data;
 
 };
-

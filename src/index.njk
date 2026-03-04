@@ -8,16 +8,22 @@ pagination:
 permalink: "{% if pagination.pageNumber > 0 %}/{{ pagination.pageNumber + 1 }}{% endif %}/index.html"
 ---
 
-<div class="post-list">
-  <ul>
-  {% for post in pagedPosts %} # <-- Match the name here
-    <li>
-      <a href="/{{ post.slug }}/">
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.excerpt }}</p>
-      </a>
-    </li>
-  {% endfor %}
-  </ul>
-</div>
+{% from "partials/card.njk" import card %}
 
+<section class="home-intro">
+  <h1 class="home-title">{{ site.title }}</h1>
+  {% if site.description %}
+    <p class="home-description">{{ site.description }}</p>
+  {% endif %}
+</section>
+
+<section class="section-block">
+  <h2 class="section-title">Latest Posts</h2>
+  <section class="post-feed">
+    {% for post in pagedPosts %}
+      {{ card(post) }}
+    {% endfor %}
+  </section>
+</section>
+
+{% include "partials/pagination.njk" %}

@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="{{ site.lang }}">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>{{ title or site.title }}</title>
-    <style>{{ css | cssmin | safe }}</style>
+    <meta name="description" content="{{ description or site.description or site.title }}">
+    <meta name="theme-color" content="#1e2021">
+    <style>{% include "css/styles.css" %}</style>
 </head>
-<body>
+<body class="site-shell{% if page.url == '/' %} site-home{% endif %}{% if post %} site-post{% endif %}">
     <header>{% include "partials/header.njk" %}</header>
-    <main>
+    <hr class="site-rule">
+    <main class="site-main">
         {% block content %}{% endblock %}
     </main>
+    <hr class="site-rule">
     <footer>{% include "partials/footer.njk" %}</footer>
 </body>
 </html>
-

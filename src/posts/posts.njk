@@ -1,5 +1,5 @@
 ---
-layout: base
+layout: 'layouts/post.njk'
 pagination:
   data: collections.posts
   size: 1
@@ -7,10 +7,4 @@ pagination:
 permalink: "/{{ post.slug }}/index.html"
 ---
 
-{% block content %}
-<article class="post-content">
-    <h1>{{ post.title }}</h1>
-    {{ post.html | safe }}
-</article>
-{% endblock %}
-
+{{ post.html | safe }}

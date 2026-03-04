@@ -5,14 +5,25 @@
 {% set codeinjection_foot = post.codeinjection_foot %}
 
 {% block content %}
-    <article class="content">
+    <article class="content content-post">
+        <header class="post-header">
+            <div class="post-meta-row">
+                {% if post.primary_tag %}
+                    <span class="post-tag">{{ post.primary_tag.name }}</span>
+                {% endif %}
+                <time class="post-date" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateReadable }}</time>
+            </div>
+            <h1 class="content-title">{{ title }}</h1>
+            {% if post.excerpt %}
+                <p class="post-dek">{{ post.excerpt }}</p>
+            {% endif %}
+        </header>
         {% if post.feature_image %}
             <figure class="post-feature-image">
                 <img src="{{ post.feature_image }}" alt="{{ title }}">
             </figure>
         {% endif %}
         <section class="post-full-content">
-            <h1 class="content-title">{{ title }}</h1>
             <section class="content-body load-external-scripts">
                 {{ content | safe }}
             </section>
@@ -23,12 +34,12 @@
             <ul>
                 <li>
                     {% if previousPost %}
-                    <a href="{{ previousPost.url }}">← {{ previousPost.title }}</a>
+                    <a href="{{ previousPost.url }}">Older: {{ previousPost.title }}</a>
                     {% endif %}
                 </li>
                 <li>
                     {% if nextPost %}
-                    <a href="{{ nextPost.url }}">{{ nextPost.title }} →</a>
+                    <a href="{{ nextPost.url }}">Newer: {{ nextPost.title }}</a>
                     {% endif %}
                 </li>
             </ul>
