@@ -314,11 +314,13 @@ h6 {
   background: #343738;
 }
 
+.site-home .section-block:first-of-type .tag-pill,
 .site-home .section-block:last-of-type .tag-pill,
 .home-stream-item-reading .tag-pill {
   background: var(--bg);
 }
 
+.site-home .section-block:first-of-type .tag-pill:hover,
 .site-home .section-block:last-of-type .tag-pill:hover,
 .home-stream-item-reading .tag-pill:hover {
   background: #26292a;
@@ -365,6 +367,7 @@ h6 {
   margin-top: 0.9rem;
 }
 
+.site-home .section-block:first-of-type .home-stream-item,
 .site-home .section-block:last-of-type .home-stream-item {
   padding: 0.9rem;
   border-radius: 0.7rem;
