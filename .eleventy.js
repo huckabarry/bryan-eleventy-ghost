@@ -362,6 +362,14 @@ module.exports = function (eleventyConfig) {
     return (posts || []).filter((post) => !(postHasTag(post, "status") && isUntitledPost(post)));
   });
 
+  eleventyConfig.addFilter("byPublishedDateDesc", (posts) => {
+    return [...(posts || [])].sort((a, b) => {
+      const aTime = new Date(a && a.published_at ? a.published_at : 0).getTime();
+      const bTime = new Date(b && b.published_at ? b.published_at : 0).getTime();
+      return bTime - aTime;
+    });
+  });
+
   eleventyConfig.addFilter("hasTagSlug", (post, slug) => {
     return postHasTag(post, slug);
   });

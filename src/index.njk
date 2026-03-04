@@ -4,9 +4,9 @@ eleventyExcludeFromCollections: true
 permalink: /index.html
 ---
 
-{% set statusPosts = collections.posts | withTagSlug("status") | onlyUntitledPosts | withoutAnyTagSlugs("listening,now-playing") %}
+{% set statusPosts = collections.posts | withTagSlug("status") | withoutAnyTagSlugs("listening,now-playing") | byPublishedDateDesc %}
 {% set listeningPosts = collections.posts | withAnyTagSlugs("listening,now-playing") %}
-{% set latestPosts = collections.posts | withoutUntitledStatusPosts | withoutAnyTagSlugs("listening,now-playing,books,now-reading,gallery,photos") %}
+{% set latestPosts = collections.posts | withoutAnyTagSlugs("status,listening,now-playing,books,now-reading,gallery,photos") | byPublishedDateDesc %}
 {% set statusPost = statusPosts[0] %}
 {% set listeningPost = listeningPosts[0] %}
 
