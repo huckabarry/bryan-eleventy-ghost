@@ -17,10 +17,12 @@ module.exports = async function() {
     });
 
   // This line ensures your "Masked URL" is used instead of your backend Ghost URL
+  // Replace your return block with this:
+  const data = siteData || {}; // Safety fallback
   if (process.env.SITE_URL) {
-    siteData.url = process.env.SITE_URL;
+    data.url = process.env.SITE_URL;
   }
+  return data;
 
-  return siteData;
 };
 
