@@ -55,10 +55,9 @@ description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place w
           </a>
         {% endif %}
         <div class="home-stream-body home-stream-body-reading e-content">
+          <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
           {% if post.excerpt %}
             <p>{{ post.excerpt }}</p>
-          {% else %}
-            <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
           {% endif %}
         </div>
       </article>
