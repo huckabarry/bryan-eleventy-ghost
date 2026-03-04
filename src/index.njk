@@ -31,6 +31,13 @@ permalink: /index.html
         <div class="home-stream-body e-content">
           <p class="home-stream-meta">
             <a class="u-url" href="{{ post | localPostUrl }}">
+              <span class="post-action-icon home-stream-meta-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="14" height="14" rx="2"></rect>
+                  <path d="M7 2v4M13 2v4M3 8h14"></path>
+                  <path d="M14.5 14.5l4-4 1.5 1.5-4 4-2 .5z"></path>
+                </svg>
+              </span>
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
             </a>
           </p>
@@ -91,6 +98,13 @@ permalink: /index.html
         <div class="home-stream-body e-content">
           <p class="home-stream-meta">
             <a class="u-url" href="{{ post | localPostUrl }}">
+              <span class="post-action-icon home-stream-meta-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="14" height="14" rx="2"></rect>
+                  <path d="M7 2v4M13 2v4M3 8h14"></path>
+                  <path d="M14.5 14.5l4-4 1.5 1.5-4 4-2 .5z"></path>
+                </svg>
+              </span>
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
             </a>
           </p>

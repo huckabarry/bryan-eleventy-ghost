@@ -278,6 +278,18 @@ h6 {
   margin: 0 0 0.8rem;
 }
 
+.home-stream-meta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-stream-meta a:hover {
+  color: #ffffff;
+}
+
 .home-stream-tags,
 .post-tag-list {
   display: flex;
@@ -314,22 +326,25 @@ h6 {
   background: #343738;
 }
 
-.site-home .section-block-status .tag-pill,
 .site-home .section-block-listening .tag-pill,
 .home-stream-item-reading .tag-pill {
   background: var(--bg);
 }
 
-.site-home .section-block-status .tag-pill:hover,
 .site-home .section-block-listening .tag-pill:hover,
 .home-stream-item-reading .tag-pill:hover {
   background: #26292a;
 }
 
-.home-title,
-.content-title {
+.home-title {
   margin: 0;
   font-size: clamp(1.35rem, 2.6vw, 1.9rem);
+  letter-spacing: -0.02em;
+}
+
+.content-title {
+  margin: 0;
+  font-size: clamp(1.22rem, 2.35vw, 1.7rem);
   letter-spacing: -0.02em;
 }
 
@@ -367,7 +382,6 @@ h6 {
   margin-top: 0.9rem;
 }
 
-.site-home .section-block-status .home-stream-item,
 .site-home .section-block-listening .home-stream-item {
   padding: 0.9rem;
   border-radius: 0.7rem;
@@ -881,6 +895,11 @@ body.photo-lightbox-open {
   display: block;
   width: 0.95rem;
   height: 0.95rem;
+}
+
+.home-stream-meta-icon svg {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
 .post-navigation ul {
