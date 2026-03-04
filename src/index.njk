@@ -26,7 +26,8 @@ permalink: /index.html
           </a>
         {% endif %}
         <div class="home-stream-body e-content">
-          <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ post | statusPreview }}</a></p>
+          {% set preview = post | statusPreview %}
+          <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ preview or "Open status" }}</a></p>
           <p class="home-stream-meta">
             <a class="u-url" href="/{{ post.slug }}/">
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
