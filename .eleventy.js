@@ -239,15 +239,20 @@ async function fetchNowPosts() {
   }
 
   const posts = await nowPostsPromise;
+  const sortedPosts = [...posts].sort((a, b) => {
+    const aTime = new Date(a && a.published_at ? a.published_at : 0).getTime();
+    const bTime = new Date(b && b.published_at ? b.published_at : 0).getTime();
+    return bTime - aTime;
+  });
 
   console.log(
-    `[afterword] fetched ${posts.length} Ghost posts for filter ${INCLUDED_SITE_TAGS
+    `[afterword] fetched ${sortedPosts.length} Ghost posts for filter ${INCLUDED_SITE_TAGS
       .map((tag) => `tag:${tag}`)
       .join(" OR ")}`
   );
 
-  if (posts.length > 0) {
-    const visibilityCounts = posts.reduce((acc, post) => {
+  if (sortedPosts.length > 0) {
+    const visibilityCounts = sortedPosts.reduce((acc, post) => {
       const key = post && post.visibility ? post.visibility : "unknown";
       acc[key] = (acc[key] || 0) + 1;
       return acc;
@@ -256,13 +261,13 @@ async function fetchNowPosts() {
     console.log(`[afterword] visibility counts: ${JSON.stringify(visibilityCounts)}`);
 
     console.log(
-      `[afterword] sample posts: ${posts
+      `[afterword] sample posts: ${sortedPosts
         .slice(0, 5)
         .map((post) => `${post.slug}(${post.visibility || "unknown"})`)
         .join(", ")}`
     );
 
-    const latestCandidates = posts.filter((post) => {
+    const latestCandidates = sortedPosts.filter((post) => {
       const excludedTags = ["listening", "now-playing", "books", "now-reading", "gallery", "photos"];
       const hasExcludedTag = excludedTags.some((slug) => postHasTag(post, slug));
       const isUntitledStatus = postHasTag(post, "status") && isUntitledPost(post);
@@ -277,7 +282,7 @@ async function fetchNowPosts() {
     );
   }
 
-  return posts;
+  return sortedPosts;
 }
 
 module.exports = function (eleventyConfig) {

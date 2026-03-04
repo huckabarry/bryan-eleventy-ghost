@@ -48,7 +48,7 @@ permalink: /index.html
           {% if post.tags %}
           <div class="home-stream-tags">
             {% for tag in post.tags %}
-              {% if tag.visibility != "internal" and tag.slug != "now" %}
+              {% if tag.visibility != "internal" and tag.slug != "now" and tag.slug != "afterword" %}
               <a class="tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
               {% endif %}
             {% endfor %}
@@ -119,7 +119,7 @@ permalink: /index.html
           {% if post.tags %}
           <div class="home-stream-tags">
             {% for tag in post.tags %}
-              {% if tag.visibility != "internal" and tag.slug != "now" %}
+              {% if tag.visibility != "internal" and tag.slug != "now" and tag.slug != "afterword" %}
               <a class="tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
               {% endif %}
             {% endfor %}

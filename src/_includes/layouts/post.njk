@@ -20,7 +20,7 @@
             {% if post.tags %}
                 <div class="post-tag-list">
                     {% for tag in post.tags %}
-                        {% if tag.slug != "now" and tag.visibility != "internal" %}
+                        {% if tag.slug != "now" and tag.slug != "afterword" and tag.visibility != "internal" %}
                         <a class="post-tag tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
                         {% endif %}
                     {% endfor %}

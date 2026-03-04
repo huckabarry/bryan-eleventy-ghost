@@ -971,6 +971,11 @@ body.photo-lightbox-open {
   font-size: 0.92rem;
   font-weight: 500;
   line-height: 1.35;
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .post-navigation-link:hover .post-navigation-title {
@@ -1183,7 +1188,7 @@ body.photo-lightbox-open {
   }
 
   .content-body .kg-gallery-card {
-    column-count: 1;
+    column-count: 2;
   }
 
   .stream-item {
@@ -1242,13 +1247,31 @@ body.photo-lightbox-open {
     gap: 0.75rem 0.65rem;
   }
 
-  .post-navigation ul,
   .site-foot-nav {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  .post-navigation ul {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .post-navigation li {
+    min-width: 0;
+  }
+
   .post-navigation li:last-child {
-    text-align: left;
+    text-align: right;
+  }
+
+  .post-navigation-item-next .post-navigation-link {
+    align-items: flex-end;
+  }
+
+  .post-navigation-title {
+    display: none;
   }
 }

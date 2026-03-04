@@ -29,7 +29,9 @@ description: "The latest now post."
         <div class="post-tag-list">
           {% for tag in nowPost.tags %}
             {% if tag.visibility != "internal" %}
+            {% if tag.slug != "afterword" and tag.visibility != "internal" %}
             <a class="post-tag tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
+            {% endif %}
             {% endif %}
           {% endfor %}
         </div>
