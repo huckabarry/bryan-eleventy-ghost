@@ -261,6 +261,20 @@ async function fetchNowPosts() {
         .map((post) => `${post.slug}(${post.visibility || "unknown"})`)
         .join(", ")}`
     );
+
+    const latestCandidates = posts.filter((post) => {
+      const excludedTags = ["listening", "now-playing", "books", "now-reading", "gallery", "photos"];
+      const hasExcludedTag = excludedTags.some((slug) => postHasTag(post, slug));
+      const isUntitledStatus = postHasTag(post, "status") && isUntitledPost(post);
+      return !hasExcludedTag && !isUntitledStatus;
+    });
+
+    console.log(
+      `[afterword] latest candidates: ${latestCandidates
+        .slice(0, 10)
+        .map((post) => `${post.slug}:${post.title || "(no-title)"}`)
+        .join(", ")}`
+    );
   }
 
   return posts;
@@ -342,6 +356,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("onlyTitledPosts", (posts) => {
     return (posts || []).filter((post) => !isUntitledPost(post));
+  });
+
+  eleventyConfig.addFilter("withoutUntitledStatusPosts", (posts) => {
+    return (posts || []).filter((post) => !(postHasTag(post, "status") && isUntitledPost(post)));
   });
 
   eleventyConfig.addFilter("hasTagSlug", (post, slug) => {
