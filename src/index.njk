@@ -7,6 +7,8 @@ permalink: /index.html
 {% set statusPosts = collections.posts | withTagSlug("status") | withoutTagSlug("now-playing") %}
 {% set listeningPosts = collections.posts | withTagSlug("now-playing") %}
 {% set latestPosts = collections.posts | withTagSlug("afterword") | withoutTagSlug("status") | withoutTagSlug("now-playing") %}
+{% set statusPost = statusPosts[0] %}
+{% set listeningPost = listeningPosts[0] %}
 
 <section class="home-intro">
   {% if site.description %}
@@ -17,7 +19,8 @@ permalink: /index.html
 <section class="section-block">
   <h2 class="section-title">Status</h2>
   <div class="home-stream">
-    {% for post in statusPosts | slice(0, 1) %}
+    {% if statusPost %}
+      {% set post = statusPost %}
       {% set streamImage = post | firstImage %}
       <article class="home-stream-item h-entry">
         {% if streamImage %}
@@ -36,7 +39,7 @@ permalink: /index.html
       </article>
     {% else %}
       <p>No status posts are available yet.</p>
-    {% endfor %}
+    {% endif %}
   </div>
 </section>
 
@@ -64,7 +67,8 @@ permalink: /index.html
 <section class="section-block">
   <h2 class="section-title">Listening</h2>
   <div class="home-stream">
-    {% for post in listeningPosts | slice(0, 1) %}
+    {% if listeningPost %}
+      {% set post = listeningPost %}
       {% set streamImage = post | firstImage %}
       <article class="home-stream-item h-entry">
         {% if streamImage %}
@@ -87,7 +91,7 @@ permalink: /index.html
       </article>
     {% else %}
       <p>No listening posts are available yet.</p>
-    {% endfor %}
+    {% endif %}
   </div>
   <p class="listening-note">
     See past entries <a href="/tags/now-playing/">here</a> or follow along on <a href="{{ site.albumWhaleUrl }}">Album Whale</a>.
