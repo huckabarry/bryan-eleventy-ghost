@@ -169,6 +169,7 @@ h6 {
   display: inline-block;
   padding: 0.05rem 0;
   color: var(--accent);
+  font-weight: 700;
   text-decoration: underline;
   text-decoration-color: currentColor;
 }
@@ -241,12 +242,15 @@ h6 {
 
 .site-list-date {
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 1.35rem;
+  font-weight: 700;
   line-height: 1.35;
 }
 
 .site-list-link {
   color: var(--accent);
+  font-size: 1.35rem;
+  font-weight: 700;
   line-height: 1.35;
   text-decoration: none;
 }

@@ -11,12 +11,12 @@ permalink: /index.html
 </section>
 
 <section class="section-block">
-  <h2 class="section-title">Latest posts</h2>
+  <h2 class="section-title">Latest Posts</h2>
   <ul class="site-list-of-posts h-feed">
     {% for post in collections.posts.slice(0, 10) %}
       <li class="site-list-of-posts-item h-entry">
         <time class="site-list-date dt-published" datetime="{{ post.published_at | htmlDateString }}">
-          {{ post.published_at | dateReadable }}
+          {{ post.published_at | dateDisplay }}
         </time>
         <div>
           <a class="site-list-link p-name u-url" href="/{{ post.slug }}/">{{ post.title }}</a>

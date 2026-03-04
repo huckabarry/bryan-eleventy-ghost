@@ -11,7 +11,7 @@
                 {% if post.primary_tag %}
                     <span class="post-tag p-category">{{ post.primary_tag.name }}</span>
                 {% endif %}
-                <time class="post-date dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateReadable }}</time>
+                <time class="post-date dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
                 <span class="post-author p-author h-card">
                     <a class="p-name u-url" href="/">{{ post.primary_author.name | default(site.title) }}</a>
                 </span>
