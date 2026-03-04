@@ -550,7 +550,7 @@ h6 {
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
-  align-items: center;
+  align-items: baseline;
 }
 
 .post-author a {
