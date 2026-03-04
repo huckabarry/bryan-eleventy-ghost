@@ -12,6 +12,34 @@ layout: base
   {% if tagPage.description %}
     <p class="home-description">{{ tagPage.description }}</p>
   {% endif %}
+  {% if tagPage.slug == "listening" or tagPage.slug == "now-playing" %}
+  <div class="cover-grid cover-grid-listening h-feed">
+    {% for post in tagPage.posts %}
+      {% set coverImage = post | firstImage %}
+      <article class="cover-card h-entry">
+        <a class="cover-card-link u-url" href="{{ post | localPostUrl }}">
+          {% if coverImage %}
+          <img
+            class="cover-card-image u-photo"
+            src="{{ coverImage.src }}"
+            alt="{{ coverImage.alt }}"
+            loading="lazy"
+          >
+          {% else %}
+          <span class="cover-card-image cover-card-image-fallback" aria-hidden="true"></span>
+          {% endif %}
+          <span class="cover-card-title p-name">{{ post.title }}</span>
+        </a>
+        <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">
+          {{ post.published_at | dateDisplay }}
+        </time>
+        <span class="site-visually-hidden p-author h-card">
+          <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
+        </span>
+      </article>
+    {% endfor %}
+  </div>
+  {% else %}
   <ul class="site-list-of-posts h-feed">
     {% for post in tagPage.posts %}
       <li class="site-list-of-posts-item h-entry">
@@ -27,5 +55,6 @@ layout: base
       </li>
     {% endfor %}
   </ul>
+  {% endif %}
   <p class="tag-feed-note">Follow the <a href="/tags/{{ tagPage.slug }}/rss.xml">RSS feed</a> or <a href="/tags/{{ tagPage.slug }}/feed.json">JSON feed</a> for this tag.</p>
 </section>

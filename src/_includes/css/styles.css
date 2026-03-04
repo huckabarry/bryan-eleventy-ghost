@@ -39,7 +39,7 @@ body {
 body.site-shell {
   max-width: calc(var(--column) + (var(--gutter) * 2));
   margin: 0 auto;
-  padding: 1.85rem var(--gutter) 3rem;
+  padding: 2rem var(--gutter) 3rem;
 }
 
 a {
@@ -197,6 +197,7 @@ h6 {
 
 .home-intro {
   width: 100%;
+  margin-bottom: 0.4rem;
 }
 
 .home-stream {
@@ -616,6 +617,46 @@ h6 {
   column-count: 4;
 }
 
+.cover-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem 0.8rem;
+}
+
+.cover-card {
+  min-width: 0;
+}
+
+.cover-card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cover-card-image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.cover-card-image-fallback {
+  display: block;
+  background: #2c2f30;
+}
+
+.cover-card-title {
+  color: var(--accent);
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.cover-card-link:hover .cover-card-title {
+  color: #ffffff;
+}
+
 .photo-card {
   break-inside: avoid;
   margin: 0 0 0.5rem;
@@ -986,7 +1027,7 @@ body.photo-lightbox-open {
 
 @media (max-width: 640px) {
   body.site-shell {
-    padding-top: 1rem;
+    padding-top: 1.15rem;
   }
 
   .site-header {
@@ -1022,6 +1063,10 @@ body.photo-lightbox-open {
     column-count: 3;
   }
 
+  .cover-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .photo-lightbox {
     padding: 1rem;
     gap: 0.4rem;
@@ -1037,6 +1082,11 @@ body.photo-lightbox-open {
 
   .books-grid {
     column-count: 2;
+  }
+
+  .cover-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 0.65rem;
   }
 
   .post-navigation ul,
