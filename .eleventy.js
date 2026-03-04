@@ -92,7 +92,7 @@ module.exports = function (eleventyConfig) {
     }).formatToParts(new Date(date));
 
     const day = parts.find((part) => part.type === "day")?.value || "";
-    const month = (parts.find((part) => part.type === "month")?.value || "").toUpperCase();
+    const month = parts.find((part) => part.type === "month")?.value || "";
 
     return `${day} ${month}`.trim();
   });
