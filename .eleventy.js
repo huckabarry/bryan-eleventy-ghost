@@ -117,6 +117,14 @@ module.exports = function (eleventyConfig) {
     return new Date(dateObj).toISOString().split("T")[0];
   });
 
+  eleventyConfig.addFilter("rfc3339Date", (dateObj) => {
+    return new Date(dateObj).toISOString();
+  });
+
+  eleventyConfig.addFilter("rfc822Date", (dateObj) => {
+    return new Date(dateObj).toUTCString();
+  });
+
   eleventyConfig.addFilter("getReadingTime", (html) => {
     const text = String(html || "").replace(/<[^>]*>/g, " ");
     const words = text.trim().split(/\s+/).filter(Boolean).length;

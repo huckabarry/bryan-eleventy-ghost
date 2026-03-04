@@ -6,7 +6,7 @@
   <link href="{{ feedUrl }}" rel="self"/>
   <link href="{{ siteUrl }}"/>
   {%- for post in posts.slice(0,1) | sort(true, false, 'updated_at') %}
-  <updated>{{ post.updated_at | dateToRfc3339 }}</updated>
+  <updated>{{ post.updated_at | rfc3339Date }}</updated>
   {%- endfor %}
   <id>{{ feedUrl }}</id>
   <author>
@@ -16,7 +16,7 @@
   <entry>
     <title>{{ post | feedTitle }}</title>
     <link href="{{ siteUrl + (post | localPostUrl) }}"/>
-    <updated>{{ post.updated_at | dateToRfc3339 }}</updated>
+    <updated>{{ post.updated_at | rfc3339Date }}</updated>
     <id>{{ siteUrl + (post | localPostUrl) }}</id>
     <content type="html">{{ post.html | htmlToAbsoluteUrls(pageUrl) }}</content>
   </entry>
@@ -32,7 +32,7 @@
     <link>{{ siteUrl }}/</link>
     <description>{{ description }}</description>
     {%- for post in posts.slice(0,1) | sort(true, false, 'updated_at') %}
-    <lastBuildDate>{{ post.updated_at | dateToRfc822 }}</lastBuildDate>
+    <lastBuildDate>{{ post.updated_at | rfc822Date }}</lastBuildDate>
     {%- endfor %}
     <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="{{ feedUrl }}" rel="self" type="application/rss+xml" />
     {%- for post in posts %}
@@ -42,7 +42,7 @@
       {%- endif %}
       <link>{{ siteUrl + (post | localPostUrl) }}</link>
       <guid>{{ siteUrl + (post | localPostUrl) }}</guid>
-      <pubDate>{{ post.published_at | dateToRfc822 }}</pubDate>
+      <pubDate>{{ post.published_at | rfc822Date }}</pubDate>
       <description><![CDATA[{{ post.html | htmlToAbsoluteUrls(pageUrl) }}]]></description>
     </item>
     {%- endfor %}
