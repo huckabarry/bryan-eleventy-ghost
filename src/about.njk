@@ -44,17 +44,17 @@ description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place w
       {% set post = readingPost %}
       {% set streamImage = post | firstImage %}
       <article class="home-stream-item home-stream-item-reading h-entry">
+        <p class="home-stream-meta home-stream-meta-reading">
+          <a class="u-url" href="{{ post | localPostUrl }}">
+            <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+          </a>
+        </p>
         {% if streamImage %}
           <a class="home-stream-media home-stream-media-reading u-url" href="{{ post | localPostUrl }}">
             <img class="home-stream-image home-stream-image-listening u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
           </a>
         {% endif %}
         <div class="home-stream-body home-stream-body-reading e-content">
-          <p class="home-stream-meta">
-            <a class="u-url" href="{{ post | localPostUrl }}">
-              <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
-            </a>
-          </p>
           {% if post.excerpt %}
             <p>{{ post.excerpt }}</p>
           {% else %}

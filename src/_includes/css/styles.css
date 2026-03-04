@@ -232,12 +232,19 @@ h6 {
 .home-stream-item-reading {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 180px);
-  grid-template-areas: "body media";
+  grid-template-areas:
+    "meta meta"
+    "body media";
   align-items: start;
   gap: 1rem;
   padding: 0.9rem;
   border-radius: 0.7rem;
   background: #2c2f30;
+}
+
+.home-stream-meta-reading {
+  grid-area: meta;
+  margin-bottom: 0;
 }
 
 .home-stream-media-reading {
@@ -1094,7 +1101,9 @@ body.photo-lightbox-open {
 
   .home-stream-item-reading {
     grid-template-columns: minmax(0, 1fr) minmax(110px, 130px);
-    grid-template-areas: "body media";
+    grid-template-areas:
+      "meta meta"
+      "body media";
     gap: 0.85rem;
   }
 
