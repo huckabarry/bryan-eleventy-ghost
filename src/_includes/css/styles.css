@@ -56,6 +56,7 @@ a:hover {
 img {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
 p,
@@ -298,6 +299,7 @@ h6 {
 
 .post-feature-image img {
   width: 100%;
+  height: auto;
   border-radius: var(--radius);
   border: 1px solid var(--border);
 }
@@ -361,6 +363,15 @@ h6 {
 
 .content-body a {
   color: var(--accent);
+}
+
+.content-body img,
+.content-body picture img,
+.content-body figure img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .about-links {
@@ -474,6 +485,7 @@ h6 {
 .kg-gallery-image img,
 .kg-image-card img {
   width: 100%;
+  height: auto;
   border-radius: var(--radius);
 }
 
