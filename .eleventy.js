@@ -9,7 +9,17 @@ const ghostApi = new GhostContentAPI({
 });
 
 let nowPostsPromise;
-const INCLUDED_SITE_TAGS = ["afterword", "status", "now-playing", "now-reading", "photos", "now"];
+const INCLUDED_SITE_TAGS = [
+  "afterword",
+  "status",
+  "listening",
+  "books",
+  "gallery",
+  "now-playing",
+  "now-reading",
+  "photos",
+  "now"
+];
 
 function extractFirstImage(post) {
   const html = String(post && post.html ? post.html : "");
@@ -262,7 +272,7 @@ module.exports = function (eleventyConfig) {
     const posts = await fetchNowPosts();
 
     return posts
-      .filter((post) => postHasTag(post, "photos"))
+      .filter((post) => postHasTag(post, "gallery") || postHasTag(post, "photos"))
       .map((post) => ({
         ...post,
         firstImage: extractFirstImage(post)

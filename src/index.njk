@@ -4,9 +4,9 @@ eleventyExcludeFromCollections: true
 permalink: /index.html
 ---
 
-{% set statusPosts = collections.posts | withTagSlug("status") | withoutTagSlug("now-playing") %}
-{% set listeningPosts = collections.posts | withTagSlug("now-playing") %}
-{% set latestPosts = collections.posts | withAnyTagSlugs("afterword,now") | withoutAnyTagSlugs("status,now-playing,now-reading,photos") %}
+{% set statusPosts = collections.posts | withTagSlug("status") | withoutAnyTagSlugs("listening,now-playing") %}
+{% set listeningPosts = collections.posts | withAnyTagSlugs("listening,now-playing") %}
+{% set latestPosts = collections.posts | withAnyTagSlugs("afterword,now") | withoutAnyTagSlugs("status,listening,now-playing,books,now-reading,gallery,photos") %}
 {% set statusPost = statusPosts[0] %}
 {% set listeningPost = listeningPosts[0] %}
 
@@ -94,6 +94,6 @@ permalink: /index.html
     {% endif %}
   </div>
   <p class="listening-note">
-    See past entries <a href="/tags/now-playing/">here</a> or follow along on <a href="{{ site.albumWhaleUrl }}">Album Whale</a>.
+    See past entries <a href="/tags/listening/">here</a> or follow along on <a href="{{ site.albumWhaleUrl }}">Album Whale</a>.
   </p>
 </section>
