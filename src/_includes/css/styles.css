@@ -784,20 +784,10 @@ body.photo-lightbox-open {
 @media (max-width: 640px) {
   body.site-shell {
     padding-top: 1rem;
-    color: #ffffff;
   }
 
   .site-header {
     align-items: flex-start;
-  }
-
-  .site-title,
-  .section-title,
-  .content-body,
-  .home-description,
-  .post-dek,
-  .webmentions-subtitle {
-    color: #ffffff;
   }
 
   .stream-item {
