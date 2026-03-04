@@ -554,6 +554,7 @@ h6 {
 
 .post-author a {
   color: var(--muted);
+  font-size: 0.8rem;
   text-decoration: none;
 }
 
@@ -715,6 +716,11 @@ h6 {
 
 .tag-archive .section-title + .cover-grid-listening {
   margin-top: 1.2rem;
+}
+
+.tag-archive-status .section-title + .site-list-of-posts,
+.tag-archive-listening .section-title + .cover-grid-listening {
+  margin-top: 1.35rem;
 }
 
 .cover-card {
