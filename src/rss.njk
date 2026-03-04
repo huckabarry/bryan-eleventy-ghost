@@ -2,5 +2,5 @@
 permalink: rss.xml
 eleventyExcludeFromCollections: true
 ---
-{% from "feed-helpers.njk" import rssFeed %}
-{{ rssFeed(site.title, site.description, site.url + page.url, site.url, collections.posts, site.url + page.url) }}
+{%- from "feed-helpers.njk" import rssFeed -%}
+{{- rssFeed(site.title, site.description, site.url + page.url, site.url, collections.posts, site.url + page.url) -}}
