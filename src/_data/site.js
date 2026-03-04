@@ -1,13 +1,38 @@
 require("dotenv").config();
+const fs = require("fs");
+const path = require("path");
+
+const defaultHomeIntro =
+  "Hey! I’m Bryan, an urban planner and design thinker living in the Pacific Northwest with my wife and two young kids. Afterword is a blog where I post about everyday life.";
+
+function readHomeIntro() {
+  const introPath = path.join(__dirname, "..", "home-intro.md");
+
+  try {
+    if (!fs.existsSync(introPath)) {
+      return defaultHomeIntro;
+    }
+
+    return fs
+      .readFileSync(introPath, "utf8")
+      .replace(/\r\n/g, "\n")
+      .trim() || defaultHomeIntro;
+  } catch (error) {
+    console.warn(`[afterword] unable to read home intro markdown: ${error.message}`);
+    return defaultHomeIntro;
+  }
+}
 
 module.exports = async function () {
   const configuredUrl = process.env.SITE_URL || "https://afterword.blog";
   const normalizedSiteUrl = /^https?:\/\//i.test(configuredUrl)
     ? configuredUrl
     : `https://${configuredUrl}`;
+  const homeIntro = readHomeIntro();
   const data = {
     title: "Afterword",
-    description: "Hey! I’m Bryan, an urban planner and design thinker living in the Pacific Northwest with my wife and two young kids. Afterword is a blog where I post about everyday life.",
+    description: homeIntro,
+    homeIntro,
     logo: "https://cdn.u.pika.page/2S770Bf-Ta8Bf_SF3tDUa-2fIeZocDjl3ewqMmBvJSk/fn:IMG_8710/plain/s3://pika-production/aj4090bxube83j7rhj151mum2ssn",
     url: normalizedSiteUrl
   };

@@ -14,6 +14,7 @@ description: "The latest now post."
   {% if nowPost %}
     <article class="content content-page h-entry">
       <a class="site-visually-hidden u-uid" href="{{ site.url }}{{ nowPost | localPostUrl }}">{{ site.url }}{{ nowPost | localPostUrl }}</a>
+      <span class="site-visually-hidden p-name">{{ nowPost.title | default("Now update") }}</span>
       <div class="post-meta-row">
         <time class="post-date dt-published" datetime="{{ nowPost.published_at | htmlDateString }}">{{ nowPost.published_at | dateDisplay }}</time>
         <span class="site-visually-hidden p-author h-card">

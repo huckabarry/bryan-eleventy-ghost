@@ -11,7 +11,9 @@ permalink: /index.html
 {% set listeningPost = listeningPosts[0] %}
 
 <section class="home-intro">
-  {% if site.description %}
+  {% if site.homeIntro %}
+    <p class="home-description">{{ site.homeIntro }}</p>
+  {% elif site.description %}
     <p class="home-description">{{ site.description }}</p>
   {% endif %}
 </section>

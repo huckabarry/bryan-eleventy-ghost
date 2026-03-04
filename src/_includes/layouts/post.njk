@@ -222,7 +222,7 @@
                         likes.forEach((entry) => {
                             const author = entry.author || {};
                             const link = document.createElement("a");
-                            link.className = "webmentions-like";
+                            link.className = "webmentions-like h-cite u-url";
                             link.href = entry.url || author.url || "#";
                             link.target = "_blank";
                             link.rel = "nofollow noopener noreferrer";
@@ -230,12 +230,23 @@
 
                             if (author.photo) {
                                 const img = document.createElement("img");
+                                img.className = "u-photo";
                                 img.src = author.photo;
                                 img.alt = author.name || "Like";
                                 img.loading = "lazy";
                                 link.appendChild(img);
-                            } else {
-                                link.textContent = (author.name || "?").slice(0, 1).toUpperCase();
+                            }
+
+                            const name = document.createElement("span");
+                            name.className = "site-visually-hidden p-name";
+                            name.textContent = author.name || "Someone";
+                            link.appendChild(name);
+
+                            if (!author.photo) {
+                                const fallback = document.createElement("span");
+                                fallback.setAttribute("aria-hidden", "true");
+                                fallback.textContent = (author.name || "?").slice(0, 1).toUpperCase();
+                                link.appendChild(fallback);
                             }
 
                             likeList.appendChild(link);
@@ -244,14 +255,22 @@
                         comments.forEach((entry) => {
                             const author = entry.author || {};
                             const item = document.createElement("li");
-                            item.className = "webmentions-comment";
+                            item.className = "webmentions-comment h-cite";
+
+                            if (entry.url) {
+                                const citeUrl = document.createElement("a");
+                                citeUrl.className = "site-visually-hidden u-url";
+                                citeUrl.href = entry.url;
+                                citeUrl.textContent = entry.url;
+                                item.appendChild(citeUrl);
+                            }
 
                             const header = document.createElement("div");
                             header.className = "webmentions-comment-header";
 
                             if (author.photo) {
                                 const img = document.createElement("img");
-                                img.className = "webmentions-comment-avatar";
+                                img.className = "webmentions-comment-avatar u-photo";
                                 img.src = author.photo;
                                 img.alt = author.name || "Comment avatar";
                                 img.loading = "lazy";
@@ -261,19 +280,22 @@
                             const meta = document.createElement("div");
                             meta.className = "webmentions-comment-meta";
 
+                            const authorCard = document.createElement("span");
+                            authorCard.className = "webmentions-comment-author p-author h-card";
                             const name = document.createElement(author.url ? "a" : "span");
-                            name.className = "webmentions-comment-author";
+                            name.className = author.url ? "p-name u-url" : "p-name";
                             name.textContent = author.name || "Someone";
                             if (author.url) {
                                 name.href = author.url;
                                 name.target = "_blank";
                                 name.rel = "nofollow noopener noreferrer";
                             }
-                            meta.appendChild(name);
+                            authorCard.appendChild(name);
+                            meta.appendChild(authorCard);
 
                             if (entry.published || entry["wm-received"]) {
                                 const time = document.createElement("time");
-                                time.className = "webmentions-comment-date";
+                                time.className = "webmentions-comment-date dt-published";
                                 const raw = entry.published || entry["wm-received"];
                                 time.dateTime = raw;
                                 time.textContent = new Date(raw).toLocaleDateString("en-US", {
@@ -289,12 +311,12 @@
 
                             if (entry.content && (entry.content.html || entry.content.text)) {
                                 const body = document.createElement("div");
-                                body.className = "webmentions-comment-body";
+                                body.className = "webmentions-comment-body e-content";
                                 body.innerHTML = entry.content.html || entry.content.text;
                                 item.appendChild(body);
                             } else if (entry.url) {
                                 const link = document.createElement("a");
-                                link.className = "webmentions-comment-link";
+                                link.className = "webmentions-comment-link u-url";
                                 link.href = entry.url;
                                 link.target = "_blank";
                                 link.rel = "nofollow noopener noreferrer";
