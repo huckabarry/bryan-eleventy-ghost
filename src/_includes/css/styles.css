@@ -223,6 +223,27 @@ h6 {
   margin: 0 auto;
 }
 
+.home-stream-item-reading {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.home-stream-media-reading {
+  width: 100%;
+}
+
+.home-stream-media-reading .home-stream-image-listening {
+  width: 100%;
+  max-width: 180px;
+  margin: 0;
+}
+
+.home-stream-body-reading {
+  min-width: 0;
+}
+
 .home-stream-body p:last-child {
   margin-bottom: 0;
 }
@@ -804,6 +825,15 @@ body.photo-lightbox-open {
   .stream-item {
     grid-template-columns: 1fr;
     gap: 0.45rem;
+  }
+
+  .home-stream-item-reading {
+    grid-template-columns: 1fr;
+  }
+
+  .home-stream-media-reading .home-stream-image-listening {
+    max-width: 300px;
+    margin: 0 auto;
   }
 
   .photo-grid {

@@ -46,13 +46,13 @@ description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place w
     <div class="home-stream">
       {% set post = readingPost %}
       {% set streamImage = post | firstImage %}
-      <article class="home-stream-item h-entry">
+      <article class="home-stream-item home-stream-item-reading h-entry">
         {% if streamImage %}
-          <a class="home-stream-media u-url" href="{{ post | localPostUrl }}">
+          <a class="home-stream-media home-stream-media-reading u-url" href="{{ post | localPostUrl }}">
             <img class="home-stream-image home-stream-image-listening u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
           </a>
         {% endif %}
-        <div class="home-stream-body e-content">
+        <div class="home-stream-body home-stream-body-reading e-content">
           {% if post.excerpt %}
             <p>{{ post.excerpt }}</p>
           {% else %}
