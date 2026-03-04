@@ -89,11 +89,7 @@ permalink: /index.html
           </a>
         {% endif %}
         <div class="home-stream-body e-content">
-          {% if post.excerpt %}
-            <p>{{ post.excerpt }}</p>
-          {% else %}
-            <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
-          {% endif %}
+          <div class="content-body">{{ post.html | stripFirstImage | safe }}</div>
           {% if post.tags %}
           <div class="home-stream-tags">
             {% for tag in post.tags %}

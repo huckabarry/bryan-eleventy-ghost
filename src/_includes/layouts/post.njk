@@ -81,9 +81,10 @@
                 <span>Back to all posts</span>
             </a>
         </footer>
+        {% set previousPost = collections.posts | getPreviousPost(post) %}
+        {% set nextPost = collections.posts | getNextPost(post) %}
+        {% if previousPost or nextPost %}
         <nav class="post-navigation">
-            {% set previousPost = collections.posts | getPreviousCollectionItem(page) %}
-            {% set nextPost = collections.posts | getNextCollectionItem(page) %}
             <ul>
                 <li class="post-navigation-item post-navigation-item-previous">
                     {% if previousPost %}
@@ -103,6 +104,7 @@
                 </li>
             </ul>
         </nav>
+        {% endif %}
         <section
             class="webmentions"
             data-webmentions

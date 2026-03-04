@@ -277,7 +277,7 @@ h6 {
 }
 
 .home-stream-tags {
-  margin: 0.7rem 0 0.45rem;
+  margin: 1rem 0 0.45rem;
   padding-left: 0;
 }
 
@@ -711,9 +711,9 @@ body.photo-lightbox-open {
 
 .post-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem 1.1rem;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
   margin-top: 1rem;
   padding: 0 0 0.1rem;
 }

@@ -59,6 +59,25 @@ function extractFirstImage(post) {
   return null;
 }
 
+function stripFirstImage(html) {
+  const source = String(html || "");
+  const patterns = [
+    /<figure[^>]*class=["'][^"']*kg-image-card[^"']*["'][\s\S]*?<\/figure>/i,
+    /<figure[^>]*class=["'][^"']*kg-gallery-card[^"']*["'][\s\S]*?<\/figure>/i,
+    /<figure[\s\S]*?<img[^>]*>[\s\S]*?<\/figure>/i,
+    /<p>\s*<img[^>]*>\s*<\/p>/i,
+    /<img[^>]*>/i
+  ];
+
+  for (const pattern of patterns) {
+    if (pattern.test(source)) {
+      return source.replace(pattern, "").trim();
+    }
+  }
+
+  return source;
+}
+
 function postHasTag(post, slug) {
   return (post.tags || []).some((tag) => tag && tag.slug === slug);
 }
@@ -147,6 +166,25 @@ function getLocalPostSlug(post) {
 
 function getLocalPostUrl(post) {
   return `/${getLocalPostSlug(post)}/`;
+}
+
+function getCollectionIndex(posts, currentPost) {
+  const items = Array.isArray(posts) ? posts : [];
+  const currentId = currentPost && currentPost.id;
+  const currentSlug = currentPost && currentPost.slug;
+  const currentLocalSlug = currentPost ? getLocalPostSlug(currentPost) : "";
+
+  return items.findIndex((post) => {
+    if (currentId && post.id === currentId) {
+      return true;
+    }
+
+    if (currentSlug && post.slug === currentSlug) {
+      return true;
+    }
+
+    return currentLocalSlug && getLocalPostSlug(post) === currentLocalSlug;
+  });
 }
 
 async function fetchNowPosts() {
@@ -260,8 +298,22 @@ module.exports = function (eleventyConfig) {
     return getStatusPreview(post);
   });
 
+  eleventyConfig.addFilter("getPreviousPost", (posts, currentPost) => {
+    const index = getCollectionIndex(posts, currentPost);
+    return index >= 0 ? posts[index + 1] || null : null;
+  });
+
+  eleventyConfig.addFilter("getNextPost", (posts, currentPost) => {
+    const index = getCollectionIndex(posts, currentPost);
+    return index > 0 ? posts[index - 1] || null : null;
+  });
+
   eleventyConfig.addFilter("firstImage", (post) => {
     return extractFirstImage(post);
+  });
+
+  eleventyConfig.addFilter("stripFirstImage", (html) => {
+    return stripFirstImage(html);
   });
 
   eleventyConfig.addCollection("posts", async () => {
