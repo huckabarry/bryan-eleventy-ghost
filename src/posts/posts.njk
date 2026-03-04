@@ -4,7 +4,7 @@ pagination:
   data: collections.posts
   size: 1
   alias: post
-permalink: "/{{ post.slug }}/index.html"
+permalink: "/{{ post | localPostSlug }}/index.html"
 ---
 
 {{ post.html | safe }}

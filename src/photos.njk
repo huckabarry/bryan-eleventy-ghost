@@ -12,11 +12,11 @@ description: "A masonry-style gallery built from the first image in each post."
       <article class="photo-card h-entry">
         <a
           class="photo-card-link u-url"
-          href="/{{ post.slug }}/"
+          href="{{ post | localPostUrl }}"
           data-photo-trigger
           data-photo-src="{{ post.firstImage.src }}"
           data-photo-alt="{{ post.firstImage.alt }}"
-          data-photo-post-url="/{{ post.slug }}/"
+          data-photo-post-url="{{ post | localPostUrl }}"
           data-photo-post-title="{{ post.title }}"
         >
           <img

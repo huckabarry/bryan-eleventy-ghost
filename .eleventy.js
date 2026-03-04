@@ -53,16 +53,24 @@ function postHasTag(post, slug) {
   return (post.tags || []).some((tag) => tag && tag.slug === slug);
 }
 
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function getStatusLabel(post) {
   if (postHasTag(post, "status")) {
     return "";
   }
 
   return post.title || "";
-}
-
-function getLocalPostUrl(post) {
-  return `/${post.slug || ""}/`;
 }
 
 function getPlainTextPreview(post, maxLength = 220) {
@@ -97,6 +105,27 @@ function getStatusPreview(post) {
   }
 
   return String(post && post.title ? post.title : "").trim();
+}
+
+function getLocalPostSlug(post) {
+  const ghostSlug = String(post && post.slug ? post.slug : "").trim();
+
+  if (!postHasTag(post, "status")) {
+    return ghostSlug;
+  }
+
+  if (ghostSlug && ghostSlug !== "untitled") {
+    return ghostSlug;
+  }
+
+  const words = getStatusPreview(post).split(/\s+/).filter(Boolean).slice(0, 8).join(" ");
+  const derivedSlug = slugify(words);
+
+  return derivedSlug || ghostSlug || "status";
+}
+
+function getLocalPostUrl(post) {
+  return `/${getLocalPostSlug(post)}/`;
 }
 
 async function fetchNowPosts() {
@@ -186,6 +215,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("localPostUrl", (post) => {
     return getLocalPostUrl(post);
+  });
+
+  eleventyConfig.addFilter("localPostSlug", (post) => {
+    return getLocalPostSlug(post);
   });
 
   eleventyConfig.addFilter("statusPreview", (post) => {

@@ -28,7 +28,9 @@
             </h1>
             {% endif %}
             {% if post.excerpt %}
+            {% if not (post | hasTagSlug("status")) %}
                 <p class="post-dek p-summary">{{ post.excerpt }}</p>
+            {% endif %}
             {% endif %}
         </header>
         {% if post.feature_image %}
@@ -47,12 +49,12 @@
             <ul>
                 <li>
                     {% if previousPost %}
-                    <a href="{{ previousPost.url }}">Older: {{ previousPost.title }}</a>
+                    <a href="{{ previousPost | localPostUrl }}">Older: {{ previousPost.title }}</a>
                     {% endif %}
                 </li>
                 <li>
                     {% if nextPost %}
-                    <a href="{{ nextPost.url }}">Newer: {{ nextPost.title }}</a>
+                    <a href="{{ nextPost | localPostUrl }}">Newer: {{ nextPost.title }}</a>
                     {% endif %}
                 </li>
             </ul>

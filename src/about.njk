@@ -44,7 +44,7 @@ description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place w
         {% set streamImage = post | firstImage %}
         <article class="home-stream-item h-entry">
           {% if streamImage %}
-            <a class="home-stream-media u-url" href="/{{ post.slug }}/">
+            <a class="home-stream-media u-url" href="{{ post | localPostUrl }}">
               <img class="home-stream-image u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
             </a>
           {% endif %}
@@ -52,10 +52,10 @@ description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place w
             {% if post.excerpt %}
               <p>{{ post.excerpt }}</p>
             {% else %}
-              <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ post.title }}</a></p>
+              <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
             {% endif %}
             <p class="home-stream-meta">
-              <a class="u-url" href="/{{ post.slug }}/">
+              <a class="u-url" href="{{ post | localPostUrl }}">
                 <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
               </a>
             </p>

@@ -21,15 +21,14 @@ permalink: /index.html
       {% set streamImage = post | firstImage %}
       <article class="home-stream-item h-entry">
         {% if streamImage %}
-          <a class="home-stream-media u-url" href="/{{ post.slug }}/">
+          <a class="home-stream-media u-url" href="{{ post | localPostUrl }}">
             <img class="home-stream-image u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
           </a>
         {% endif %}
         <div class="home-stream-body e-content">
-          {% set preview = post | statusPreview %}
-          <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ preview or "Open status" }}</a></p>
+          <div class="content-body">{{ post.html | safe }}</div>
           <p class="home-stream-meta">
-            <a class="u-url" href="/{{ post.slug }}/">
+            <a class="u-url" href="{{ post | localPostUrl }}">
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
             </a>
           </p>
@@ -50,7 +49,7 @@ permalink: /index.html
           {{ post.published_at | dateDisplay }}
         </time>
         <div>
-          <a class="site-list-link p-name u-url" href="/{{ post.slug }}/">{{ post.title }}</a>
+          <a class="site-list-link p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a>
           <span class="site-visually-hidden p-author h-card">
             <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
           </span>
@@ -69,7 +68,7 @@ permalink: /index.html
       {% set streamImage = post | firstImage %}
       <article class="home-stream-item h-entry">
         {% if streamImage %}
-          <a class="home-stream-media u-url" href="/{{ post.slug }}/">
+          <a class="home-stream-media u-url" href="{{ post | localPostUrl }}">
             <img class="home-stream-image u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
           </a>
         {% endif %}
@@ -77,10 +76,10 @@ permalink: /index.html
           {% if post.excerpt %}
             <p>{{ post.excerpt }}</p>
           {% else %}
-            <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ post.title }}</a></p>
+            <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
           {% endif %}
           <p class="home-stream-meta">
-            <a class="u-url" href="/{{ post.slug }}/">
+            <a class="u-url" href="{{ post | localPostUrl }}">
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
             </a>
           </p>
