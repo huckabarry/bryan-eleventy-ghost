@@ -218,6 +218,11 @@ h6 {
   width: 100%;
 }
 
+.home-stream-image-listening {
+  width: min(100%, 300px);
+  margin: 0 auto;
+}
+
 .home-stream-body p:last-child {
   margin-bottom: 0;
 }
@@ -260,6 +265,12 @@ h6 {
 
 .listening-note {
   margin-top: 0.9rem;
+}
+
+.tag-feed-note {
+  margin-top: 0.9rem;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .post-feed {
