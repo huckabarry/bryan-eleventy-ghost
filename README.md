@@ -1,20 +1,31 @@
-# Low Velocity Now Feed
+# Afterword
 
-An Eleventy site that pulls content from a Ghost instance and publishes only posts tagged `now`.
+Afterword is an Eleventy static site front end for a Ghost CMS backend.
 
-This repo is intentionally narrower than the original Ghost starter. It is not a full Ghost theme replacement. It builds a filtered static front-end over a larger Ghost site.
+It is not a Ghost theme. Ghost remains the content source of truth, and Eleventy builds a filtered, custom-designed static site from that content for deployment.
 
-## Installing
+## Architecture
 
-```bash
-yarn
-```
+- Ghost provides posts and site data through the Content API
+- Eleventy renders the public static frontend
+- Netlify deploys the generated `_site` output
 
-## Running
+## Content model
 
-```bash
-yarn start
-```
+The site currently pulls in posts tagged with one or more of these tags:
+
+- `afterword`
+- `status`
+- `listening`
+- `books`
+- `gallery`
+
+Some legacy tags are still tolerated during migration:
+
+- `now`
+- `now-playing`
+- `now-reading`
+- `photos`
 
 ## Required environment variables
 
@@ -22,18 +33,24 @@ yarn start
 - `GHOST_CONTENT_API_KEY`
 - `SITE_URL`
 
-## Content scope
+## Install
 
-The Eleventy `posts` collection filters Ghost content with:
-
-```js
-filter: "tag:now"
+```bash
+yarn
 ```
 
-That means posts from the underlying Ghost site only appear here when they carry the `now` tag.
+## Run
+
+```bash
+yarn start
+```
 
 ## Build
 
 ```bash
 yarn build
 ```
+
+## Note
+
+The current visual direction is a personal adaptation of the earlier Afterword site I built on Pika.page. This repo is its own Eleventy implementation, but that earlier site was the design reference point.
