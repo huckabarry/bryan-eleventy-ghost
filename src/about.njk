@@ -50,16 +50,16 @@ description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place w
           </a>
         {% endif %}
         <div class="home-stream-body home-stream-body-reading e-content">
-          {% if post.excerpt %}
-            <p>{{ post.excerpt }}</p>
-          {% else %}
-            <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
-          {% endif %}
           <p class="home-stream-meta">
             <a class="u-url" href="{{ post | localPostUrl }}">
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
             </a>
           </p>
+          {% if post.excerpt %}
+            <p>{{ post.excerpt }}</p>
+          {% else %}
+            <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
+          {% endif %}
         </div>
       </article>
     </div>
