@@ -237,7 +237,7 @@ h6 {
   grid-template-columns: minmax(7rem, 8.5rem) minmax(0, 1fr);
   gap: 1rem;
   align-items: baseline;
-  padding: 0.45rem 0 0.95rem;
+  padding: 0.2rem 0 0.45rem;
 }
 
 .site-list-date {
