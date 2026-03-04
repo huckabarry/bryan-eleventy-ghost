@@ -21,7 +21,7 @@
                 <div class="post-tag-list">
                     {% for tag in post.tags %}
                         {% if tag.slug != "now" and tag.visibility != "internal" %}
-                        <a class="post-tag p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
+                        <a class="post-tag tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -47,18 +47,58 @@
                 {{ content | safe }}
             </section>
         </section>
+        <div class="photo-lightbox" data-post-lightbox hidden>
+            <button class="photo-lightbox-close" type="button" aria-label="Close image" data-post-lightbox-close>&times;</button>
+            <button class="photo-lightbox-nav photo-lightbox-prev" type="button" aria-label="Previous image" data-post-lightbox-prev>&larr;</button>
+            <div class="photo-lightbox-stage">
+                <img class="photo-lightbox-image" src="" alt="" data-post-lightbox-image>
+            </div>
+            <button class="photo-lightbox-nav photo-lightbox-next" type="button" aria-label="Next image" data-post-lightbox-next>&rarr;</button>
+        </div>
+        <footer class="post-actions" aria-label="Post actions">
+            <a class="post-action-link" href="{{ page.url }}">
+                <span class="post-action-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 576 512" fill="currentColor">
+                        <path d="M128 0c13.3 0 24 10.7 24 24V64H296V24c0-13.3 10.7-24 24-24s24 10.7 24 24V64h40c35.3 0 64 28.7 64 64v16 48H400 384 48V448c0 8.8 7.2 16 16 16H262.5l-5.1 20.2c-2.3 9.4-1.8 19 1.4 27.8H64c-35.3 0-64-28.7-64-64V192 144 128C0 92.7 28.7 64 64 64h40V24c0-13.3 10.7-24 24-24zm-8 256H296c13.3 0 24 10.7 24 24s-10.7 24-24 24H120c-13.3 0-24-10.7-24-24s10.7-24 24-24zM96 376c0-13.3 10.7-24 24-24H232c13.3 0 24 10.7 24 24s-10.7 24-24 24H120c-13.3 0-24-10.7-24-24z"></path>
+                    </svg>
+                </span>
+                <span>{{ post.published_at | dateDisplay }}</span>
+            </a>
+            <a class="post-action-link" href="/contact/">
+                <span class="post-action-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 512 512" fill="currentColor">
+                        <path d="M64 112c-17.7 0-32 14.3-32 32V368c0 17.7 14.3 32 32 32H448c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32H64zM112 160H400c6.5 0 12.6 3.1 16.3 8.3L275.7 283.4c-11.1 9.1-27.2 9.1-38.3 0L95.7 168.3c3.7-5.2 9.8-8.3 16.3-8.3z"></path>
+                    </svg>
+                </span>
+                <span>Reply by email</span>
+            </a>
+            <a class="post-action-link" href="/">
+                <span class="post-action-icon" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 448 512" fill="currentColor">
+                        <path d="M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L150.4 208H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H150.4l106.7 106.9c9.8 9.3 10 24.8 .4 34.2z"></path>
+                    </svg>
+                </span>
+                <span>Back to all posts</span>
+            </a>
+        </footer>
         <nav class="post-navigation">
             {% set previousPost = collections.posts | getPreviousCollectionItem(page) %}
             {% set nextPost = collections.posts | getNextCollectionItem(page) %}
             <ul>
-                <li>
+                <li class="post-navigation-item post-navigation-item-previous">
                     {% if previousPost %}
-                    <a href="{{ previousPost | localPostUrl }}">Older: {{ previousPost.title }}</a>
+                    <a class="post-navigation-link" href="{{ previousPost | localPostUrl }}">
+                        <span class="post-navigation-label">← Previous</span>
+                        <span class="post-navigation-title">{{ previousPost.title }}</span>
+                    </a>
                     {% endif %}
                 </li>
-                <li>
+                <li class="post-navigation-item post-navigation-item-next">
                     {% if nextPost %}
-                    <a href="{{ nextPost | localPostUrl }}">Newer: {{ nextPost.title }}</a>
+                    <a class="post-navigation-link" href="{{ nextPost | localPostUrl }}">
+                        <span class="post-navigation-label">Next →</span>
+                        <span class="post-navigation-title">{{ nextPost.title }}</span>
+                    </a>
                     {% endif %}
                 </li>
             </ul>
@@ -81,6 +121,80 @@
         </section>
         <script>
             (function () {
+                const lightbox = document.querySelector("[data-post-lightbox]");
+                const lightboxImage = lightbox ? lightbox.querySelector("[data-post-lightbox-image]") : null;
+                const lightboxClose = lightbox ? lightbox.querySelector("[data-post-lightbox-close]") : null;
+                const lightboxPrev = lightbox ? lightbox.querySelector("[data-post-lightbox-prev]") : null;
+                const lightboxNext = lightbox ? lightbox.querySelector("[data-post-lightbox-next]") : null;
+                const images = Array.from(document.querySelectorAll(".post-feature-image img, .content-body img"));
+                let currentImageIndex = 0;
+
+                function renderImage(index) {
+                    const image = images[index];
+                    if (!image || !lightboxImage) return;
+
+                    currentImageIndex = index;
+                    lightboxImage.src = image.currentSrc || image.src || "";
+                    lightboxImage.alt = image.alt || "";
+                }
+
+                function openLightbox(index) {
+                    if (!lightbox) return;
+                    renderImage(index);
+                    lightbox.hidden = false;
+                    document.body.classList.add("photo-lightbox-open");
+                }
+
+                function closeLightbox() {
+                    if (!lightbox || !lightboxImage) return;
+                    lightbox.hidden = true;
+                    document.body.classList.remove("photo-lightbox-open");
+                    lightboxImage.src = "";
+                    lightboxImage.alt = "";
+                }
+
+                function stepImage(direction) {
+                    if (!images.length) return;
+                    const nextIndex = (currentImageIndex + direction + images.length) % images.length;
+                    renderImage(nextIndex);
+                }
+
+                images.forEach((image, index) => {
+                    image.classList.add("post-lightbox-trigger");
+                    image.setAttribute("tabindex", "0");
+                    image.setAttribute("role", "button");
+                    image.setAttribute("aria-label", image.alt ? `Expand image: ${image.alt}` : "Expand image");
+
+                    image.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        openLightbox(index);
+                    });
+
+                    image.addEventListener("keydown", (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            openLightbox(index);
+                        }
+                    });
+                });
+
+                if (lightbox && lightboxClose && lightboxPrev && lightboxNext) {
+                    lightboxClose.addEventListener("click", closeLightbox);
+                    lightboxPrev.addEventListener("click", () => stepImage(-1));
+                    lightboxNext.addEventListener("click", () => stepImage(1));
+
+                    lightbox.addEventListener("click", (event) => {
+                        if (event.target === lightbox) closeLightbox();
+                    });
+                }
+
+                document.addEventListener("keydown", (event) => {
+                    if (!lightbox || lightbox.hidden) return;
+                    if (event.key === "Escape") closeLightbox();
+                    if (event.key === "ArrowLeft") stepImage(-1);
+                    if (event.key === "ArrowRight") stepImage(1);
+                });
+
                 const root = document.querySelector("[data-webmentions]");
                 if (!root) return;
 

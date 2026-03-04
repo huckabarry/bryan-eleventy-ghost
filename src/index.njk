@@ -24,12 +24,21 @@ permalink: /index.html
       {% set streamImage = post | firstImage %}
       <article class="home-stream-item h-entry">
         {% if streamImage %}
-          <a class="home-stream-media u-url" href="{{ post | localPostUrl }}">
+          <a class="home-stream-media home-stream-media-listening u-url" href="{{ post | localPostUrl }}">
             <img class="home-stream-image home-stream-image-listening u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
           </a>
         {% endif %}
         <div class="home-stream-body e-content">
           <div class="content-body">{{ post.html | safe }}</div>
+          {% if post.tags %}
+          <div class="home-stream-tags">
+            {% for tag in post.tags %}
+              {% if tag.visibility != "internal" and tag.slug != "now" %}
+              <a class="tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
+              {% endif %}
+            {% endfor %}
+          </div>
+          {% endif %}
           <span class="site-visually-hidden p-author h-card">
             <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
           </span>
@@ -84,6 +93,15 @@ permalink: /index.html
             <p>{{ post.excerpt }}</p>
           {% else %}
             <p><a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a></p>
+          {% endif %}
+          {% if post.tags %}
+          <div class="home-stream-tags">
+            {% for tag in post.tags %}
+              {% if tag.visibility != "internal" and tag.slug != "now" %}
+              <a class="tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
+              {% endif %}
+            {% endfor %}
+          </div>
           {% endif %}
           <span class="site-visually-hidden p-author h-card">
             <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
