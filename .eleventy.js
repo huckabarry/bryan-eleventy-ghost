@@ -51,7 +51,7 @@ module.exports = function (eleventyConfig) {
     return await ghostApi.posts.browse({
       include: "tags,authors",
       limit: 100, // Ghost 6 max limit per request
-      filter: "tag:now",
+      filter: "tag:Now",
     });
   });
 
@@ -59,7 +59,7 @@ module.exports = function (eleventyConfig) {
     const posts = await ghostApi.posts.browse({
       include: "tags,authors",
       limit: 100, // Update from "all" to 100
-      filter: "tag:now",
+      filter: "tag:Now",
     });
 
     const tags = {};
