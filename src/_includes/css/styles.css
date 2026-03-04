@@ -271,14 +271,6 @@ h6 {
   margin: 0;
 }
 
-.home-stream-footer {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.55rem;
-  margin-top: 1rem;
-}
-
 .home-stream-tags,
 .post-tag-list {
   display: flex;
@@ -287,7 +279,7 @@ h6 {
 }
 
 .home-stream-tags {
-  margin: 0;
+  margin: 0.8rem 0 0;
   padding-left: 0;
 }
 

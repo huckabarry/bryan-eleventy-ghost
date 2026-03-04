@@ -29,26 +29,24 @@ permalink: /index.html
           </a>
         {% endif %}
         <div class="home-stream-body e-content">
+          <p class="home-stream-meta">
+            <a class="u-url" href="{{ post | localPostUrl }}">
+              <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+            </a>
+          </p>
           <div class="content-body">{{ post.html | safe }}</div>
           <span class="site-visually-hidden p-author h-card">
             <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
           </span>
-          <div class="home-stream-footer">
-            <p class="home-stream-meta">
-              <a class="u-url" href="{{ post | localPostUrl }}">
-                <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
-              </a>
-            </p>
-            {% if post.tags %}
-            <div class="home-stream-tags">
-              {% for tag in post.tags %}
-                {% if tag.visibility != "internal" and tag.slug != "now" %}
-                <a class="tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
-                {% endif %}
-              {% endfor %}
-            </div>
-            {% endif %}
+          {% if post.tags %}
+          <div class="home-stream-tags">
+            {% for tag in post.tags %}
+              {% if tag.visibility != "internal" and tag.slug != "now" %}
+              <a class="tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
+              {% endif %}
+            {% endfor %}
           </div>
+          {% endif %}
         </div>
       </article>
     {% else %}
@@ -91,26 +89,24 @@ permalink: /index.html
           </a>
         {% endif %}
         <div class="home-stream-body e-content">
+          <p class="home-stream-meta">
+            <a class="u-url" href="{{ post | localPostUrl }}">
+              <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+            </a>
+          </p>
           <div class="content-body">{{ post.html | stripFirstImage | safe }}</div>
           <span class="site-visually-hidden p-author h-card">
             <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
           </span>
-          <div class="home-stream-footer">
-            <p class="home-stream-meta">
-              <a class="u-url" href="{{ post | localPostUrl }}">
-                <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
-              </a>
-            </p>
-            {% if post.tags %}
-            <div class="home-stream-tags">
-              {% for tag in post.tags %}
-                {% if tag.visibility != "internal" and tag.slug != "now" %}
-                <a class="tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
-                {% endif %}
-              {% endfor %}
-            </div>
-            {% endif %}
+          {% if post.tags %}
+          <div class="home-stream-tags">
+            {% for tag in post.tags %}
+              {% if tag.visibility != "internal" and tag.slug != "now" %}
+              <a class="tag-pill p-category" href="/tags/{{ tag.slug }}/">{{ tag.name }}</a>
+              {% endif %}
+            {% endfor %}
           </div>
+          {% endif %}
         </div>
       </article>
     {% else %}
