@@ -1,10 +1,10 @@
-const GhostContentAPI = require("@tryghost/content-api");
+const GhostAdminAPI = require("@tryghost/admin-api");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const rssPlugin = require("@11ty/eleventy-plugin-rss");
 
-const ghostApi = new GhostContentAPI({
-  url: process.env.GHOST_URL,
-  key: process.env.GHOST_CONTENT_API_KEY,
+const ghostApi = new GhostAdminAPI({
+  url: process.env.GHOST_ADMIN_URL || process.env.GHOST_URL,
+  key: process.env.GHOST_ADMIN_KEY,
   version: "v5.71"
 });
 
@@ -226,9 +226,10 @@ function getCollectionIndex(posts, currentPost) {
 async function fetchNowPosts() {
   if (!nowPostsPromise) {
     nowPostsPromise = ghostApi.posts.browse({
+      formats: "html",
       include: "tags,authors",
       limit: 100,
-      filter: `tag:[${INCLUDED_SITE_TAGS.join(",")}]`
+      filter: `status:published+tag:[${INCLUDED_SITE_TAGS.join(",")}]`
     });
   }
 

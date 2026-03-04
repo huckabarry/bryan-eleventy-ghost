@@ -30,7 +30,8 @@ Some legacy tags are still tolerated during migration:
 ## Required environment variables
 
 - `GHOST_URL`
-- `GHOST_CONTENT_API_KEY`
+- `GHOST_ADMIN_URL`
+- `GHOST_ADMIN_KEY`
 - `SITE_URL`
 
 ## Install
