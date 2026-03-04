@@ -3,4 +3,4 @@ permalink: feed.json
 eleventyExcludeFromCollections: true
 ---
 {%- from "feed-helpers.njk" import jsonFeed -%}
-{{- jsonFeed(site.title, site.description, site.url + page.url, site.url, collections.posts) -}}
+{{- jsonFeed(site.title, site.description, site.url + page.url, site.url, collections.posts, site.title) -}}

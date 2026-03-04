@@ -50,7 +50,7 @@
 </rss>
 {%- endmacro %}
 
-{% macro jsonFeed(title, description, feedUrl, siteUrl, posts) -%}
+{% macro jsonFeed(title, description, feedUrl, siteUrl, posts, authorName) -%}
 {
   "version": "https://jsonfeed.org/version/1.1",
   "title": {{ title | dump | safe }},
@@ -59,7 +59,7 @@
   "description": {{ description | dump | safe }},
   "authors": [
     {
-      "name": {{ site.title | dump | safe }},
+      "name": {{ authorName | dump | safe }},
       "url": {{ siteUrl | dump | safe }}
     }
   ],

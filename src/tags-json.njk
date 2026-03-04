@@ -7,4 +7,4 @@ permalink: "/tags/{{ tagPage.slug }}/feed.json"
 eleventyExcludeFromCollections: true
 ---
 {%- from "feed-helpers.njk" import jsonFeed -%}
-{{- jsonFeed(tagPage.name + " – " + site.title, tagPage.description or ("Posts tagged " + tagPage.name), site.url + page.url, site.url, tagPage.posts) -}}
+{{- jsonFeed(tagPage.name + " – " + site.title, tagPage.description or ("Posts tagged " + tagPage.name), site.url + page.url, site.url, tagPage.posts, site.title) -}}
