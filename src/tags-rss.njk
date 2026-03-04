@@ -1,0 +1,10 @@
+---
+pagination:
+  data: collections.tagPages
+  size: 1
+  alias: tagPage
+permalink: "/tags/{{ tagPage.slug }}/rss.xml"
+eleventyExcludeFromCollections: true
+---
+{% from "feed-helpers.njk" import rssFeed %}
+{{ rssFeed(tagPage.name + " – " + site.title, tagPage.description or ("Posts tagged " + tagPage.name), site.url + page.url, site.url, tagPage.posts, site.url + page.url) }}

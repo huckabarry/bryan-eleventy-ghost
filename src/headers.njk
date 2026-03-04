@@ -3,7 +3,22 @@ permalink: '_headers'
 ---
 
 /feed.xml
+  content-type: application/atom+xml; charset=UTF-8
+
+/rss.xml
   content-type: application/rss+xml; charset=UTF-8
+
+/feed.json
+  content-type: application/feed+json; charset=UTF-8
+
+/tags/*/feed.xml
+  content-type: application/atom+xml; charset=UTF-8
+
+/tags/*/rss.xml
+  content-type: application/rss+xml; charset=UTF-8
+
+/tags/*/feed.json
+  content-type: application/feed+json; charset=UTF-8
 
 /.well-known/atproto-did
   content-type: text/plain; charset=UTF-8

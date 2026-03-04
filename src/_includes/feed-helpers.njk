@@ -1,0 +1,81 @@
+{% macro atomFeed(title, description, feedUrl, siteUrl, posts, pageUrl) -%}
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>{{ title }}</title>
+  <subtitle>{{ description }}</subtitle>
+  <link href="{{ feedUrl }}" rel="self"/>
+  <link href="{{ siteUrl }}"/>
+  {%- for post in posts.slice(0,1) | sort(true, false, 'updated_at') %}
+  <updated>{{ post.updated_at | dateToRfc3339 }}</updated>
+  {%- endfor %}
+  <id>{{ feedUrl }}</id>
+  <author>
+    <name>{{ site.title }}</name>
+  </author>
+  {%- for post in posts %}
+  <entry>
+    <title>{{ post | feedTitle }}</title>
+    <link href="{{ siteUrl + (post | localPostUrl) }}"/>
+    <updated>{{ post.updated_at | dateToRfc3339 }}</updated>
+    <id>{{ siteUrl + (post | localPostUrl) }}</id>
+    <content type="html">{{ post.html | htmlToAbsoluteUrls(pageUrl) }}</content>
+  </entry>
+  {%- endfor %}
+</feed>
+{%- endmacro %}
+
+{% macro rssFeed(title, description, feedUrl, siteUrl, posts, pageUrl) -%}
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>{{ title }}</title>
+    <link>{{ siteUrl }}/</link>
+    <description>{{ description }}</description>
+    {%- for post in posts.slice(0,1) | sort(true, false, 'updated_at') %}
+    <lastBuildDate>{{ post.updated_at | dateToRfc822 }}</lastBuildDate>
+    {%- endfor %}
+    <atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="{{ feedUrl }}" rel="self" type="application/rss+xml" />
+    {%- for post in posts %}
+    <item>
+      {%- if post | feedTitle %}
+      <title>{{ post | feedTitle }}</title>
+      {%- endif %}
+      <link>{{ siteUrl + (post | localPostUrl) }}</link>
+      <guid>{{ siteUrl + (post | localPostUrl) }}</guid>
+      <pubDate>{{ post.published_at | dateToRfc822 }}</pubDate>
+      <description><![CDATA[{{ post.html | htmlToAbsoluteUrls(pageUrl) }}]]></description>
+    </item>
+    {%- endfor %}
+  </channel>
+</rss>
+{%- endmacro %}
+
+{% macro jsonFeed(title, description, feedUrl, siteUrl, posts) -%}
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": {{ title | dump | safe }},
+  "home_page_url": {{ (siteUrl + "/") | dump | safe }},
+  "feed_url": {{ feedUrl | dump | safe }},
+  "description": {{ description | dump | safe }},
+  "authors": [
+    {
+      "name": {{ site.title | dump | safe }},
+      "url": {{ siteUrl | dump | safe }}
+    }
+  ],
+  "items": [
+    {%- for post in posts %}
+    {
+      "id": {{ (siteUrl + (post | localPostUrl)) | dump | safe }},
+      "url": {{ (siteUrl + (post | localPostUrl)) | dump | safe }},
+      {%- if post | feedTitle %}
+      "title": {{ (post | feedTitle) | dump | safe }},
+      {%- endif %}
+      "content_html": {{ post.html | dump | safe }},
+      "date_published": {{ post.published_at | dump | safe }},
+      "date_modified": {{ post.updated_at | dump | safe }}
+    }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}
+{%- endmacro %}

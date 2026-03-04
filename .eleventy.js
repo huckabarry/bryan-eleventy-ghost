@@ -48,6 +48,22 @@ function extractFirstImage(post) {
   return null;
 }
 
+function postHasTag(post, slug) {
+  return (post.tags || []).some((tag) => tag && tag.slug === slug);
+}
+
+function getStatusLabel(post) {
+  if (postHasTag(post, "status")) {
+    return "";
+  }
+
+  return post.title || "";
+}
+
+function getLocalPostUrl(post) {
+  return `/${post.slug || ""}/`;
+}
+
 async function fetchNowPosts() {
   if (!nowPostsPromise) {
     nowPostsPromise = ghostApi.posts.browse({
@@ -105,6 +121,30 @@ module.exports = function (eleventyConfig) {
     const text = String(html || "").replace(/<[^>]*>/g, " ");
     const words = text.trim().split(/\s+/).filter(Boolean).length;
     return Math.max(1, Math.ceil(words / 200));
+  });
+
+  eleventyConfig.addFilter("withTagSlug", (posts, slug) => {
+    return (posts || []).filter((post) => postHasTag(post, slug));
+  });
+
+  eleventyConfig.addFilter("withoutTagSlug", (posts, slug) => {
+    return (posts || []).filter((post) => !postHasTag(post, slug));
+  });
+
+  eleventyConfig.addFilter("hasTagSlug", (post, slug) => {
+    return postHasTag(post, slug);
+  });
+
+  eleventyConfig.addFilter("feedTitle", (post) => {
+    return getStatusLabel(post);
+  });
+
+  eleventyConfig.addFilter("localPostUrl", (post) => {
+    return getLocalPostUrl(post);
+  });
+
+  eleventyConfig.addFilter("firstImage", (post) => {
+    return extractFirstImage(post);
   });
 
   eleventyConfig.addCollection("posts", async () => {

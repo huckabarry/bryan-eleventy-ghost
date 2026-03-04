@@ -193,6 +193,34 @@ h6 {
   width: 100%;
 }
 
+.home-stream {
+  width: 100%;
+}
+
+.home-stream-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.home-stream-media {
+  display: block;
+  text-decoration: none;
+}
+
+.home-stream-image {
+  width: 100%;
+}
+
+.home-stream-body p:last-child {
+  margin-bottom: 0;
+}
+
+.home-stream-meta {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
 .home-title,
 .content-title {
   margin: 0;
@@ -222,6 +250,10 @@ h6 {
   font-weight: 700;
   font-style: italic;
   letter-spacing: -0.02em;
+}
+
+.listening-note {
+  margin-top: 0.9rem;
 }
 
 .post-feed {

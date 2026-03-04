@@ -22,9 +22,11 @@
                     {% endfor %}
                 </div>
             {% endif %}
+            {% if not (post | hasTagSlug("status")) %}
             <h1 class="content-title">
                 <a class="p-name u-url" href="{{ page.url }}">{{ title }}</a>
             </h1>
+            {% endif %}
             {% if post.excerpt %}
                 <p class="post-dek p-summary">{{ post.excerpt }}</p>
             {% endif %}

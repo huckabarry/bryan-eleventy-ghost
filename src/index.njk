@@ -4,6 +4,10 @@ eleventyExcludeFromCollections: true
 permalink: /index.html
 ---
 
+{% set statusPosts = collections.posts | withTagSlug("status") | withoutTagSlug("now-playing") %}
+{% set listeningPosts = collections.posts | withTagSlug("now-playing") %}
+{% set latestPosts = collections.posts | withoutTagSlug("status") | withoutTagSlug("now-playing") %}
+
 <section class="home-intro">
   {% if site.description %}
     <p class="home-description">{{ site.description }}</p>
@@ -11,9 +15,39 @@ permalink: /index.html
 </section>
 
 <section class="section-block">
+  <h2 class="section-title">Status</h2>
+  <div class="home-stream">
+    {% for post in statusPosts | slice(0, 1) %}
+      {% set streamImage = post | firstImage %}
+      <article class="home-stream-item h-entry">
+        {% if streamImage %}
+          <a class="home-stream-media u-url" href="/{{ post.slug }}/">
+            <img class="home-stream-image u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
+          </a>
+        {% endif %}
+        <div class="home-stream-body e-content">
+          {% if post.excerpt %}
+            <p>{{ post.excerpt }}</p>
+          {% else %}
+            <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ post.html | striptags | truncate(220, true, "…") }}</a></p>
+          {% endif %}
+          <p class="home-stream-meta">
+            <a class="u-url" href="/{{ post.slug }}/">
+              <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+            </a>
+          </p>
+        </div>
+      </article>
+    {% else %}
+      <p>No status posts are available yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section-block">
   <h2 class="section-title">Latest Posts</h2>
   <ul class="site-list-of-posts h-feed">
-    {% for post in collections.posts.slice(0, 10) %}
+    {% for post in latestPosts %}
       <li class="site-list-of-posts-item h-entry">
         <time class="site-list-date dt-published" datetime="{{ post.published_at | htmlDateString }}">
           {{ post.published_at | dateDisplay }}
@@ -29,4 +63,37 @@ permalink: /index.html
       <p>No `#now` posts are available yet.</p>
     {% endfor %}
   </ul>
+</section>
+
+<section class="section-block">
+  <h2 class="section-title">Listening</h2>
+  <div class="home-stream">
+    {% for post in listeningPosts | slice(0, 1) %}
+      {% set streamImage = post | firstImage %}
+      <article class="home-stream-item h-entry">
+        {% if streamImage %}
+          <a class="home-stream-media u-url" href="/{{ post.slug }}/">
+            <img class="home-stream-image u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
+          </a>
+        {% endif %}
+        <div class="home-stream-body e-content">
+          {% if post.excerpt %}
+            <p>{{ post.excerpt }}</p>
+          {% else %}
+            <p><a class="p-name u-url" href="/{{ post.slug }}/">{{ post.title }}</a></p>
+          {% endif %}
+          <p class="home-stream-meta">
+            <a class="u-url" href="/{{ post.slug }}/">
+              <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+            </a>
+          </p>
+        </div>
+      </article>
+    {% else %}
+      <p>No listening posts are available yet.</p>
+    {% endfor %}
+  </div>
+  <p class="listening-note">
+    See past entries <a href="/tags/now-playing/">here</a> or follow along on <a href="{{ site.albumWhaleUrl }}">Album Whale</a>.
+  </p>
 </section>

@@ -41,6 +41,7 @@ module.exports = async function() {
     endpoint: `https://webmention.io/${data.domain}/webmention`,
     api: "https://webmention.io/api/mentions.jf2"
   };
+  data.albumWhaleUrl = "https://albumwhale.com/bryan/listening-now";
   data.navigation = [
     {
       label: "Home",
