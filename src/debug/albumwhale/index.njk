@@ -7,9 +7,20 @@ eleventyExcludeFromCollections: true
 
 <h1>Album Whale Debug</h1>
 
+<h2>Type</h2>
 <pre style="white-space: pre-wrap;">{{ albumwhale | safe }}</pre>
 
-<h2>Keys</h2>
+<h2>Sanity checks</h2>
+<ul>
+  <li>Has albumwhale? {% if albumwhale %}yes{% else %}no{% endif %}</li>
+  <li>Has entries? {% if albumwhale and albumwhale.items and albumwhale.items.length %}yes ({{ albumwhale.items.length }}){% else %}no{% endif %}</li>
+</ul>
+
+<h2>First entry (if any)</h2>
 <pre style="white-space: pre-wrap;">
-{{ albumwhale | keys | safe }}
+{% if albumwhale and albumwhale.items and albumwhale.items[0] %}
+{{ albumwhale.items[0] | safe }}
+{% else %}
+(no first item)
+{% endif %}
 </pre>
