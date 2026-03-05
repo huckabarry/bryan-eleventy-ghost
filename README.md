@@ -41,6 +41,7 @@ Optional:
 
 - `GITHUB_BRANCH` (default: `main`)
 - `MICROPUB_STATUS_DIR` (default: `src/status`)
+- `MICROPUB_MEDIA_DIR` (default: `src/assets/status-images`)
 - `SITE_LOGO` (override local avatar path)
 
 ## Install
@@ -66,6 +67,7 @@ yarn build
 This site includes a Netlify Micropub endpoint at:
 
 - `/micropub`
+- `/micropub/media`
 
 Current behavior:
 
@@ -73,11 +75,11 @@ Current behavior:
 - Writes new markdown files into `src/status/` via GitHub API commits.
 - Returns `201 Created` with a `Location` header to the new permalink.
 - Supports `q=config` and `q=syndicate-to`.
+- Supports media upload via multipart `file` field at `/micropub/media` and returns `201` with media `Location`.
 
 Current limitation:
 
-- `multipart/form-data` media upload is not supported yet.
-- For photos, provide URL-based photos (`photo` property) so they can be embedded as Markdown image links.
+- Media endpoint currently supports one uploaded file per request (`file` field).
 
 ## Note
 

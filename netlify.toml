@@ -10,5 +10,10 @@
   to = "/.netlify/functions/micropub"
   status = 200
 
+[[redirects]]
+  from = "/micropub/media"
+  to = "/.netlify/functions/micropub-media"
+  status = 200
+
 [template]
   incoming-hooks = ["Ghost"]

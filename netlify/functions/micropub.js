@@ -302,7 +302,8 @@ exports.handler = async function (event) {
     if (q === "config" || !q) {
       return json(200, {
         "post-types": [{ type: "h-entry", name: "Post" }],
-        destination: endpoint
+        destination: endpoint,
+        "media-endpoint": `${getSiteUrl().replace(/\/+$/, "")}/micropub/media`
       });
     }
 
