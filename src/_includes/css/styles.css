@@ -1215,10 +1215,7 @@ body.photo-lightbox-open {
 }
 
 .kg-bookmark-metadata {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex-wrap: wrap;
+  display: none;
 }
 
 .kg-bookmark-icon {

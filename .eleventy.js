@@ -48,13 +48,22 @@ function extractAllImages(post) {
   const html = String(post && post.html ? post.html : "");
   const cleanedHtml = html
     .replace(/<figure[^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][\s\S]*?<\/figure>/gi, "")
-    .replace(/<div[^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][\s\S]*?<\/div>/gi, "");
+    .replace(/<div[^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][\s\S]*?<\/div>/gi, "")
+    .replace(/<figure[^>]*class=["'][^"']*kg-embed-card[^"']*["'][\s\S]*?<\/figure>/gi, "")
+    .replace(/<div[^>]*class=["'][^"']*kg-embed-card[^"']*["'][\s\S]*?<\/div>/gi, "");
   const matches = [];
   const seen = new Set();
   const imagePattern = /<img(?![^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*>/gi;
   let match;
 
   while ((match = imagePattern.exec(cleanedHtml))) {
+    const fragment = match[0];
+    const classMatch = fragment.match(/\bclass=["']([^"']+)["']/i);
+    const classNames = classMatch ? classMatch[1] : "";
+    if (/(^|\s)(avatar|author|profile|icon)(\s|$)/i.test(classNames)) {
+      continue;
+    }
+
     const src = match[1];
 
     if (!isUsablePhotoUrl(src) || seen.has(src)) {
@@ -64,7 +73,7 @@ function extractAllImages(post) {
     seen.add(src);
     matches.push({
       src,
-      alt: getImageAlt(match[0], post.title || "")
+      alt: getImageAlt(fragment, post.title || "")
     });
   }
 
