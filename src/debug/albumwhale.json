@@ -1,5 +1,0 @@
----
-permalink: /debug/albumwhale.json
-eleventyExcludeFromCollections: true
----
-{{ albumwhale | dump | safe }}
