@@ -111,6 +111,40 @@ function firstWords(value, count = 8) {
     .join(" ");
 }
 
+function decodeHtmlEntities(value) {
+  return String(value || "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, "\"")
+    .replace(/&#39;/g, "'");
+}
+
+function normalizeContentText(value) {
+  const raw = String(value || "").trim();
+  if (!raw) {
+    return "";
+  }
+
+  const looksLikeHtml = /<\/?[a-z][\s\S]*>/i.test(raw);
+  if (!looksLikeHtml) {
+    return raw;
+  }
+
+  const normalized = raw
+    .replace(/\r\n/g, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>\s*<p[^>]*>/gi, "\n\n")
+    .replace(/^<p[^>]*>/i, "")
+    .replace(/<\/p>$/i, "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  return decodeHtmlEntities(normalized);
+}
+
 function normalizeDate(value) {
   const parsed = value ? new Date(value) : new Date();
   if (Number.isNaN(parsed.getTime())) {
@@ -237,9 +271,10 @@ function parseMicropubRequest(event) {
 function buildMarkdownPost(entry) {
   const publishedAt = normalizeDate(entry.published);
   const tags = normalizeTags(entry.tags);
-  const baseSlug = slugify(entry.slug || firstWords(entry.name || entry.content || "status", 8)) || "status";
+  const normalizedContent = normalizeContentText(entry.content);
+  const baseSlug = slugify(entry.slug || firstWords(entry.name || normalizedContent || "status", 8)) || "status";
   const title = String(entry.name || "").trim();
-  const textBody = String(entry.content || "").trim();
+  const textBody = normalizedContent;
   const imageLines = (entry.photos || []).map((url) => `![status image](${url})`);
   const body = [textBody, ...imageLines].filter(Boolean).join("\n\n").trim();
   const finalBody = body || "Status update.";

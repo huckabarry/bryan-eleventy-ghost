@@ -449,14 +449,50 @@ function mergePostsByLocalSlug(posts) {
       return;
     }
 
-    const existingTime = new Date(existing && existing.published_at ? existing.published_at : 0).getTime();
-    const candidateTime = new Date(post && post.published_at ? post.published_at : 0).getTime();
-    if (candidateTime >= existingTime) {
+    if (isPostNewer(post, existing)) {
       map.set(key, post);
     }
   });
 
   return Array.from(map.values());
+}
+
+function getPostPublishedTime(post) {
+  return new Date(post && post.published_at ? post.published_at : 0).getTime();
+}
+
+function getPostUpdatedTime(post) {
+  return new Date(post && post.updated_at ? post.updated_at : 0).getTime();
+}
+
+function comparePostsDesc(a, b) {
+  const publishedDiff = getPostPublishedTime(b) - getPostPublishedTime(a);
+  if (publishedDiff !== 0) {
+    return publishedDiff;
+  }
+
+  const updatedDiff = getPostUpdatedTime(b) - getPostUpdatedTime(a);
+  if (updatedDiff !== 0) {
+    return updatedDiff;
+  }
+
+  const aSlug = getLocalPostSlug(a);
+  const bSlug = getLocalPostSlug(b);
+  return bSlug.localeCompare(aSlug);
+}
+
+function isPostNewer(candidate, existing) {
+  const publishedDiff = getPostPublishedTime(candidate) - getPostPublishedTime(existing);
+  if (publishedDiff !== 0) {
+    return publishedDiff > 0;
+  }
+
+  const updatedDiff = getPostUpdatedTime(candidate) - getPostUpdatedTime(existing);
+  if (updatedDiff !== 0) {
+    return updatedDiff > 0;
+  }
+
+  return getLocalPostSlug(candidate).localeCompare(getLocalPostSlug(existing)) > 0;
 }
 
 async function fetchNowPosts() {
@@ -470,11 +506,7 @@ async function fetchNowPosts() {
   }
 
   const posts = await nowPostsPromise;
-  const sortedPosts = [...posts].sort((a, b) => {
-    const aTime = new Date(a && a.published_at ? a.published_at : 0).getTime();
-    const bTime = new Date(b && b.published_at ? b.published_at : 0).getTime();
-    return bTime - aTime;
-  });
+  const sortedPosts = [...posts].sort(comparePostsDesc);
 
   console.log(
     `[afterword] fetched ${sortedPosts.length} Ghost posts for filter ${INCLUDED_SITE_TAGS
@@ -530,11 +562,7 @@ function getLocalStatusPosts(collectionApi) {
 async function getMergedPosts(collectionApi) {
   const ghostPosts = await fetchNowPosts();
   const localStatusPosts = getLocalStatusPosts(collectionApi);
-  const mergedPosts = mergePostsByLocalSlug([...ghostPosts, ...localStatusPosts]).sort((a, b) => {
-    const aTime = new Date(a && a.published_at ? a.published_at : 0).getTime();
-    const bTime = new Date(b && b.published_at ? b.published_at : 0).getTime();
-    return bTime - aTime;
-  });
+  const mergedPosts = mergePostsByLocalSlug([...ghostPosts, ...localStatusPosts]).sort(comparePostsDesc);
 
   if (localStatusPosts.length > 0) {
     console.log(
@@ -629,11 +657,7 @@ module.exports = function (eleventyConfig) {
   });
 
   eleventyConfig.addFilter("byPublishedDateDesc", (posts) => {
-    return [...(posts || [])].sort((a, b) => {
-      const aTime = new Date(a && a.published_at ? a.published_at : 0).getTime();
-      const bTime = new Date(b && b.published_at ? b.published_at : 0).getTime();
-      return bTime - aTime;
-    });
+    return [...(posts || [])].sort(comparePostsDesc);
   });
 
   eleventyConfig.addFilter("hasTagSlug", (post, slug) => {
