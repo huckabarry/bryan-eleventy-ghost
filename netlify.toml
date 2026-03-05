@@ -5,5 +5,10 @@
 [functions]
   directory = "netlify/functions"
 
+[[redirects]]
+  from = "/micropub"
+  to = "/.netlify/functions/micropub"
+  status = 200
+
 [template]
   incoming-hooks = ["Ghost"]

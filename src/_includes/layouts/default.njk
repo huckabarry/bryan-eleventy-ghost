@@ -17,6 +17,7 @@
     {% for profile in site.relMe or [] %}
     <link rel="me" href="{{ profile }}">
     {% endfor %}
+    <link rel="micropub" href="{{ site.url }}/micropub">
     <link rel="webmention" href="{{ site.webmentions.endpoint }}">
     <link rel="pingback" href="{{ site.webmentions.pingback }}">
     <link rel="stylesheet" href="/assets/fontawesome/css/all.min.css">

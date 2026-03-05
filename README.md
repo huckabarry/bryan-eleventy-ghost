@@ -33,6 +33,15 @@ Some legacy tags are still tolerated during migration:
 - `GHOST_ADMIN_URL`
 - `GHOST_ADMIN_KEY`
 - `SITE_URL`
+- `MICROPUB_TOKEN` (shared bearer token for Micropub clients)
+- `GITHUB_TOKEN` (GitHub token with repo write access)
+- `GITHUB_REPO` (`owner/repo`, used by Micropub function to commit status markdown)
+
+Optional:
+
+- `GITHUB_BRANCH` (default: `main`)
+- `MICROPUB_STATUS_DIR` (default: `src/status`)
+- `SITE_LOGO` (override local avatar path)
 
 ## Install
 
@@ -51,6 +60,24 @@ yarn start
 ```bash
 yarn build
 ```
+
+## Micropub endpoint
+
+This site includes a Netlify Micropub endpoint at:
+
+- `/micropub`
+
+Current behavior:
+
+- Supports create (`h-entry`) posts.
+- Writes new markdown files into `src/status/` via GitHub API commits.
+- Returns `201 Created` with a `Location` header to the new permalink.
+- Supports `q=config` and `q=syndicate-to`.
+
+Current limitation:
+
+- `multipart/form-data` media upload is not supported yet.
+- For photos, provide URL-based photos (`photo` property) so they can be embedded as Markdown image links.
 
 ## Note
 
