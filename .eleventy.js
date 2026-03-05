@@ -113,10 +113,14 @@ function stripFirstImage(html) {
 function stripBookmarkCardImages(html) {
   const source = String(html || "");
 
-  return source.replace(
-    /<(figure|div)([^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][^>]*)>[\s\S]*?<\/\1>/gi,
-    (block) => block.replace(/<img\b[^>]*>/gi, "")
-  );
+  return source
+    .replace(
+      /<(figure|div)([^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][^>]*)>[\s\S]*?<\/\1>/gi,
+      (block) => block.replace(/<img\b[^>]*>/gi, "")
+    )
+    .replace(/<div[^>]*class=["'][^"']*kg-bookmark-thumbnail[^"']*["'][^>]*>[\s\S]*?<\/div>/gi, "")
+    .replace(/<span[^>]*class=["'][^"']*kg-bookmark-icon[^"']*["'][^>]*>[\s\S]*?<\/span>/gi, "")
+    .replace(/<img[^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'][^>]*>/gi, "");
 }
 
 function postHasTag(post, slug) {
