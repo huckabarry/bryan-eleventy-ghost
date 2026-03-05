@@ -33,7 +33,7 @@ module.exports = async function () {
     title: "Afterword",
     description: homeIntro,
     homeIntro,
-    logo: "https://cdn.u.pika.page/2S770Bf-Ta8Bf_SF3tDUa-2fIeZocDjl3ewqMmBvJSk/fn:IMG_8710/plain/s3://pika-production/aj4090bxube83j7rhj151mum2ssn",
+    logo: process.env.SITE_LOGO || "/assets/site/avatar.jpg",
     url: normalizedSiteUrl
   };
 

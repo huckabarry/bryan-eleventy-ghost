@@ -9,4 +9,4 @@ author: "Bryan Robb"
 
 Local markdown status post with an image test.
 
-![Kid-made flamingo art in a window](/assets/status-images/marzo-flamingo.jpg)
+![Kid-made flamingo art in a window](/assets/status-images/IMG_3027.jpeg)
