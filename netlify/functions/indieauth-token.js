@@ -12,6 +12,35 @@ function json(statusCode, payload) {
   };
 }
 
+function formEncoded(statusCode, payload) {
+  const body = new URLSearchParams(
+    Object.entries(payload).reduce((acc, [key, value]) => {
+      acc[key] = value == null ? "" : String(value);
+      return acc;
+    }, {})
+  ).toString();
+
+  return {
+    statusCode,
+    headers: {
+      "content-type": "application/x-www-form-urlencoded; charset=utf-8"
+    },
+    body
+  };
+}
+
+function wantsJson(event) {
+  const accept = String(event.headers?.accept || event.headers?.Accept || "").toLowerCase();
+  if (!accept) {
+    return false;
+  }
+  return accept.includes("application/json") || accept.includes("application/jrd+json");
+}
+
+function tokenResponse(event, payload) {
+  return wantsJson(event) ? json(200, payload) : formEncoded(200, payload);
+}
+
 function b64urlDecode(input) {
   const normalized = String(input || "").replace(/-/g, "+").replace(/_/g, "/");
   const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
@@ -129,7 +158,7 @@ exports.handler = async function (event) {
     };
     const accessToken = signPayload(accessPayload, secret);
 
-    return json(200, {
+    return tokenResponse(event, {
       access_token: accessToken,
       token_type: "Bearer",
       scope: accessPayload.scope,
@@ -139,7 +168,7 @@ exports.handler = async function (event) {
 
   if (requestedToken) {
     if (staticMicropubToken && requestedToken === staticMicropubToken) {
-      return json(200, {
+      return tokenResponse(event, {
         me: getSiteUrl(),
         scope: "create",
         client_id: getSiteUrl()
@@ -151,7 +180,7 @@ exports.handler = async function (event) {
       return json(401, { error: "Invalid token" });
     }
 
-    return json(200, {
+    return tokenResponse(event, {
       me: payload.me || getSiteUrl(),
       scope: payload.scope || "create",
       client_id: payload.client_id || ""

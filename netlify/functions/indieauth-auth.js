@@ -171,6 +171,8 @@ exports.handler = async function (event) {
   const code = signCode(codePayload, secret);
   const redirect = new URL(codePayload.redirect_uri);
   redirect.searchParams.set("code", code);
+  redirect.searchParams.set("me", me);
+  redirect.searchParams.set("scope", codePayload.scope || "create");
   if (form.state) {
     redirect.searchParams.set("state", String(form.state));
   }
