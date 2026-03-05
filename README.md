@@ -34,6 +34,8 @@ Some legacy tags are still tolerated during migration:
 - `GHOST_ADMIN_KEY`
 - `SITE_URL`
 - `MICROPUB_TOKEN` (shared bearer token for Micropub clients)
+- `INDIEAUTH_SECRET` (HMAC secret for IndieAuth auth codes and access tokens)
+- `INDIEAUTH_PASSWORD` (password you enter on the `/auth` approval screen)
 - `GITHUB_TOKEN` (GitHub token with repo write access)
 - `GITHUB_REPO` (`owner/repo`, used by Micropub function to commit status markdown)
 
@@ -68,6 +70,8 @@ This site includes a Netlify Micropub endpoint at:
 
 - `/micropub`
 - `/micropub/media`
+- IndieAuth authorization endpoint: `/auth`
+- IndieAuth token endpoint: `/token`
 
 Current behavior:
 
@@ -76,6 +80,7 @@ Current behavior:
 - Returns `201 Created` with a `Location` header to the new permalink.
 - Supports `q=config` and `q=syndicate-to`.
 - Supports media upload via multipart `file` field at `/micropub/media` and returns `201` with media `Location`.
+- Supports IndieAuth code flow for mobile Micropub apps.
 
 Current limitation:
 

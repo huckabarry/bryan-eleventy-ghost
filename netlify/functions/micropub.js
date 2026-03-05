@@ -1,5 +1,7 @@
 "use strict";
 
+const crypto = require("crypto");
+
 const DEFAULT_STATUS_DIR = "src/status";
 const DEFAULT_AUTHOR = "Bryan Robb";
 
@@ -28,18 +30,63 @@ function getBearerToken(event) {
   return match ? match[1].trim() : "";
 }
 
+function b64urlDecode(input) {
+  const normalized = String(input || "").replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
+  return Buffer.from(padded, "base64").toString("utf8");
+}
+
+function verifySignedPayload(token, secret) {
+  const [encodedPayload, sig] = String(token || "").split(".");
+  if (!encodedPayload || !sig || !secret) {
+    return null;
+  }
+
+  const expectedSig = crypto
+    .createHmac("sha256", secret)
+    .update(encodedPayload)
+    .digest("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+
+  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(b64urlDecode(encodedPayload));
+    if (payload.exp && Math.floor(Date.now() / 1000) > Number(payload.exp)) {
+      return null;
+    }
+    return payload;
+  } catch (error) {
+    return null;
+  }
+}
+
 function requireAuth(event) {
   const expected = String(process.env.MICROPUB_TOKEN || "").trim();
-  if (!expected) {
+  const secret = String(process.env.INDIEAUTH_SECRET || process.env.MICROPUB_TOKEN || "").trim();
+  if (!expected && !secret) {
     return { ok: false, statusCode: 500, error: "MICROPUB_TOKEN is not configured" };
   }
 
   const provided = getBearerToken(event);
-  if (!provided || provided !== expected) {
+  if (!provided) {
     return { ok: false, statusCode: 401, error: "Unauthorized" };
   }
 
-  return { ok: true };
+  if (expected && provided === expected) {
+    return { ok: true };
+  }
+
+  const payload = verifySignedPayload(provided, secret);
+  if (payload && payload.t === "access") {
+    return { ok: true };
+  }
+
+  return { ok: false, statusCode: 401, error: "Unauthorized" };
 }
 
 function slugify(value) {

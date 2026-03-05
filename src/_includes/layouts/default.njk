@@ -17,6 +17,8 @@
     {% for profile in site.relMe or [] %}
     <link rel="me" href="{{ profile }}">
     {% endfor %}
+    <link rel="authorization_endpoint" href="{{ site.url }}/auth">
+    <link rel="token_endpoint" href="{{ site.url }}/token">
     <link rel="micropub" href="{{ site.url }}/micropub">
     <link rel="micropub-media-endpoint" href="{{ site.url }}/micropub/media">
     <link rel="webmention" href="{{ site.webmentions.endpoint }}">
