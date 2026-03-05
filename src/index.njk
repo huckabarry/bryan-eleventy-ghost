@@ -15,13 +15,7 @@ permalink: /index.html
   <div class="home-stream">
     {% if statusPost %}
       {% set post = statusPost %}
-      {% set streamImage = post | firstImage %}
       <article class="home-stream-item h-entry">
-        {% if streamImage %}
-          <a class="home-stream-media home-stream-media-listening u-url" href="{{ post | localPostUrl }}">
-            <img class="home-stream-image home-stream-image-listening u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
-          </a>
-        {% endif %}
         <div class="home-stream-body e-content">
           <p class="home-stream-meta">
             <a class="u-url" href="{{ post | localPostUrl }}">
@@ -35,7 +29,7 @@ permalink: /index.html
               <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
             </a>
           </p>
-          <div class="content-body">{{ post.html | stripFirstImage | safe }}</div>
+          <div class="content-body">{{ post.html | safe }}</div>
           <span class="site-visually-hidden p-author h-card">
             <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
           </span>
