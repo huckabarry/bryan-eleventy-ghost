@@ -10,14 +10,6 @@ permalink: /index.html
 {% set statusPost = statusPosts[0] %}
 {% set listeningPost = listeningPosts[0] %}
 
-<section class="home-intro">
-  {% if site.homeIntro %}
-    <p class="home-description">{{ site.homeIntro }}</p>
-  {% elif site.description %}
-    <p class="home-description">{{ site.description }}</p>
-  {% endif %}
-</section>
-
 <section class="section-block section-block-status">
   <h2 class="section-title">Status</h2>
   <div class="home-stream">
