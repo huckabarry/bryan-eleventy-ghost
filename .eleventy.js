@@ -211,6 +211,16 @@ function firstWords(value, count = 7) {
   return `${words.slice(0, count).join(" ")}…`;
 }
 
+function isUntitledLikeTitle(value) {
+  const normalized = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^[\(\[\{]\s*/, "")
+    .replace(/\s*[\)\]\}]$/, "");
+
+  return !normalized || normalized === "untitled";
+}
+
 function getLocalPostSlug(post) {
   const ghostSlug = String(post && post.slug ? post.slug : "").trim();
 
@@ -433,6 +443,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("firstWords", (value, count = 7) => {
     return firstWords(value, count);
+  });
+
+  eleventyConfig.addFilter("isUntitledLikeTitle", (value) => {
+    return isUntitledLikeTitle(value);
   });
 
   eleventyConfig.addFilter("rssDescription", (post) => {

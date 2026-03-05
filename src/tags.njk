@@ -43,7 +43,7 @@ layout: base
   <ul class="site-list-of-posts h-feed">
     {% for post in tagPage.posts %}
       {% set listTitle = post.title | trim %}
-      {% if tagPage.slug == "status" and (not listTitle or listTitle | lower == "untitled") %}
+      {% if tagPage.slug == "status" and (not listTitle or (listTitle | isUntitledLikeTitle)) %}
         {% set listTitle = (post | statusPreview) | firstWords(7) %}
       {% endif %}
       <li class="site-list-of-posts-item h-entry">
