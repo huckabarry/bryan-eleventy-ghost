@@ -516,6 +516,35 @@ async function fetchNowPosts() {
   return sortedPosts;
 }
 
+function getLocalStatusPosts(collectionApi) {
+  if (!collectionApi || typeof collectionApi.getFilteredByGlob !== "function") {
+    return [];
+  }
+
+  return collectionApi
+    .getFilteredByGlob("src/status/*.md")
+    .filter((item) => !(item.fileSlug || "").startsWith("_"))
+    .map((item) => createLocalStatusPost(item));
+}
+
+async function getMergedPosts(collectionApi) {
+  const ghostPosts = await fetchNowPosts();
+  const localStatusPosts = getLocalStatusPosts(collectionApi);
+  const mergedPosts = mergePostsByLocalSlug([...ghostPosts, ...localStatusPosts]).sort((a, b) => {
+    const aTime = new Date(a && a.published_at ? a.published_at : 0).getTime();
+    const bTime = new Date(b && b.published_at ? b.published_at : 0).getTime();
+    return bTime - aTime;
+  });
+
+  if (localStatusPosts.length > 0) {
+    console.log(
+      `[afterword] merged ${localStatusPosts.length} local status markdown post(s) from src/status`
+    );
+  }
+
+  return mergedPosts;
+}
+
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.addPlugin(rssPlugin);
@@ -668,28 +697,11 @@ module.exports = function (eleventyConfig) {
   });
 
   eleventyConfig.addCollection("posts", async (collectionApi) => {
-    const ghostPosts = await fetchNowPosts();
-    const localStatusPosts = collectionApi
-      .getFilteredByGlob("src/status/*.md")
-      .filter((item) => !(item.fileSlug || "").startsWith("_"))
-      .map((item) => createLocalStatusPost(item));
-    const mergedPosts = mergePostsByLocalSlug([...ghostPosts, ...localStatusPosts]).sort((a, b) => {
-      const aTime = new Date(a && a.published_at ? a.published_at : 0).getTime();
-      const bTime = new Date(b && b.published_at ? b.published_at : 0).getTime();
-      return bTime - aTime;
-    });
-
-    if (localStatusPosts.length > 0) {
-      console.log(
-        `[afterword] merged ${localStatusPosts.length} local status markdown post(s) from src/status`
-      );
-    }
-
-    return mergedPosts;
+    return await getMergedPosts(collectionApi);
   });
 
-  eleventyConfig.addCollection("photoPosts", async () => {
-    const posts = await fetchNowPosts();
+  eleventyConfig.addCollection("photoPosts", async (collectionApi) => {
+    const posts = await getMergedPosts(collectionApi);
 
     return posts
       .filter((post) => postHasTag(post, "gallery") || postHasTag(post, "photos"))
@@ -702,8 +714,8 @@ module.exports = function (eleventyConfig) {
       );
   });
 
-  eleventyConfig.addCollection("bookPosts", async () => {
-    const posts = await fetchNowPosts();
+  eleventyConfig.addCollection("bookPosts", async (collectionApi) => {
+    const posts = await getMergedPosts(collectionApi);
 
     return posts
       .filter((post) => postHasTag(post, "books") || postHasTag(post, "now-reading"))
@@ -714,8 +726,8 @@ module.exports = function (eleventyConfig) {
       .filter((post) => post.firstImage);
   });
 
-  eleventyConfig.addCollection("tagPages", async () => {
-    const posts = await fetchNowPosts();
+  eleventyConfig.addCollection("tagPages", async (collectionApi) => {
+    const posts = await getMergedPosts(collectionApi);
     const tags = new Map();
 
     posts.forEach((post) => {
