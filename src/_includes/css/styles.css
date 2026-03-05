@@ -699,6 +699,41 @@ h6 {
   margin-top: 0.35rem;
 }
 
+.about-social {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: -0.15rem 0 0.2rem;
+}
+
+.about-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  background: #2c2f30;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.about-social-link:visited,
+.about-social-link:active,
+.about-social-link:focus {
+  color: var(--accent);
+}
+
+.about-social-link:hover {
+  color: #ffffff;
+  background: #343738;
+}
+
+.about-social-link i {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
 .tag-archive .section-title {
   margin-bottom: 0.35rem;
 }

@@ -55,6 +55,7 @@ module.exports = async function () {
     "https://bsky.app/profile/afterword.blog"
   ];
   data.albumWhaleUrl = "https://albumwhale.com/bryan/listening-now";
+  data.microblogUrl = process.env.MICROBLOG_URL || "https://micro.blog/afterword";
   data.navigation = [
     {
       label: "Home",
