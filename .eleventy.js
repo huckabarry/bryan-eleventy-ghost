@@ -110,6 +110,15 @@ function stripFirstImage(html) {
   return source;
 }
 
+function stripBookmarkCardImages(html) {
+  const source = String(html || "");
+
+  return source.replace(
+    /<(figure|div)([^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][^>]*)>[\s\S]*?<\/\1>/gi,
+    (block) => block.replace(/<img\b[^>]*>/gi, "")
+  );
+}
+
 function postHasTag(post, slug) {
   return (post.tags || []).some((tag) => tag && tag.slug === slug);
 }
@@ -430,6 +439,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("stripFirstImage", (html) => {
     return stripFirstImage(html);
+  });
+
+  eleventyConfig.addFilter("feedHtml", (html) => {
+    return stripBookmarkCardImages(html);
   });
 
   eleventyConfig.addCollection("posts", async () => {
