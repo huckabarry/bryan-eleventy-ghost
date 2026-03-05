@@ -335,6 +335,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.addPlugin(rssPlugin);
   eleventyConfig.addLayoutAlias("base", "layouts/default.njk");
+  eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
 
   eleventyConfig.addFilter("dateReadable", (date) => {
     return new Date(date).toDateString();
