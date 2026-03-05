@@ -3,11 +3,16 @@ const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const rssPlugin = require("@11ty/eleventy-plugin-rss");
 const fs = require("fs");
 
-const ghostApi = new GhostAdminAPI({
-  url: process.env.GHOST_ADMIN_URL || process.env.GHOST_URL,
-  key: process.env.GHOST_ADMIN_KEY,
-  version: "v5.71"
-});
+const ghostAdminUrl = process.env.GHOST_ADMIN_URL || process.env.GHOST_URL;
+const ghostAdminKey = process.env.GHOST_ADMIN_KEY;
+
+const ghostApi = ghostAdminUrl && ghostAdminKey
+  ? new GhostAdminAPI({
+    url: ghostAdminUrl,
+    key: ghostAdminKey,
+    version: "v5.71"
+  })
+  : null;
 
 let nowPostsPromise;
 const INCLUDED_SITE_TAGS = [
@@ -496,6 +501,11 @@ function isPostNewer(candidate, existing) {
 }
 
 async function fetchNowPosts() {
+  if (!ghostApi) {
+    console.warn("[afterword] GHOST_ADMIN_URL/GHOST_ADMIN_KEY not set; skipping Ghost Admin API fetch.");
+    return [];
+  }
+
   if (!nowPostsPromise) {
     nowPostsPromise = ghostApi.posts.browse({
       formats: "html",
