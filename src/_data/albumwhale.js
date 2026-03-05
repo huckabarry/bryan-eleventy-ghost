@@ -2,15 +2,22 @@
 const Parser = require("rss-parser");
 const parser = new Parser({
   headers: {
-    // Some feed endpoints behave better with an explicit UA
     "User-Agent": "afterword.blog (Eleventy) AlbumWhale fetcher"
   }
 });
 
 const FEED_URL = "https://albumwhale.com/bryan/listening-now.atom";
+const LIST_PAGE_URL = "https://albumwhale.com/bryan/listening-now";
 
-// Simple in-memory cache for a single build run
-const coverCache = new Map();
+// One-build caches
+let listPageHtmlCache = null;
+
+function pickFirstTruthy(...values) {
+  for (const v of values) {
+    if (typeof v === "string" && v.trim()) return v.trim();
+  }
+  return null;
+}
 
 function toAbsoluteUrl(url, base) {
   try {
@@ -20,49 +27,7 @@ function toAbsoluteUrl(url, base) {
   }
 }
 
-function pickFirstTruthy(...values) {
-  for (const v of values) {
-    if (typeof v === "string" && v.trim()) return v.trim();
-  }
-  return null;
-}
-
-function extractCoverFromHtml(html, pageUrl) {
-  if (!html) return null;
-
-  // 1) OpenGraph
-  const og =
-    html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
-    html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-
-  if (og?.[1]) return toAbsoluteUrl(og[1], pageUrl);
-
-  // 2) Twitter card
-  const tw =
-    html.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i) ||
-    html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["']/i);
-
-  if (tw?.[1]) return toAbsoluteUrl(tw[1], pageUrl);
-
-  // 3) Album Whale often includes an "Image: ..." link near the top.
-  // Grab the href on the anchor that contains "Image:".
-  const imageAnchor =
-    html.match(/<a[^>]+href=["']([^"']+)["'][^>]*>\s*Image:/i) ||
-    html.match(/>\s*Image:[^<]*<\/a>/i); // fallback marker only
-
-  if (imageAnchor?.[1]) return toAbsoluteUrl(imageAnchor[1], pageUrl);
-
-  // 4) Some pages might include an <img ...> for the artwork
-  const img =
-    html.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
-
-  if (img?.[1]) return toAbsoluteUrl(img[1], pageUrl);
-
-  return null;
-}
-
 async function fetchText(url) {
-  // Node 22 has global fetch on Netlify
   const res = await fetch(url, {
     redirect: "follow",
     headers: {
@@ -71,55 +36,65 @@ async function fetchText(url) {
     }
   });
 
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status} for ${url}`);
-  }
+  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
   return res.text();
 }
 
-async function getCoverFromAlbumWhalePage(link) {
+// Pull "album_68569" from "...#album_68569"
+function getAlbumAnchorId(link) {
   if (!link) return null;
-
-  if (coverCache.has(link)) return coverCache.get(link);
-
-  try {
-    const html = await fetchText(link);
-    const cover = extractCoverFromHtml(html, link);
-    coverCache.set(link, cover || null);
-    return cover || null;
-  } catch (err) {
-    // Don’t fail the whole build if Album Whale is flaky.
-    coverCache.set(link, null);
-    return null;
-  }
+  const hashIndex = link.indexOf("#");
+  if (hashIndex === -1) return null;
+  const fragment = link.slice(hashIndex + 1).trim();
+  // Album Whale uses ids like album_12345
+  return fragment.startsWith("album_") ? fragment : null;
 }
 
-// Small concurrency limiter so you don’t create 50 parallel fetches
-async function mapWithConcurrency(items, limit, mapper) {
-  const results = new Array(items.length);
-  let i = 0;
+// Extract the HTML for one album block by id="album_12345"
+function extractAlbumBlockHtml(listHtml, albumId) {
+  if (!listHtml || !albumId) return null;
 
-  async function worker() {
-    while (i < items.length) {
-      const idx = i++;
-      results[idx] = await mapper(items[idx], idx);
-    }
-  }
+  // Try id="album_12345" (common) and id='album_12345'
+  const idPattern = albumId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // escape
+  const re = new RegExp(
+    `(id=["']${idPattern}["'][\\s\\S]*?)(?=\\bid=["']album_\\d+["']|$)`,
+    "i"
+  );
 
-  const workers = Array.from({ length: Math.min(limit, items.length) }, () => worker());
-  await Promise.all(workers);
-  return results;
+  const match = listHtml.match(re);
+  return match?.[1] ? match[1] : null;
+}
+
+function extractCoverFromAlbumBlock(blockHtml, pageUrl) {
+  if (!blockHtml) return null;
+
+  // Prefer an actual <img ...> inside the album block
+  // (This tends to be the artwork thumbnail/cover)
+  const img = blockHtml.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
+  if (img?.[1]) return toAbsoluteUrl(img[1], pageUrl);
+
+  // Or an "Image:" link if present
+  const imageAnchor = blockHtml.match(/<a[^>]+href=["']([^"']+)["'][^>]*>\s*Image:/i);
+  if (imageAnchor?.[1]) return toAbsoluteUrl(imageAnchor[1], pageUrl);
+
+  return null;
+}
+
+async function getListPageHtml() {
+  if (listPageHtmlCache) return listPageHtmlCache;
+  listPageHtmlCache = await fetchText(LIST_PAGE_URL);
+  return listPageHtmlCache;
 }
 
 module.exports = async function () {
   const feed = await parser.parseURL(FEED_URL);
 
-  const normalizedItems = (feed.items || []).map(item => {
+  const items = (feed.items || []).map((item) => {
     const title = item.title || "";
     const link = item.link || "";
     const date = item.isoDate || item.pubDate || null;
 
-    // Covers in feeds can show up in different places depending on the publisher.
+    // Sometimes the feed provides a cover, but Album Whale often doesn’t.
     const feedCover = pickFirstTruthy(
       item.enclosure?.url,
       item.itunes?.image,
@@ -130,15 +105,20 @@ module.exports = async function () {
     return { title, link, date, cover: feedCover };
   });
 
-  // Fill in missing covers by scraping the album page
-  const filled = await mapWithConcurrency(normalizedItems, 4, async (album) => {
+  // Only fetch/scrape the list page if we need covers.
+  const needsScrape = items.some((a) => !a.cover && getAlbumAnchorId(a.link));
+  const listHtml = needsScrape ? await getListPageHtml() : null;
+
+  const filled = items.map((album) => {
     if (album.cover) return album;
 
-    const scrapedCover = await getCoverFromAlbumWhalePage(album.link);
-    return {
-      ...album,
-      cover: scrapedCover
-    };
+    const albumId = getAlbumAnchorId(album.link);
+    if (!albumId || !listHtml) return album;
+
+    const block = extractAlbumBlockHtml(listHtml, albumId);
+    const cover = extractCoverFromAlbumBlock(block, LIST_PAGE_URL);
+
+    return { ...album, cover: cover || null };
   });
 
   return filled;
