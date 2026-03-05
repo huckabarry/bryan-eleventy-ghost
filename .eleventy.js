@@ -197,6 +197,20 @@ function getStatusPreview(post) {
   return String(post && post.title ? post.title : "").trim();
 }
 
+function firstWords(value, count = 7) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) {
+    return "";
+  }
+
+  const words = text.split(" ").filter(Boolean);
+  if (words.length <= count) {
+    return words.join(" ");
+  }
+
+  return `${words.slice(0, count).join(" ")}…`;
+}
+
 function getLocalPostSlug(post) {
   const ghostSlug = String(post && post.slug ? post.slug : "").trim();
 
@@ -415,6 +429,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("statusPreview", (post) => {
     return getStatusPreview(post);
+  });
+
+  eleventyConfig.addFilter("firstWords", (value, count = 7) => {
+    return firstWords(value, count);
   });
 
   eleventyConfig.addFilter("rssDescription", (post) => {
