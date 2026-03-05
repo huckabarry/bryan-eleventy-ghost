@@ -1232,6 +1232,10 @@ body.photo-lightbox-open {
   object-fit: contain;
 }
 
+.kg-bookmark-thumbnail {
+  display: none;
+}
+
 /* Google Maps bookmark cards often repeat address metadata and show a low-res pin favicon. */
 .kg-bookmark-container[href*="google.com/maps"] .kg-bookmark-icon,
 .kg-bookmark-container[href*="maps.app.goo.gl"] .kg-bookmark-icon {

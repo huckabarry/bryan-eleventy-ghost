@@ -130,7 +130,9 @@
                 const lightboxClose = lightbox ? lightbox.querySelector("[data-post-lightbox-close]") : null;
                 const lightboxPrev = lightbox ? lightbox.querySelector("[data-post-lightbox-prev]") : null;
                 const lightboxNext = lightbox ? lightbox.querySelector("[data-post-lightbox-next]") : null;
-                const images = Array.from(document.querySelectorAll(".post-feature-image img, .content-body img"));
+                const images = Array.from(
+                    document.querySelectorAll(".post-feature-image img, .content-body img")
+                ).filter((image) => !image.closest(".kg-bookmark-card"));
                 let currentImageIndex = 0;
 
                 function renderImage(index) {
