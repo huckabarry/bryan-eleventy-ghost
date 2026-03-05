@@ -83,8 +83,9 @@
                 <span>Back to all posts</span>
             </a>
         </footer>
-        {% set previousPost = collections.posts | getPreviousPost(post) %}
-        {% set nextPost = collections.posts | getNextPost(post) %}
+        {% set navPosts = collections.posts | withoutTagSlug("status") %}
+        {% set previousPost = navPosts | getPreviousPost(post) %}
+        {% set nextPost = navPosts | getNextPost(post) %}
         {% if previousPost or nextPost %}
         <nav class="post-navigation">
             <ul>
