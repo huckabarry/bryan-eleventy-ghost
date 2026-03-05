@@ -12,15 +12,11 @@ eleventyExcludeFromCollections: true
 
 <h2>Sanity checks</h2>
 <ul>
-  <li>Has albumwhale? {% if albumwhale %}yes{% else %}no{% endif %}</li>
-  <li>Has entries? {% if albumwhale and albumwhale.items and albumwhale.items.length %}yes ({{ albumwhale.items.length }}){% else %}no{% endif %}</li>
+  <li>Has entries? {% if albumwhale and albumwhale.length %}yes ({{ albumwhale.length }}){% else %}no{% endif %}</li>
 </ul>
 
-<h2>First entry (if any)</h2>
-<pre style="white-space: pre-wrap;">
-{% if albumwhale and albumwhale.items and albumwhale.items[0] %}
-{{ albumwhale.items[0] | safe }}
+{% if albumwhale and albumwhale[0] %}
+  {{ albumwhale[0] }}
 {% else %}
-(no first item)
+  (no first item)
 {% endif %}
-</pre>
