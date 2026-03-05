@@ -274,6 +274,119 @@ function getCollectionIndex(posts, currentPost) {
   });
 }
 
+function normalizeDate(value, fallback = new Date(0).toISOString()) {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return fallback;
+  }
+
+  return parsed.toISOString();
+}
+
+function toTagName(slug) {
+  return String(slug || "")
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function parseLocalStatusTags(value) {
+  const rawTags = Array.isArray(value)
+    ? value
+    : String(value || "")
+        .split(",")
+        .map((part) => part.trim())
+        .filter(Boolean);
+
+  const normalized = rawTags
+    .map((tag) => slugify(tag))
+    .filter(Boolean);
+
+  if (!normalized.includes("status")) {
+    normalized.unshift("status");
+  }
+
+  const seen = new Set();
+  return normalized
+    .filter((tag) => {
+      if (seen.has(tag)) {
+        return false;
+      }
+      seen.add(tag);
+      return true;
+    })
+    .map((slug) => ({
+      slug,
+      name: toTagName(slug),
+      visibility: "public"
+    }));
+}
+
+function createLocalStatusPost(item) {
+  const data = (item && item.data) || {};
+  const slug = slugify(data.slug || item.fileSlug || "");
+  const publishedAt = normalizeDate(
+    data.published_at || data.date || item.date,
+    item && item.date ? new Date(item.date).toISOString() : new Date().toISOString()
+  );
+  const updatedAt = normalizeDate(data.updated_at || data.modified_at || publishedAt, publishedAt);
+  const title = String(data.title || "").trim() || "Untitled";
+  const html = String(item.templateContent || item.rawInput || "").trim();
+  const excerpt = String(data.excerpt || "").trim();
+  const featureImage = data.feature_image || data.featureImage || "";
+  const authorName = String(data.author || data.author_name || "Bryan Robb").trim() || "Bryan Robb";
+
+  return {
+    id: `local-status:${slug || item.fileSlug || item.inputPath}`,
+    uuid: `local-status:${slug || item.fileSlug || item.inputPath}`,
+    slug: slug || item.fileSlug || "status",
+    title,
+    html,
+    excerpt,
+    feature_image: featureImage || null,
+    visibility: "published",
+    published_at: publishedAt,
+    updated_at: updatedAt,
+    tags: parseLocalStatusTags(data.tags),
+    primary_author: {
+      name: authorName
+    },
+    authors: [
+      {
+        name: authorName
+      }
+    ]
+  };
+}
+
+function mergePostsByLocalSlug(posts) {
+  const map = new Map();
+
+  (posts || []).forEach((post) => {
+    const slug = getLocalPostSlug(post);
+    const key = slug || `id:${post.id || post.uuid || Math.random()}`;
+    const existing = map.get(key);
+
+    if (!existing) {
+      map.set(key, post);
+      return;
+    }
+
+    const existingTime = new Date(existing && existing.published_at ? existing.published_at : 0).getTime();
+    const candidateTime = new Date(post && post.published_at ? post.published_at : 0).getTime();
+    if (candidateTime >= existingTime) {
+      map.set(key, post);
+    }
+  });
+
+  return Array.from(map.values());
+}
+
 async function fetchNowPosts() {
   if (!nowPostsPromise) {
     nowPostsPromise = ghostApi.posts.browse({
@@ -482,8 +595,25 @@ module.exports = function (eleventyConfig) {
     return stripBookmarkCardImages(html);
   });
 
-  eleventyConfig.addCollection("posts", async () => {
-    return await fetchNowPosts();
+  eleventyConfig.addCollection("posts", async (collectionApi) => {
+    const ghostPosts = await fetchNowPosts();
+    const localStatusPosts = collectionApi
+      .getFilteredByGlob("src/status/*.md")
+      .filter((item) => !(item.fileSlug || "").startsWith("_"))
+      .map((item) => createLocalStatusPost(item));
+    const mergedPosts = mergePostsByLocalSlug([...ghostPosts, ...localStatusPosts]).sort((a, b) => {
+      const aTime = new Date(a && a.published_at ? a.published_at : 0).getTime();
+      const bTime = new Date(b && b.published_at ? b.published_at : 0).getTime();
+      return bTime - aTime;
+    });
+
+    if (localStatusPosts.length > 0) {
+      console.log(
+        `[afterword] merged ${localStatusPosts.length} local status markdown post(s) from src/status`
+      );
+    }
+
+    return mergedPosts;
   });
 
   eleventyConfig.addCollection("photoPosts", async () => {
