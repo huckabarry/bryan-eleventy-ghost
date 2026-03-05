@@ -245,7 +245,11 @@ h6 {
 
 .home-stream-meta-reading {
   grid-area: meta;
-  margin-bottom: 0;
+}
+
+.home-stream-item-reading .home-stream-meta-reading {
+  margin: 0;
+  line-height: 1.2;
 }
 
 .home-stream-media-reading {
