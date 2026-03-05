@@ -1,6 +1,7 @@
 const GhostAdminAPI = require("@tryghost/admin-api");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const rssPlugin = require("@11ty/eleventy-plugin-rss");
+const fs = require("fs");
 
 const ghostApi = new GhostAdminAPI({
   url: process.env.GHOST_ADMIN_URL || process.env.GHOST_URL,
@@ -336,7 +337,8 @@ function createLocalStatusPost(item) {
   );
   const updatedAt = normalizeDate(data.updated_at || data.modified_at || publishedAt, publishedAt);
   const title = String(data.title || "").trim() || "Untitled";
-  const html = String(item.templateContent || item.rawInput || "").trim();
+  const markdownSource = readLocalMarkdownBody(item && item.inputPath ? item.inputPath : "");
+  const html = markdownToSimpleHtml(markdownSource);
   const excerpt = String(data.excerpt || "").trim();
   const featureImage = data.feature_image || data.featureImage || "";
   const authorName = String(data.author || data.author_name || "Bryan Robb").trim() || "Bryan Robb";
@@ -362,6 +364,76 @@ function createLocalStatusPost(item) {
       }
     ]
   };
+}
+
+function readLocalMarkdownBody(filePath) {
+  if (!filePath) {
+    return "";
+  }
+
+  try {
+    const source = fs.readFileSync(filePath, "utf8");
+    return stripFrontMatter(source).trim();
+  } catch (error) {
+    console.warn(`[afterword] unable to read local status markdown ${filePath}: ${error.message}`);
+    return "";
+  }
+}
+
+function stripFrontMatter(source) {
+  const text = String(source || "").replace(/\r\n/g, "\n");
+
+  if (!text.startsWith("---\n")) {
+    return text;
+  }
+
+  const end = text.indexOf("\n---\n", 4);
+  if (end === -1) {
+    return text;
+  }
+
+  return text.slice(end + 5);
+}
+
+function escapeHtml(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function inlineMarkdownToHtml(text) {
+  return escapeHtml(text).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
+    return `<a href="${escapeHtml(url)}">${escapeHtml(label)}</a>`;
+  });
+}
+
+function markdownToSimpleHtml(markdown) {
+  const normalized = String(markdown || "").replace(/\r\n/g, "\n").trim();
+  if (!normalized) {
+    return "";
+  }
+
+  const blocks = normalized.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
+  const htmlBlocks = blocks.map((block) => {
+    const imageMatch = block.match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/);
+    if (imageMatch) {
+      const alt = escapeHtml(imageMatch[1] || "");
+      const src = escapeHtml(imageMatch[2] || "");
+      return `<p><img src="${src}" alt="${alt}"></p>`;
+    }
+
+    const lineHtml = block
+      .split("\n")
+      .map((line) => inlineMarkdownToHtml(line))
+      .join("<br>");
+
+    return `<p>${lineHtml}</p>`;
+  });
+
+  return htmlBlocks.join("\n");
 }
 
 function mergePostsByLocalSlug(posts) {
