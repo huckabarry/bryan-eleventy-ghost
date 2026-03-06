@@ -562,11 +562,13 @@ function mergePostsByLocalSlug(posts) {
 }
 
 function getPostPublishedTime(post) {
-  return new Date(post && post.published_at ? post.published_at : 0).getTime();
+  const value = new Date(post && post.published_at ? post.published_at : 0).getTime();
+  return Number.isFinite(value) ? value : 0;
 }
 
 function getPostUpdatedTime(post) {
-  return new Date(post && post.updated_at ? post.updated_at : 0).getTime();
+  const value = new Date(post && post.updated_at ? post.updated_at : 0).getTime();
+  return Number.isFinite(value) ? value : 0;
 }
 
 function comparePostsDesc(a, b) {
@@ -727,17 +729,55 @@ function isPostNewer(candidate, existing) {
 
 async function fetchNowPosts() {
   if (!nowPostsPromise) {
+    const filter = `status:published+tag:[${INCLUDED_SITE_TAGS.join(",")}]`;
+
     nowPostsPromise = ghostApi.posts
       .browse({
         formats: "html",
         include: "tags,authors",
         limit: 100,
-        filter: `status:published+tag:[${INCLUDED_SITE_TAGS.join(",")}]`
+        filter
       })
-      .catch((error) => {
-        const details = error && error.message ? error.message : String(error);
-        console.warn(`[afterword] Ghost fetch failed; continuing with local posts only. ${details}`);
-        return [];
+      .catch(async (adminError) => {
+        const adminDetails = adminError && adminError.message ? adminError.message : String(adminError);
+        console.warn(`[afterword] Ghost Admin API fetch failed; trying Content API fallback. ${adminDetails}`);
+
+        const contentBase = String(process.env.GHOST_URL || "").replace(/\/$/, "");
+        const contentKey = String(process.env.GHOST_CONTENT_API_KEY || "").trim();
+
+        if (!contentBase || !contentKey) {
+          console.warn("[afterword] Ghost Content API fallback unavailable; missing GHOST_URL or GHOST_CONTENT_API_KEY.");
+          return [];
+        }
+
+        try {
+          const params = new URLSearchParams({
+            key: contentKey,
+            filter,
+            include: "tags,authors",
+            formats: "html",
+            limit: "100"
+          });
+          const response = await fetch(`${contentBase}/ghost/api/content/posts/?${params.toString()}`, {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const payload = await response.json();
+          const posts = Array.isArray(payload && payload.posts) ? payload.posts : [];
+          console.log(`[afterword] fetched ${posts.length} Ghost posts via Content API fallback`);
+          return posts;
+        } catch (contentError) {
+          const contentDetails = contentError && contentError.message ? contentError.message : String(contentError);
+          console.warn(`[afterword] Ghost Content API fallback failed; continuing with local posts only. ${contentDetails}`);
+          return [];
+        }
       });
   }
 
