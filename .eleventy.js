@@ -21,6 +21,7 @@ const INCLUDED_SITE_TAGS = [
   "photos",
   "now"
 ];
+const STATUS_MAX_CHARACTERS = 500;
 
 function isUsablePhotoUrl(url) {
   const value = String(url || "");
@@ -172,14 +173,18 @@ function isBookPost(post) {
   return postHasTag(post, "books") || postHasTag(post, "now-reading");
 }
 
-function getPlainTextPreview(post, maxLength = 220) {
-  const text = decodeHtmlEntities(
-    String(post && post.html ? post.html : "")
-    .replace(/<figcaption[\s\S]*?<\/figcaption>/gi, " ")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
+function getPlainTextFromHtml(html) {
+  return decodeHtmlEntities(
+    String(html || "")
+      .replace(/<figcaption[\s\S]*?<\/figcaption>/gi, " ")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
   );
+}
+
+function getPlainTextPreview(post, maxLength = 220) {
+  const text = getPlainTextFromHtml(post && post.html ? post.html : "");
 
   if (!text) {
     return "";
@@ -210,6 +215,22 @@ function getStatusPreview(post) {
   }
 
   return decodeHtmlEntities(String(post && post.title ? post.title : "").trim());
+}
+
+function normalizeStatusLengthForCollections(post) {
+  if (!postHasTag(post, "status")) {
+    return post;
+  }
+
+  const bodyLength = getPlainTextFromHtml(post && post.html ? post.html : "").length;
+  if (bodyLength <= STATUS_MAX_CHARACTERS) {
+    return post;
+  }
+
+  return {
+    ...post,
+    tags: (post.tags || []).filter((tag) => !(tag && tag.slug === "status"))
+  };
 }
 
 function firstWords(value, count = 7) {
@@ -869,7 +890,11 @@ async function getMergedPosts(collectionApi) {
     ...localListeningPosts,
     ...localBookPosts
   ]);
-  const mergedPosts = dedupeBookPosts(dedupeListeningPosts(mergedBySlug)).sort(comparePostsDesc);
+  const statusBeforeNormalization = mergedBySlug.filter((post) => postHasTag(post, "status")).length;
+  const normalizedPosts = mergedBySlug.map((post) => normalizeStatusLengthForCollections(post));
+  const mergedPosts = dedupeBookPosts(dedupeListeningPosts(normalizedPosts)).sort(comparePostsDesc);
+  const statusAfterNormalization = normalizedPosts.filter((post) => postHasTag(post, "status")).length;
+  const longStatusCount = Math.max(0, statusBeforeNormalization - statusAfterNormalization);
 
   if (localStatusPosts.length > 0) {
     console.log(
@@ -892,6 +917,12 @@ async function getMergedPosts(collectionApi) {
   if (ghostPosts.length !== ghostPostsWithoutListening.length) {
     console.log(
       `[afterword] excluded ${ghostPosts.length - ghostPostsWithoutListening.length} Ghost listening/now-playing post(s) in favor of local listening sources`
+    );
+  }
+
+  if (longStatusCount > 0) {
+    console.log(
+      `[afterword] reclassified ${longStatusCount} status post(s) over ${STATUS_MAX_CHARACTERS} characters into regular posts`
     );
   }
 
