@@ -173,6 +173,47 @@ function isBookPost(post) {
   return postHasTag(post, "books") || postHasTag(post, "now-reading");
 }
 
+function splitTitleByBy(value) {
+  const text = String(value || "").trim();
+  if (!text) {
+    return { title: "", byline: "" };
+  }
+
+  const match = text.match(/^(.+?)\s+by\s+(.+)$/i);
+  if (!match) {
+    return { title: text, byline: "" };
+  }
+
+  return {
+    title: String(match[1] || "").trim(),
+    byline: String(match[2] || "").trim()
+  };
+}
+
+function getMediaCardTitle(post) {
+  const split = splitTitleByBy(post && post.title ? post.title : "");
+  return split.title || String(post && post.title ? post.title : "").trim();
+}
+
+function getMediaCardSubtitle(post) {
+  if (isListeningPost(post)) {
+    const split = splitTitleByBy(post && post.title ? post.title : "");
+    return split.byline;
+  }
+
+  if (isBookPost(post)) {
+    const explicitAuthor = String(post && post.book_author ? post.book_author : "").trim();
+    if (explicitAuthor) {
+      return explicitAuthor;
+    }
+
+    const split = splitTitleByBy(post && post.title ? post.title : "");
+    return split.byline;
+  }
+
+  return "";
+}
+
 function isLocalMarkdownPost(post) {
   const id = String(post && post.id ? post.id : "");
   return id.startsWith("local-");
@@ -389,6 +430,7 @@ function createLocalMarkdownPost(item, options = {}) {
   const featureImage = data.feature_image || data.featureImage || "";
   const authorName = String(data.author || data.author_name || "Bryan Robb").trim() || "Bryan Robb";
   const albumwhaleOrder = Number.isFinite(Number(data.albumwhale_order)) ? Number(data.albumwhale_order) : null;
+  const bookAuthor = String(data.book_author || "").trim() || null;
 
   return {
     id: `${idPrefix}:${slug || item.fileSlug || item.inputPath}`,
@@ -399,6 +441,7 @@ function createLocalMarkdownPost(item, options = {}) {
     excerpt,
     feature_image: featureImage || null,
     albumwhale_order: albumwhaleOrder,
+    book_author: bookAuthor,
     visibility: "published",
     published_at: publishedAt,
     updated_at: updatedAt,
@@ -1067,6 +1110,14 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("statusPreview", (post) => {
     return getStatusPreview(post);
+  });
+
+  eleventyConfig.addFilter("mediaCardTitle", (post) => {
+    return getMediaCardTitle(post);
+  });
+
+  eleventyConfig.addFilter("mediaCardSubtitle", (post) => {
+    return getMediaCardSubtitle(post);
   });
 
   eleventyConfig.addFilter("firstWords", (value, count = 7) => {

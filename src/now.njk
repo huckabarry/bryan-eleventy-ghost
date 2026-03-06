@@ -70,7 +70,11 @@ description: "The latest now post."
           {% else %}
           <span class="cover-card-image cover-card-image-fallback" aria-hidden="true"></span>
           {% endif %}
-          <span class="cover-card-title p-name">📚 {{ post.title }}</span>
+          <span class="cover-card-title p-name">{{ post | mediaCardTitle }}</span>
+          {% set mediaSubtitle = post | mediaCardSubtitle %}
+          {% if mediaSubtitle %}
+          <span class="cover-card-subtitle">{{ mediaSubtitle }}</span>
+          {% endif %}
           <span class="cover-card-meta">{{ post.published_at | dateDisplay }}</span>
         </a>
         <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
@@ -92,7 +96,11 @@ description: "The latest now post."
           {% else %}
           <span class="cover-card-image cover-card-image-fallback" aria-hidden="true"></span>
           {% endif %}
-          <span class="cover-card-title p-name">🎵 {{ post.title }}</span>
+          <span class="cover-card-title p-name">{{ post | mediaCardTitle }}</span>
+          {% set mediaSubtitle = post | mediaCardSubtitle %}
+          {% if mediaSubtitle %}
+          <span class="cover-card-subtitle">{{ mediaSubtitle }}</span>
+          {% endif %}
           <span class="cover-card-meta">{{ post.published_at | dateDisplay }}</span>
         </a>
         <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
