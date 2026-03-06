@@ -554,7 +554,7 @@ function getLocalStatusPosts(collectionApi) {
   }
 
   return collectionApi
-    .getFilteredByGlob("src/status/*.md")
+    .getFilteredByGlob("src/status/**/*.md")
     .filter((item) => !(item.fileSlug || "").startsWith("_"))
     .map((item) => createLocalStatusPost(item));
 }
