@@ -596,6 +596,21 @@ module.exports = function (eleventyConfig) {
     return `${day} ${month}`.trim();
   });
 
+  eleventyConfig.addFilter("dateDisplayWithYear", (date) => {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      timeZone: "UTC"
+    }).formatToParts(new Date(date));
+
+    const day = parts.find((part) => part.type === "day")?.value || "";
+    const month = parts.find((part) => part.type === "month")?.value || "";
+    const year = parts.find((part) => part.type === "year")?.value || "";
+
+    return `${day} ${month} ${year}`.trim();
+  });
+
   eleventyConfig.addFilter("htmlDateString", (dateObj) => {
     return new Date(dateObj).toISOString().split("T")[0];
   });

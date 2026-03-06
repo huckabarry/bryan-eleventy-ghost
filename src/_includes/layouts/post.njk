@@ -9,7 +9,7 @@
         <header class="post-header">
             <a class="site-visually-hidden u-uid" href="{{ site.url }}{{ page.url }}">{{ site.url }}{{ page.url }}</a>
             <div class="post-meta-row">
-                <time class="post-date dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+                <time class="post-date dt-published" datetime="{{ post.published_at | htmlDateString }}">{% if post | hasTagSlug("status") %}{{ post.published_at | dateDisplayWithYear }}{% else %}{{ post.published_at | dateDisplay }}{% endif %}</time>
                 {% if post.updated_at and post.updated_at != post.published_at %}
                 <time class="site-visually-hidden dt-updated" datetime="{{ post.updated_at | htmlDateString }}">{{ post.updated_at | dateDisplay }}</time>
                 {% endif %}
@@ -64,7 +64,7 @@
                         <path d="M14.5 14.5l4-4 1.5 1.5-4 4-2 .5z"></path>
                     </svg>
                 </span>
-                <span>{{ post.published_at | dateDisplay }}</span>
+                <span>{% if post | hasTagSlug("status") %}{{ post.published_at | dateDisplayWithYear }}{% else %}{{ post.published_at | dateDisplay }}{% endif %}</span>
             </a>
             <a class="post-action-link" href="/contact/">
                 <span class="post-action-icon" aria-hidden="true">

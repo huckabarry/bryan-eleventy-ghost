@@ -31,7 +31,7 @@ layout: base
           <span class="cover-card-title p-name">{{ post.title }}</span>
         </a>
         <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">
-          {{ post.published_at | dateDisplay }}
+          {% if tagPage.slug == "status" %}{{ post.published_at | dateDisplayWithYear }}{% else %}{{ post.published_at | dateDisplay }}{% endif %}
         </time>
         <span class="site-visually-hidden p-author h-card">
           <a class="p-name u-url" href="{{ site.url }}">{{ site.title }}</a>
@@ -48,7 +48,7 @@ layout: base
       {% endif %}
       <li class="site-list-of-posts-item h-entry">
         <time class="site-list-date dt-published" datetime="{{ post.published_at | htmlDateString }}">
-          {{ post.published_at | dateDisplay }}
+          {% if tagPage.slug == "status" %}{{ post.published_at | dateDisplayWithYear }}{% else %}{{ post.published_at | dateDisplay }}{% endif %}
         </time>
         <div>
           <a class="site-list-link p-name u-url" href="{{ post | localPostUrl }}">{{ listTitle or "Untitled" }}</a>
