@@ -469,7 +469,6 @@ function markdownToSimpleHtml(markdown) {
     }
 
     const lineHtml = paragraphLines
-      .join("\n")
       .map((line) => {
         return inlineMarkdownToHtml(line).replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, src) => {
           return `<img src="${escapeHtml(src || "")}" alt="${escapeHtml(alt || "")}">`;
