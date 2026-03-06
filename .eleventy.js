@@ -164,6 +164,10 @@ function isUntitledPost(post) {
   return !title || title === "untitled";
 }
 
+function isListeningPost(post) {
+  return postHasTag(post, "listening") || postHasTag(post, "now-playing");
+}
+
 function getPlainTextPreview(post, maxLength = 220) {
   const text = decodeHtmlEntities(
     String(post && post.html ? post.html : "")
@@ -568,6 +572,72 @@ function comparePostsDesc(a, b) {
   return bSlug.localeCompare(aSlug);
 }
 
+function normalizeTitleKey(value) {
+  return decodeHtmlEntities(String(value || ""))
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function getPostDayKey(post) {
+  const value = String(post && post.published_at ? post.published_at : "").trim();
+  if (!value) {
+    return "";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  return date.toISOString().slice(0, 10);
+}
+
+function getListeningPostScore(post) {
+  let score = 0;
+
+  const id = String(post && post.id ? post.id : "");
+  if (id.startsWith("local-listening:")) {
+    score += 10;
+  }
+
+  if (String(post && post.albumwhale_url ? post.albumwhale_url : "").trim()) {
+    score += 5;
+  }
+
+  if (/<img\b/i.test(String(post && post.html ? post.html : ""))) {
+    score += 2;
+  }
+
+  return score;
+}
+
+function dedupeListeningPosts(posts) {
+  const nonListening = [];
+  const listeningByKey = new Map();
+
+  (posts || []).forEach((post) => {
+    if (!isListeningPost(post)) {
+      nonListening.push(post);
+      return;
+    }
+
+    const dayKey = getPostDayKey(post);
+    const titleKey = normalizeTitleKey(post && post.title ? post.title : "");
+    const dedupeKey = `${dayKey}|${titleKey}`;
+
+    if (!dayKey || !titleKey) {
+      nonListening.push(post);
+      return;
+    }
+
+    const existing = listeningByKey.get(dedupeKey);
+    if (!existing || getListeningPostScore(post) > getListeningPostScore(existing)) {
+      listeningByKey.set(dedupeKey, post);
+    }
+  });
+
+  return [...nonListening, ...Array.from(listeningByKey.values())];
+}
+
 function isPostNewer(candidate, existing) {
   const publishedDiff = getPostPublishedTime(candidate) - getPostPublishedTime(existing);
   if (publishedDiff !== 0) {
@@ -661,11 +731,12 @@ async function getMergedPosts(collectionApi) {
   const ghostPosts = await fetchNowPosts();
   const localStatusPosts = getLocalStatusPosts(collectionApi);
   const localListeningPosts = getLocalListeningPosts(collectionApi);
-  const mergedPosts = mergePostsByLocalSlug([
+  const mergedBySlug = mergePostsByLocalSlug([
     ...ghostPosts,
     ...localStatusPosts,
     ...localListeningPosts
-  ]).sort(comparePostsDesc);
+  ]);
+  const mergedPosts = dedupeListeningPosts(mergedBySlug).sort(comparePostsDesc);
 
   if (localStatusPosts.length > 0) {
     console.log(
