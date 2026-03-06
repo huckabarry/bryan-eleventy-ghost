@@ -3,8 +3,13 @@ name: Sync Media Feeds
 on:
   workflow_dispatch:
   schedule:
-    # Daily at 13:30 UTC (early morning US Pacific).
-    - cron: "30 13 * * *"
+    # 4x daily in Pacific daytime/evening:
+    # 16:00, 20:00, 00:00, 04:00 UTC
+    # ~= 8am/12pm/4pm/8pm PST or 9am/1pm/5pm/9pm PDT
+    - cron: "0 16 * * *"
+    - cron: "0 20 * * *"
+    - cron: "0 0 * * *"
+    - cron: "0 4 * * *"
 
 permissions:
   contents: write
