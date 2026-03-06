@@ -168,6 +168,10 @@ function isListeningPost(post) {
   return postHasTag(post, "listening") || postHasTag(post, "now-playing");
 }
 
+function isBookPost(post) {
+  return postHasTag(post, "books") || postHasTag(post, "now-reading");
+}
+
 function getPlainTextPreview(post, maxLength = 220) {
   const text = decodeHtmlEntities(
     String(post && post.html ? post.html : "")
@@ -389,6 +393,13 @@ function createLocalListeningPost(item) {
   return createLocalMarkdownPost(item, {
     idPrefix: "local-listening",
     requiredTag: "listening"
+  });
+}
+
+function createLocalBookPost(item) {
+  return createLocalMarkdownPost(item, {
+    idPrefix: "local-book",
+    requiredTag: ""
   });
 }
 
@@ -638,6 +649,54 @@ function dedupeListeningPosts(posts) {
   return [...nonListening, ...Array.from(listeningByKey.values())];
 }
 
+function getBookPostScore(post) {
+  let score = 0;
+
+  const id = String(post && post.id ? post.id : "");
+  if (id.startsWith("local-book:")) {
+    score += 10;
+  }
+
+  if (String(post && post.bookwyrm_url ? post.bookwyrm_url : "").trim()) {
+    score += 5;
+  }
+
+  if (/<img\b/i.test(String(post && post.html ? post.html : ""))) {
+    score += 2;
+  }
+
+  return score;
+}
+
+function dedupeBookPosts(posts) {
+  const nonBooks = [];
+  const booksByKey = new Map();
+
+  (posts || []).forEach((post) => {
+    if (!isBookPost(post)) {
+      nonBooks.push(post);
+      return;
+    }
+
+    const sourceKey = String(post && post.bookwyrm_url ? post.bookwyrm_url : "").trim();
+    const dayKey = getPostDayKey(post);
+    const titleKey = normalizeTitleKey(post && post.title ? post.title : "");
+    const dedupeKey = sourceKey || `${dayKey}|${titleKey}`;
+
+    if (!sourceKey && (!dayKey || !titleKey)) {
+      nonBooks.push(post);
+      return;
+    }
+
+    const existing = booksByKey.get(dedupeKey);
+    if (!existing || getBookPostScore(post) > getBookPostScore(existing)) {
+      booksByKey.set(dedupeKey, post);
+    }
+  });
+
+  return [...nonBooks, ...Array.from(booksByKey.values())];
+}
+
 function isPostNewer(candidate, existing) {
   const publishedDiff = getPostPublishedTime(candidate) - getPostPublishedTime(existing);
   if (publishedDiff !== 0) {
@@ -727,17 +786,30 @@ function getLocalListeningPosts(collectionApi) {
     .map((item) => createLocalListeningPost(item));
 }
 
+function getLocalBookPosts(collectionApi) {
+  if (!collectionApi || typeof collectionApi.getFilteredByGlob !== "function") {
+    return [];
+  }
+
+  return collectionApi
+    .getFilteredByGlob("src/reading-books/**/*.md")
+    .filter((item) => !(item.fileSlug || "").startsWith("_"))
+    .map((item) => createLocalBookPost(item));
+}
+
 async function getMergedPosts(collectionApi) {
   const ghostPosts = await fetchNowPosts();
   const ghostPostsWithoutListening = ghostPosts.filter((post) => !isListeningPost(post));
   const localStatusPosts = getLocalStatusPosts(collectionApi);
   const localListeningPosts = getLocalListeningPosts(collectionApi);
+  const localBookPosts = getLocalBookPosts(collectionApi);
   const mergedBySlug = mergePostsByLocalSlug([
     ...ghostPostsWithoutListening,
     ...localStatusPosts,
-    ...localListeningPosts
+    ...localListeningPosts,
+    ...localBookPosts
   ]);
-  const mergedPosts = dedupeListeningPosts(mergedBySlug).sort(comparePostsDesc);
+  const mergedPosts = dedupeBookPosts(dedupeListeningPosts(mergedBySlug)).sort(comparePostsDesc);
 
   if (localStatusPosts.length > 0) {
     console.log(
@@ -748,6 +820,12 @@ async function getMergedPosts(collectionApi) {
   if (localListeningPosts.length > 0) {
     console.log(
       `[afterword] merged ${localListeningPosts.length} local listening markdown post(s) from src/listening-albums`
+    );
+  }
+
+  if (localBookPosts.length > 0) {
+    console.log(
+      `[afterword] merged ${localBookPosts.length} local reading markdown post(s) from src/reading-books`
     );
   }
 

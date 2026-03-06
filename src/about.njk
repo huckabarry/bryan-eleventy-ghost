@@ -5,8 +5,9 @@ title: About
 description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place where I write short status updates about what’s going on in my life, post photos, and occasionally shout into the void."
 ---
 
-{% set readingPosts = collections.posts | withAnyTagSlugs("books,now-reading") %}
-{% set readingPost = readingPosts[0] %}
+{% set currentReadingPosts = collections.posts | withTagSlug("now-reading") | byPublishedDateDesc %}
+{% set readingPosts = collections.posts | withAnyTagSlugs("books,now-reading") | byPublishedDateDesc %}
+{% set readingPost = currentReadingPosts[0] or readingPosts[0] %}
 
 <article class="content content-page h-entry">
   <header class="post-header">
