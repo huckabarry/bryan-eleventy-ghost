@@ -173,6 +173,11 @@ function isBookPost(post) {
   return postHasTag(post, "books") || postHasTag(post, "now-reading");
 }
 
+function isLocalMarkdownPost(post) {
+  const id = String(post && post.id ? post.id : "");
+  return id.startsWith("local-");
+}
+
 function getPlainTextFromHtml(html) {
   return decodeHtmlEntities(
     String(html || "")
@@ -218,6 +223,10 @@ function getStatusPreview(post) {
 }
 
 function normalizeStatusLengthForCollections(post) {
+  if (isLocalMarkdownPost(post)) {
+    return post;
+  }
+
   if (!postHasTag(post, "status")) {
     return post;
   }
@@ -1029,6 +1038,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("byPublishedDateDesc", (posts) => {
     return [...(posts || [])].sort(comparePostsDesc);
+  });
+
+  eleventyConfig.addFilter("onlyGhostPosts", (posts) => {
+    return (posts || []).filter((post) => !isLocalMarkdownPost(post));
   });
 
   eleventyConfig.addFilter("take", (posts, count = 10) => {
