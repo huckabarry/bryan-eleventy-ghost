@@ -1031,6 +1031,11 @@ module.exports = function (eleventyConfig) {
     return [...(posts || [])].sort(comparePostsDesc);
   });
 
+  eleventyConfig.addFilter("take", (posts, count = 10) => {
+    const limit = Number.isFinite(Number(count)) ? Math.max(0, Number(count)) : 10;
+    return (posts || []).slice(0, limit);
+  });
+
   eleventyConfig.addFilter("hasTagSlug", (post, slug) => {
     return postHasTag(post, slug);
   });

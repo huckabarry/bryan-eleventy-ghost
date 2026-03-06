@@ -5,7 +5,7 @@ permalink: /index.html
 ---
 
 {% set statusPosts = collections.posts | withTagSlug("status") | withoutAnyTagSlugs("listening,now-playing") | byPublishedDateDesc %}
-{% set latestPosts = collections.posts | withoutAnyTagSlugs("status,listening,now-playing,books,now-reading,gallery,photos") | byPublishedDateDesc %}
+{% set latestPosts = collections.posts | withoutAnyTagSlugs("status,listening,now-playing,books,now-reading,gallery,photos") | byPublishedDateDesc | take(12) %}
 {% set statusPost = statusPosts[0] %}
 
 <section class="section-block section-block-status">
@@ -53,7 +53,7 @@ permalink: /index.html
   <ul class="site-list-of-posts h-feed">
     {% for post in latestPosts %}
       {% set listTitle = post.title | trim %}
-      {% if not listTitle %}
+      {% if (not listTitle) or (listTitle | isUntitledLikeTitle) %}
         {% set listTitle = post | statusPreview %}
       {% endif %}
       <li class="site-list-of-posts-item h-entry">
