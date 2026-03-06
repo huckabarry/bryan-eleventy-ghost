@@ -6,7 +6,9 @@ function json(statusCode, payload) {
   return {
     statusCode,
     headers: {
-      "content-type": "application/json; charset=utf-8"
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+      pragma: "no-cache"
     },
     body: JSON.stringify(payload)
   };
@@ -158,7 +160,7 @@ exports.handler = async function (event) {
     };
     const accessToken = signPayload(accessPayload, secret);
 
-    return tokenResponse(event, {
+    return json(200, {
       access_token: accessToken,
       token_type: "Bearer",
       scope: accessPayload.scope,
