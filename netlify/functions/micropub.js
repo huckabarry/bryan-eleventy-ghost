@@ -371,6 +371,30 @@ function getSiteUrl() {
   return /^https?:\/\//i.test(configured) ? configured : `https://${configured}`;
 }
 
+function getMicropubConfig() {
+  return {
+    "post-types": [
+      {
+        type: "h-entry",
+        name: "Note",
+        properties: ["content"]
+      },
+      {
+        type: "h-entry",
+        name: "Photo",
+        properties: ["photo", "content"]
+      },
+      {
+        type: "h-entry",
+        name: "Article",
+        properties: ["name", "content"]
+      }
+    ],
+    destination: `${getSiteUrl().replace(/\/+$/, "")}/micropub`,
+    "media-endpoint": `${getSiteUrl().replace(/\/+$/, "")}/micropub/media`
+  };
+}
+
 exports.handler = async function (event) {
   if (event.httpMethod !== "GET" && event.httpMethod !== "POST") {
     return json(405, { error: "Method not allowed" });
@@ -379,14 +403,13 @@ exports.handler = async function (event) {
   if (event.httpMethod === "GET") {
     const query = event.queryStringParameters || {};
     const q = String(query.q || "").trim().toLowerCase();
-    const endpoint = `${getSiteUrl().replace(/\/+$/, "")}/micropub`;
 
     if (q === "config" || !q) {
-      return json(200, {
-        "post-types": [{ type: "h-entry", name: "Post" }],
-        destination: endpoint,
-        "media-endpoint": `${getSiteUrl().replace(/\/+$/, "")}/micropub/media`
-      });
+      return json(200, getMicropubConfig());
+    }
+
+    if (q === "post-types") {
+      return json(200, { "post-types": getMicropubConfig()["post-types"] });
     }
 
     if (q === "syndicate-to") {
