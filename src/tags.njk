@@ -9,6 +9,10 @@ layout: base
 
 <section class="section-block tag-archive{% if tagPage.slug == 'status' %} tag-archive-status{% elif tagPage.slug == 'listening' or tagPage.slug == 'now-playing' or tagPage.slug == 'books' or tagPage.slug == 'now-reading' %} tag-archive-listening{% endif %}">
   <h1 class="section-title">{% if tagPage.slug == "status" %}Status Archive{% elif tagPage.slug == "listening" or tagPage.slug == "now-playing" %}Listening History{% elif tagPage.slug == "books" or tagPage.slug == "now-reading" %}Library{% else %}{{ tagPage.name }}{% endif %}</h1>
+  {% set archivePosts = tagPage.posts %}
+  {% if tagPage.slug == "status" %}
+    {% set archivePosts = tagPage.posts | onlyLocalPosts %}
+  {% endif %}
   {% if tagPage.description %}
     <p class="home-description">{{ tagPage.description }}</p>
   {% endif %}
@@ -41,7 +45,7 @@ layout: base
   </div>
   {% else %}
   <ul class="site-list-of-posts h-feed">
-    {% for post in tagPage.posts %}
+    {% for post in archivePosts %}
       {% set listTitle = post.title | trim %}
       {% if tagPage.slug == "status" and (not listTitle or (listTitle | isUntitledLikeTitle)) %}
         {% set listTitle = (post | statusPreview) | firstWords(7) %}

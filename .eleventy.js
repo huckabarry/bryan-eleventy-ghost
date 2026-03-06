@@ -162,7 +162,7 @@ function getStatusLabel(post) {
 
 function isUntitledPost(post) {
   const title = String(post && post.title ? post.title : "").trim().toLowerCase();
-  return !title || title === "untitled";
+  return !title || title === "untitled" || title === "no subject";
 }
 
 function isListeningPost(post) {
@@ -303,8 +303,9 @@ function isUntitledLikeTitle(value) {
     .toLowerCase()
     .replace(/^[\(\[\{]\s*/, "")
     .replace(/\s*[\)\]\}]$/, "");
+  const compact = normalized.replace(/[^a-z0-9]+/g, " ").trim();
 
-  return !normalized || normalized === "untitled";
+  return !compact || compact === "untitled" || compact === "no subject" || compact === "nosubject";
 }
 
 function getLocalPostSlug(post) {
@@ -1085,6 +1086,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("onlyGhostPosts", (posts) => {
     return (posts || []).filter((post) => !isLocalMarkdownPost(post));
+  });
+
+  eleventyConfig.addFilter("onlyLocalPosts", (posts) => {
+    return (posts || []).filter((post) => isLocalMarkdownPost(post));
   });
 
   eleventyConfig.addFilter("take", (posts, count = 10) => {

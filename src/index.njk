@@ -4,7 +4,7 @@ eleventyExcludeFromCollections: true
 permalink: /index.html
 ---
 
-{% set statusPosts = collections.posts | withTagSlug("status") | withoutAnyTagSlugs("listening,now-playing") | byPublishedDateDesc %}
+{% set statusPosts = collections.posts | onlyLocalPosts | withTagSlug("status") | withoutAnyTagSlugs("listening,now-playing") | byPublishedDateDesc %}
 {% set latestPosts = collections.posts | onlyGhostPosts | withoutAnyTagSlugs("status,listening,now-playing,books,now-reading,gallery,photos") | byPublishedDateDesc | take(12) %}
 {% set statusPost = statusPosts[0] %}
 
