@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: |
           corepack enable
-          yarn install --frozen-lockfile
+          yarn install
 
       - name: Sync AlbumWhale and BookWyrm
         run: |
