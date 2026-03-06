@@ -83,7 +83,13 @@ function verifySignedPayload(token, secret) {
     .replace(/\//g, "_")
     .replace(/=+$/g, "");
 
-  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {
+  const sigBuffer = Buffer.from(sig);
+  const expectedBuffer = Buffer.from(expectedSig);
+  if (sigBuffer.length !== expectedBuffer.length) {
+    return null;
+  }
+
+  if (!crypto.timingSafeEqual(sigBuffer, expectedBuffer)) {
     return null;
   }
 
@@ -144,10 +150,12 @@ exports.handler = async function (event) {
 
     const codePayload = verifySignedPayload(code, secret);
     if (!codePayload || codePayload.t !== "code") {
+      console.warn("[indieauth-token] invalid or expired authorization code");
       return json(400, { error: "Invalid code" });
     }
 
     if (codePayload.client_id !== clientId || codePayload.redirect_uri !== redirectUri) {
+      console.warn("[indieauth-token] code mismatch for client_id or redirect_uri");
       return json(400, { error: "Code mismatch for client_id or redirect_uri" });
     }
 
@@ -179,6 +187,7 @@ exports.handler = async function (event) {
 
     const payload = verifySignedPayload(requestedToken, secret);
     if (!payload || payload.t !== "access") {
+      console.warn("[indieauth-token] invalid access token verification request");
       return json(401, { error: "Invalid token" });
     }
 
