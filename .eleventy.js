@@ -165,11 +165,13 @@ function isUntitledPost(post) {
 }
 
 function getPlainTextPreview(post, maxLength = 220) {
-  const text = String(post && post.html ? post.html : "")
+  const text = decodeHtmlEntities(
+    String(post && post.html ? post.html : "")
     .replace(/<figcaption[\s\S]*?<\/figcaption>/gi, " ")
     .replace(/<[^>]*>/g, " ")
     .replace(/\s+/g, " ")
-    .trim();
+    .trim()
+  );
 
   if (!text) {
     return "";
@@ -183,7 +185,7 @@ function getPlainTextPreview(post, maxLength = 220) {
 }
 
 function getStatusPreview(post) {
-  const excerpt = String(post && post.excerpt ? post.excerpt : "").trim();
+  const excerpt = decodeHtmlEntities(String(post && post.excerpt ? post.excerpt : "").trim());
 
   if (excerpt) {
     return excerpt;
@@ -195,7 +197,11 @@ function getStatusPreview(post) {
     return preview;
   }
 
-  return String(post && post.title ? post.title : "").trim();
+  if (/<img\b/i.test(String(post && post.html ? post.html : ""))) {
+    return "Photo update";
+  }
+
+  return decodeHtmlEntities(String(post && post.title ? post.title : "").trim());
 }
 
 function firstWords(value, count = 7) {
@@ -404,6 +410,42 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function decodeHtmlEntities(value) {
+  const text = String(value == null ? "" : value);
+  const namedEntities = {
+    amp: "&",
+    apos: "'",
+    quot: "\"",
+    lt: "<",
+    gt: ">",
+    nbsp: " ",
+    rsquo: "'",
+    lsquo: "'",
+    rdquo: "\"",
+    ldquo: "\"",
+    ndash: "-",
+    mdash: "-"
+  };
+  const toCodePoint = (num) => {
+    if (!Number.isInteger(num) || num < 0 || num > 0x10ffff) {
+      return "";
+    }
+    try {
+      return String.fromCodePoint(num);
+    } catch (error) {
+      return "";
+    }
+  };
+
+  return text
+    .replace(/&#(\d+);/g, (_, dec) => toCodePoint(Number.parseInt(dec, 10)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => toCodePoint(Number.parseInt(hex, 16)))
+    .replace(/&([a-zA-Z][a-zA-Z0-9]+);/g, (match, name) => {
+      const key = String(name).toLowerCase();
+      return Object.prototype.hasOwnProperty.call(namedEntities, key) ? namedEntities[key] : match;
+    });
+}
+
 function inlineMarkdownToHtml(text) {
   return escapeHtml(text).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
     return `<a href="${escapeHtml(url)}">${escapeHtml(label)}</a>`;
@@ -416,22 +458,52 @@ function markdownToSimpleHtml(markdown) {
     return "";
   }
 
-  const blocks = normalized.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
-  const htmlBlocks = blocks.map((block) => {
-    const imageMatch = block.match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/);
-    if (imageMatch) {
-      const alt = escapeHtml(imageMatch[1] || "");
-      const src = escapeHtml(imageMatch[2] || "");
-      return `<p><img src="${src}" alt="${alt}"></p>`;
+  const htmlBlocks = [];
+  const paragraphLines = [];
+  const imageOnlyLinePattern = /^!\[([^\]]*)\]\(([^)\s]+)\)(?:!\[([^\]]*)\]\(([^)\s]+)\))*$/;
+  const imagePattern = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
+
+  const flushParagraph = () => {
+    if (!paragraphLines.length) {
+      return;
     }
 
-    const lineHtml = block
-      .split("\n")
-      .map((line) => inlineMarkdownToHtml(line))
+    const lineHtml = paragraphLines
+      .join("\n")
+      .map((line) => {
+        return inlineMarkdownToHtml(line).replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, src) => {
+          return `<img src="${escapeHtml(src || "")}" alt="${escapeHtml(alt || "")}">`;
+        });
+      })
       .join("<br>");
+    htmlBlocks.push(`<p>${lineHtml}</p>`);
+    paragraphLines.length = 0;
+  };
 
-    return `<p>${lineHtml}</p>`;
+  normalized.split("\n").forEach((rawLine) => {
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushParagraph();
+      return;
+    }
+
+    if (imageOnlyLinePattern.test(line)) {
+      flushParagraph();
+      let match;
+      while ((match = imagePattern.exec(line)) !== null) {
+        const alt = escapeHtml(match[1] || "");
+        const src = escapeHtml(match[2] || "");
+        htmlBlocks.push(`<p><img src="${src}" alt="${alt}"></p>`);
+      }
+      imagePattern.lastIndex = 0;
+      return;
+    }
+
+    paragraphLines.push(rawLine);
   });
+
+  flushParagraph();
 
   return htmlBlocks.join("\n");
 }
