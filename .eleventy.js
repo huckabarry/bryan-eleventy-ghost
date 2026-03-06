@@ -302,7 +302,7 @@ function toTagName(slug) {
     .join(" ");
 }
 
-function parseLocalStatusTags(value) {
+function parseLocalPostTags(value, requiredTag) {
   const rawTags = Array.isArray(value)
     ? value
     : String(value || "")
@@ -314,8 +314,9 @@ function parseLocalStatusTags(value) {
     .map((tag) => slugify(tag))
     .filter(Boolean);
 
-  if (!normalized.includes("status")) {
-    normalized.unshift("status");
+  const required = slugify(requiredTag || "");
+  if (required && !normalized.includes(required)) {
+    normalized.unshift(required);
   }
 
   const seen = new Set();
@@ -327,14 +328,15 @@ function parseLocalStatusTags(value) {
       seen.add(tag);
       return true;
     })
-    .map((slug) => ({
-      slug,
-      name: toTagName(slug),
+    .map((tagSlug) => ({
+      slug: tagSlug,
+      name: toTagName(tagSlug),
       visibility: "public"
     }));
 }
 
-function createLocalStatusPost(item) {
+function createLocalMarkdownPost(item, options = {}) {
+  const { idPrefix = "local-post", requiredTag = "" } = options;
   const data = (item && item.data) || {};
   const slug = slugify(data.slug || item.fileSlug || "");
   const publishedAt = normalizeDate(
@@ -350,8 +352,8 @@ function createLocalStatusPost(item) {
   const authorName = String(data.author || data.author_name || "Bryan Robb").trim() || "Bryan Robb";
 
   return {
-    id: `local-status:${slug || item.fileSlug || item.inputPath}`,
-    uuid: `local-status:${slug || item.fileSlug || item.inputPath}`,
+    id: `${idPrefix}:${slug || item.fileSlug || item.inputPath}`,
+    uuid: `${idPrefix}:${slug || item.fileSlug || item.inputPath}`,
     slug: slug || item.fileSlug || "status",
     title,
     html,
@@ -360,7 +362,7 @@ function createLocalStatusPost(item) {
     visibility: "published",
     published_at: publishedAt,
     updated_at: updatedAt,
-    tags: parseLocalStatusTags(data.tags),
+    tags: parseLocalPostTags(data.tags, requiredTag),
     primary_author: {
       name: authorName
     },
@@ -372,6 +374,20 @@ function createLocalStatusPost(item) {
   };
 }
 
+function createLocalStatusPost(item) {
+  return createLocalMarkdownPost(item, {
+    idPrefix: "local-status",
+    requiredTag: "status"
+  });
+}
+
+function createLocalListeningPost(item) {
+  return createLocalMarkdownPost(item, {
+    idPrefix: "local-listening",
+    requiredTag: "listening"
+  });
+}
+
 function readLocalMarkdownBody(filePath) {
   if (!filePath) {
     return "";
@@ -381,7 +397,7 @@ function readLocalMarkdownBody(filePath) {
     const source = fs.readFileSync(filePath, "utf8");
     return stripFrontMatter(source).trim();
   } catch (error) {
-    console.warn(`[afterword] unable to read local status markdown ${filePath}: ${error.message}`);
+    console.warn(`[afterword] unable to read local markdown ${filePath}: ${error.message}`);
     return "";
   }
 }
@@ -630,14 +646,36 @@ function getLocalStatusPosts(collectionApi) {
     .map((item) => createLocalStatusPost(item));
 }
 
+function getLocalListeningPosts(collectionApi) {
+  if (!collectionApi || typeof collectionApi.getFilteredByGlob !== "function") {
+    return [];
+  }
+
+  return collectionApi
+    .getFilteredByGlob("src/listening-albums/**/*.md")
+    .filter((item) => !(item.fileSlug || "").startsWith("_"))
+    .map((item) => createLocalListeningPost(item));
+}
+
 async function getMergedPosts(collectionApi) {
   const ghostPosts = await fetchNowPosts();
   const localStatusPosts = getLocalStatusPosts(collectionApi);
-  const mergedPosts = mergePostsByLocalSlug([...ghostPosts, ...localStatusPosts]).sort(comparePostsDesc);
+  const localListeningPosts = getLocalListeningPosts(collectionApi);
+  const mergedPosts = mergePostsByLocalSlug([
+    ...ghostPosts,
+    ...localStatusPosts,
+    ...localListeningPosts
+  ]).sort(comparePostsDesc);
 
   if (localStatusPosts.length > 0) {
     console.log(
       `[afterword] merged ${localStatusPosts.length} local status markdown post(s) from src/status`
+    );
+  }
+
+  if (localListeningPosts.length > 0) {
+    console.log(
+      `[afterword] merged ${localListeningPosts.length} local listening markdown post(s) from src/listening-albums`
     );
   }
 

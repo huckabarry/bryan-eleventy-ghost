@@ -5,30 +5,33 @@ permalink: /listening-now/
 eleventyExcludeFromCollections: true
 ---
 
+{% set listeningPosts = collections.posts | withAnyTagSlugs("listening,now-playing") | byPublishedDateDesc %}
+
 <section class="section-block tag-archive tag-archive-listening">
   <h1 class="section-title">Listening Now</h1>
 
-  {% if albumwhale and albumwhale.length %}
+  {% if listeningPosts and listeningPosts.length %}
     <div class="cover-grid cover-grid-listening h-feed">
-      {% for album in albumwhale %}
+      {% for post in listeningPosts %}
+        {% set coverImage = post | firstImage %}
         <article class="cover-card h-entry">
-          <a class="cover-card-link u-url" href="{{ album.link }}">
-            {% if album.cover %}
+          <a class="cover-card-link u-url" href="{{ post | localPostUrl }}">
+            {% if coverImage %}
               <img
                 class="cover-card-image u-photo"
-                src="{{ album.cover }}"
-                alt="{{ album.title }}"
+                src="{{ coverImage.src }}"
+                alt="{{ coverImage.alt }}"
                 loading="lazy"
               >
             {% else %}
               <span class="cover-card-image cover-card-image-fallback" aria-hidden="true"></span>
             {% endif %}
 
-            <span class="cover-card-title p-name">{{ album.title }}</span>
+            <span class="cover-card-title p-name">{{ post.title }}</span>
           </a>
 
-          <time class="site-visually-hidden dt-published" datetime="{{ album.date }}">
-            {{ album.date | dateDisplay }}
+          <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">
+            {{ post.published_at | dateDisplay }}
           </time>
 
           <span class="site-visually-hidden p-author h-card">

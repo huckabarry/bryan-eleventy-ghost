@@ -4,25 +4,25 @@ title: Listening
 permalink: /listening/
 ---
 
+{% set listeningPosts = collections.posts | withAnyTagSlugs("listening,now-playing") | byPublishedDateDesc %}
+
 <section class="section-block">
   <h1 class="section-title">Listening</h1>
 
-  {% if albumwhale and albumwhale.items and albumwhale.items.length %}
+  {% if listeningPosts and listeningPosts.length %}
     <ul class="site-list-of-posts">
-      {% for item in albumwhale.items %}
+      {% for post in listeningPosts %}
         <li class="site-list-of-posts-item">
           <div class="site-list-link">
-            <a href="{{ item.link }}">{{ item.title }}</a>
+            <a href="{{ post | localPostUrl }}">{{ post.title }}</a>
           </div>
-          {% if item.pubDate %}
-            <time class="site-list-date" datetime="{{ item.pubDate | htmlDateString }}">
-              {{ item.pubDate | dateDisplay }}
-            </time>
-          {% endif %}
+          <time class="site-list-date" datetime="{{ post.published_at | htmlDateString }}">
+            {{ post.published_at | dateDisplay }}
+          </time>
         </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p>No Album Whale entries yet.</p>
+    <p>No listening entries yet.</p>
   {% endif %}
 </section>

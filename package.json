@@ -7,6 +7,7 @@
     "start": "yarn run dev",
     "dev": "cross-env ELEVENTY_ENV=dev eleventy --serve",
     "build": "cross-env ELEVENTY_ENV=prod eleventy",
+    "sync:albumwhale": "node scripts/sync-albumwhale-to-local.js",
     "test": "yarn run build",
     "lint": "eslint . --ext .js --cache"
   },
