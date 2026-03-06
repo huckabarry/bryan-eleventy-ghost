@@ -51,62 +51,54 @@ description: "The latest now post."
   {% endif %}
 </section>
 
-{% if readingPost %}
+{% if readingPost or listeningPost %}
 <section class="section-block section-block-listening">
-  <h2 class="section-title">Latest Reading</h2>
-  <div class="home-stream">
-    {% set post = readingPost %}
-    {% set streamImage = post | firstImage %}
-    <article class="home-stream-item h-entry">
-      {% if streamImage %}
-        <a class="home-stream-media u-url" href="{{ post | localPostUrl }}">
-          <img class="home-stream-image home-stream-image-listening u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
+  <h2 class="section-title">Latest Media</h2>
+  <div class="cover-grid cover-grid-listening h-feed now-media-grid">
+    {% if readingPost %}
+      {% set post = readingPost %}
+      {% set coverImage = post | firstImage %}
+      <article class="cover-card h-entry">
+        <a class="cover-card-link u-url" href="{{ post | localPostUrl }}">
+          {% if coverImage %}
+          <img
+            class="cover-card-image u-photo"
+            src="{{ coverImage.src }}"
+            alt="{{ coverImage.alt }}"
+            loading="lazy"
+          >
+          {% else %}
+          <span class="cover-card-image cover-card-image-fallback" aria-hidden="true"></span>
+          {% endif %}
+          <span class="cover-card-title p-name">📚 {{ post.title }}</span>
+          <span class="cover-card-meta">{{ post.published_at | dateDisplay }}</span>
         </a>
-      {% endif %}
-      <div class="home-stream-body e-content">
-        <p class="home-stream-meta">
-          <a class="u-url" href="{{ post | localPostUrl }}">
-            <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
-          </a>
-        </p>
-        <p class="home-stream-title-reading">
-          <a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a>
-        </p>
-        {% if post.excerpt %}
-          <p>{{ post.excerpt }}</p>
-        {% endif %}
-      </div>
-    </article>
-  </div>
-  <p class="listening-note">See all reading posts <a href="/books/">here</a>.</p>
-</section>
-{% endif %}
+        <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+      </article>
+    {% endif %}
 
-{% if listeningPost %}
-<section class="section-block section-block-listening">
-  <h2 class="section-title">Latest Listening</h2>
-  <div class="home-stream">
-    {% set post = listeningPost %}
-    {% set streamImage = post | firstImage %}
-    <article class="home-stream-item h-entry">
-      {% if streamImage %}
-        <a class="home-stream-media u-url" href="{{ post | localPostUrl }}">
-          <img class="home-stream-image home-stream-image-listening u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
+    {% if listeningPost %}
+      {% set post = listeningPost %}
+      {% set coverImage = post | firstImage %}
+      <article class="cover-card h-entry">
+        <a class="cover-card-link u-url" href="{{ post | localPostUrl }}">
+          {% if coverImage %}
+          <img
+            class="cover-card-image u-photo"
+            src="{{ coverImage.src }}"
+            alt="{{ coverImage.alt }}"
+            loading="lazy"
+          >
+          {% else %}
+          <span class="cover-card-image cover-card-image-fallback" aria-hidden="true"></span>
+          {% endif %}
+          <span class="cover-card-title p-name">🎵 {{ post.title }}</span>
+          <span class="cover-card-meta">{{ post.published_at | dateDisplay }}</span>
         </a>
-      {% endif %}
-      <div class="home-stream-body e-content">
-        <p class="home-stream-meta">
-          <a class="u-url" href="{{ post | localPostUrl }}">
-            <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
-          </a>
-        </p>
-        <p class="home-stream-title-reading">
-          <a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a>
-        </p>
-        <div class="content-body">{{ post.html | stripFirstImage | safe }}</div>
-      </div>
-    </article>
+        <time class="site-visually-hidden dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
+      </article>
+    {% endif %}
   </div>
-  <p class="listening-note">See all listening posts <a href="/tags/listening/">here</a>.</p>
+  <p class="listening-note">Browse <a href="/books/">Library</a> and <a href="/tags/listening/">Listening History</a>.</p>
 </section>
 {% endif %}
