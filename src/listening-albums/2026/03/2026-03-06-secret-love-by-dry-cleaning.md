@@ -1,12 +1,12 @@
 ---
 title: "Secret Love by Dry Cleaning"
-date: 2026-03-06T00:26:17.000Z
+date: 2026-03-06T16:19:47.000Z
 tags:
   - listening
 slug: "2026-03-06-secret-love-by-dry-cleaning"
 author: "Bryan Robb"
 albumwhale_url: "https://albumwhale.com/bryan/listening-now#album_68550"
-albumwhale_order: 2
+albumwhale_order: 4
 ---
 
 ![](/assets/listening-images/2026/2026-03-06-secret-love-by-dry-cleaning-f8c9a587.jpg)
