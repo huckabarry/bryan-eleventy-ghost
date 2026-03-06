@@ -6,6 +6,7 @@ tags:
 slug: "2026-03-06-when-a-flower-doesn-t-grow-by-softcult"
 author: "Bryan Robb"
 albumwhale_url: "https://albumwhale.com/bryan/listening-now#album_68022"
+albumwhale_order: 3
 ---
 
 ![](/assets/listening-images/2026/2026-03-06-when-a-flower-doesn-t-grow-by-softcult-58851833.jpg)

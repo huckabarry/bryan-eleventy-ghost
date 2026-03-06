@@ -246,7 +246,8 @@ function createMarkdown({
   isoDate,
   slug,
   albumWhaleUrl,
-  coverPublicPath
+  coverPublicPath,
+  albumWhaleOrder
 }) {
   const frontMatter = [
     "---",
@@ -257,6 +258,7 @@ function createMarkdown({
     `slug: "${escapeYaml(slug)}"`,
     `author: "${escapeYaml(DEFAULT_AUTHOR)}"`,
     `albumwhale_url: "${escapeYaml(albumWhaleUrl || "")}"`,
+    `albumwhale_order: ${Number.isInteger(albumWhaleOrder) ? albumWhaleOrder : 9999}`,
     "---",
     ""
   ];
@@ -293,7 +295,7 @@ async function main() {
   let existingImages = 0;
   let failedImages = 0;
 
-  for (const album of albums) {
+  for (const [albumIndex, album] of albums.entries()) {
     const title = String(album && album.title ? album.title : "").trim() || "Untitled album";
     const albumWhaleUrl = String(album && album.link ? album.link : "").trim();
     const isoDate = toIsoDate(album && album.date ? album.date : undefined);
@@ -336,7 +338,8 @@ async function main() {
       isoDate,
       slug: baseName,
       albumWhaleUrl,
-      coverPublicPath
+      coverPublicPath,
+      albumWhaleOrder: albumIndex
     });
 
     const alreadyExists = fs.existsSync(postPath);

@@ -358,6 +358,7 @@ function createLocalMarkdownPost(item, options = {}) {
   const excerpt = String(data.excerpt || "").trim();
   const featureImage = data.feature_image || data.featureImage || "";
   const authorName = String(data.author || data.author_name || "Bryan Robb").trim() || "Bryan Robb";
+  const albumwhaleOrder = Number.isFinite(Number(data.albumwhale_order)) ? Number(data.albumwhale_order) : null;
 
   return {
     id: `${idPrefix}:${slug || item.fileSlug || item.inputPath}`,
@@ -367,6 +368,7 @@ function createLocalMarkdownPost(item, options = {}) {
     html,
     excerpt,
     feature_image: featureImage || null,
+    albumwhale_order: albumwhaleOrder,
     visibility: "published",
     published_at: publishedAt,
     updated_at: updatedAt,
@@ -578,6 +580,18 @@ function comparePostsDesc(a, b) {
     return updatedDiff;
   }
 
+  const aListeningOrder = Number.isFinite(Number(a && a.albumwhale_order)) ? Number(a.albumwhale_order) : null;
+  const bListeningOrder = Number.isFinite(Number(b && b.albumwhale_order)) ? Number(b.albumwhale_order) : null;
+  if (
+    isListeningPost(a) &&
+    isListeningPost(b) &&
+    aListeningOrder !== null &&
+    bListeningOrder !== null &&
+    aListeningOrder !== bListeningOrder
+  ) {
+    return aListeningOrder - bListeningOrder;
+  }
+
   const aSlug = getLocalPostSlug(a);
   const bSlug = getLocalPostSlug(b);
   return bSlug.localeCompare(aSlug);
@@ -713,12 +727,18 @@ function isPostNewer(candidate, existing) {
 
 async function fetchNowPosts() {
   if (!nowPostsPromise) {
-    nowPostsPromise = ghostApi.posts.browse({
-      formats: "html",
-      include: "tags,authors",
-      limit: 100,
-      filter: `status:published+tag:[${INCLUDED_SITE_TAGS.join(",")}]`
-    });
+    nowPostsPromise = ghostApi.posts
+      .browse({
+        formats: "html",
+        include: "tags,authors",
+        limit: 100,
+        filter: `status:published+tag:[${INCLUDED_SITE_TAGS.join(",")}]`
+      })
+      .catch((error) => {
+        const details = error && error.message ? error.message : String(error);
+        console.warn(`[afterword] Ghost fetch failed; continuing with local posts only. ${details}`);
+        return [];
+      });
   }
 
   const posts = await nowPostsPromise;
