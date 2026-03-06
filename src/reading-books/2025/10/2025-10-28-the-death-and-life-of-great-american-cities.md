@@ -5,6 +5,7 @@ tags:
   - books
 slug: "the-death-and-life-of-great-american-cities"
 author: "Bryan Robb"
+book_author: "Jane Jacobs"
 excerpt: "Finished on 2025-10-28"
 bookwyrm_url: "https://bookwyrm.social/user/bryan/generatednote/8825626"
 book_url: "https://bookwyrm.social/book/141762"

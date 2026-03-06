@@ -5,6 +5,7 @@ tags:
   - books
 slug: "healing-your-attachment-wounds"
 author: "Bryan Robb"
+book_author: "Diane Poole Heller Ph.D."
 excerpt: "Finished on 2025-12-12"
 bookwyrm_url: "https://bookwyrm.social/user/bryan/generatednote/9182813"
 book_url: "https://bookwyrm.social/book/1568715"

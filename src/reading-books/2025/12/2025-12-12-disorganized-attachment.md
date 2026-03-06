@@ -5,6 +5,7 @@ tags:
   - books
 slug: "disorganized-attachment"
 author: "Bryan Robb"
+book_author: "David Lawson PhD"
 excerpt: "Finished on 2025-12-12"
 bookwyrm_url: "https://bookwyrm.social/user/bryan/generatednote/9182835"
 book_url: "https://bookwyrm.social/book/2173928"

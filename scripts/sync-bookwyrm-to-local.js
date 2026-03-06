@@ -163,6 +163,15 @@ function deriveBookTitleFromRawTitle(rawTitle) {
   return title;
 }
 
+function deriveBookAuthorFromRawTitle(rawTitle) {
+  const title = String(rawTitle || "").trim();
+  const readingMatch = title.match(/reading\s+.+?\s+by\s+(.+)$/i);
+  if (readingMatch && readingMatch[1]) {
+    return readingMatch[1].trim();
+  }
+  return "";
+}
+
 async function fetchText(url) {
   const target = String(url || "").trim();
   if (!target) {
@@ -378,6 +387,7 @@ function createBookRecord() {
   return {
     key: "",
     bookTitle: "",
+    bookAuthor: "",
     bookUrl: "",
     coverPublicPath: "",
     coverRemoteUrl: "",
@@ -419,6 +429,7 @@ function getEventSummary(events) {
 
 function createMarkdownForBook({
   title,
+  bookAuthor,
   publishedAt,
   slug,
   tags,
@@ -436,6 +447,7 @@ function createMarkdownForBook({
     ...tags.map((tag) => `  - ${tag}`),
     `slug: "${escapeYaml(slug)}"`,
     `author: "${escapeYaml(DEFAULT_AUTHOR)}"`,
+    `book_author: "${escapeYaml(bookAuthor || "")}"`,
     `excerpt: "${escapeYaml(excerpt)}"`,
     `bookwyrm_url: "${escapeYaml(bookWyrmUrl || "")}"`,
     `book_url: "${escapeYaml(bookUrl || "")}"`,
@@ -502,6 +514,7 @@ async function loadExistingRecords() {
     const source = await fsp.readFile(filePath, "utf8");
     const { frontMatter, body } = splitFrontMatter(source);
     const title = readFrontMatterValue(frontMatter, "title");
+    const bookAuthor = readFrontMatterValue(frontMatter, "book_author");
     const bookUrl = readFrontMatterValue(frontMatter, "book_url");
     const bookWyrmUrl = readFrontMatterValue(frontMatter, "bookwyrm_url");
     const date = readFrontMatterValue(frontMatter, "date");
@@ -516,6 +529,7 @@ async function loadExistingRecords() {
     const record = records.get(key);
     record.key = key;
     record.bookTitle = record.bookTitle || deriveBookTitleFromRawTitle(title);
+    record.bookAuthor = record.bookAuthor || bookAuthor || deriveBookAuthorFromRawTitle(title);
     record.bookUrl = record.bookUrl || bookUrl;
     record.coverPublicPath = record.coverPublicPath || coverPath;
     record.candidatePaths.push(filePath);
@@ -552,6 +566,7 @@ async function main() {
     const record = records.get(key);
     record.key = key;
     record.bookTitle = record.bookTitle || bookTitle;
+    record.bookAuthor = record.bookAuthor || deriveBookAuthorFromRawTitle(item.title);
     record.bookUrl = record.bookUrl || resolvedBookUrl;
 
     upsertEvent(record, {
@@ -589,6 +604,7 @@ async function main() {
       preferred.coverPublicPath = preferred.coverPublicPath || record.coverPublicPath;
       preferred.bookUrl = preferred.bookUrl || record.bookUrl;
       preferred.bookTitle = preferred.bookTitle || record.bookTitle;
+      preferred.bookAuthor = preferred.bookAuthor || record.bookAuthor;
       record.events.forEach((event) => upsertEvent(preferred, event));
       records.delete(record.key);
     });
@@ -661,6 +677,7 @@ async function main() {
       .sort((a, b) => normalizeDate(b.date).localeCompare(normalizeDate(a.date)))[0];
     const markdown = createMarkdownForBook({
       title: record.bookTitle,
+      bookAuthor: record.bookAuthor,
       publishedAt: normalizeDate(events[0].date),
       slug,
       tags,
