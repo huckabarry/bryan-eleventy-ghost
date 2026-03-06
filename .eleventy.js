@@ -729,10 +729,11 @@ function getLocalListeningPosts(collectionApi) {
 
 async function getMergedPosts(collectionApi) {
   const ghostPosts = await fetchNowPosts();
+  const ghostPostsWithoutListening = ghostPosts.filter((post) => !isListeningPost(post));
   const localStatusPosts = getLocalStatusPosts(collectionApi);
   const localListeningPosts = getLocalListeningPosts(collectionApi);
   const mergedBySlug = mergePostsByLocalSlug([
-    ...ghostPosts,
+    ...ghostPostsWithoutListening,
     ...localStatusPosts,
     ...localListeningPosts
   ]);
@@ -747,6 +748,12 @@ async function getMergedPosts(collectionApi) {
   if (localListeningPosts.length > 0) {
     console.log(
       `[afterword] merged ${localListeningPosts.length} local listening markdown post(s) from src/listening-albums`
+    );
+  }
+
+  if (ghostPosts.length !== ghostPostsWithoutListening.length) {
+    console.log(
+      `[afterword] excluded ${ghostPosts.length - ghostPostsWithoutListening.length} Ghost listening/now-playing post(s) in favor of local listening sources`
     );
   }
 
