@@ -40,6 +40,7 @@ body.site-shell {
   max-width: calc(var(--column) + (var(--gutter) * 2));
   margin: 0 auto;
   padding: 2rem var(--gutter) 3rem;
+  scrollbar-gutter: stable;
 }
 
 a {
@@ -820,6 +821,8 @@ h6 {
 
 .photo-card {
   break-inside: avoid;
+  break-inside: avoid-column;
+  -webkit-column-break-inside: avoid;
   margin: 0 0 0.5rem;
 }
 
@@ -1340,10 +1343,6 @@ body.photo-lightbox-open {
 
   .photo-grid {
     column-count: 2;
-  }
-
-  .books-grid {
-    column-count: 3;
   }
 
   .cover-grid {

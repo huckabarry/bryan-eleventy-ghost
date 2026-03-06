@@ -5,9 +5,6 @@ title: About
 description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place where I write short status updates about what’s going on in my life, post photos, and occasionally shout into the void."
 ---
 
-{% set currentReadingPosts = collections.posts | withTagSlug("now-reading") | byPublishedDateDesc %}
-{% set readingPosts = collections.posts | withAnyTagSlugs("books,now-reading") | byPublishedDateDesc %}
-{% set readingPost = currentReadingPosts[0] or readingPosts[0] %}
 
 <article class="content content-page h-entry">
   <header class="post-header">
@@ -56,36 +53,4 @@ description: "Hello, fellow wanderer. I’m Bryan and this is my blog, a place w
   </div>
 </section>
 
-  {% if readingPost %}
-  <section class="section-block">
-    <h2 class="section-title">Reading</h2>
-    <div class="home-stream">
-      {% set post = readingPost %}
-      {% set streamImage = post | firstImage %}
-      <article class="home-stream-item home-stream-item-reading h-entry">
-        <p class="home-stream-meta home-stream-meta-reading">
-          <a class="u-url" href="{{ post | localPostUrl }}">
-            <time class="dt-published" datetime="{{ post.published_at | htmlDateString }}">{{ post.published_at | dateDisplay }}</time>
-          </a>
-        </p>
-        <p class="home-stream-title-reading">
-          <a class="p-name u-url" href="{{ post | localPostUrl }}">{{ post.title }}</a>
-        </p>
-        {% if streamImage %}
-          <a class="home-stream-media home-stream-media-reading u-url" href="{{ post | localPostUrl }}">
-            <img class="home-stream-image home-stream-image-listening u-photo" src="{{ streamImage.src }}" alt="{{ streamImage.alt }}" loading="lazy">
-          </a>
-        {% endif %}
-        <div class="home-stream-body home-stream-body-reading e-content">
-          {% if post.excerpt %}
-            <p>{{ post.excerpt }}</p>
-          {% endif %}
-        </div>
-      </article>
-    </div>
-    <p class="listening-note">
-      See all reading posts <a href="/books/">here</a>.
-    </p>
-  </section>
-  {% endif %}
 </article>
