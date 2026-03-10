@@ -1,3 +1,4 @@
 module.exports = {
-  permalink: false
+  permalink: false,
+  eleventyExcludeFromCollections: true
 };

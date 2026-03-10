@@ -1,6 +1,7 @@
 const GhostAdminAPI = require("@tryghost/admin-api");
 const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 const rssPlugin = require("@11ty/eleventy-plugin-rss");
+const RssParser = require("rss-parser");
 const fs = require("fs");
 
 const ghostApi = new GhostAdminAPI({
@@ -10,6 +11,11 @@ const ghostApi = new GhostAdminAPI({
 });
 
 let nowPostsPromise;
+const rssParser = new RssParser({
+  customFields: {
+    item: [["content:encoded", "contentEncoded"], "creator", "category", "guid"]
+  }
+});
 const INCLUDED_SITE_TAGS = [
   "afterword",
   "status",
@@ -138,6 +144,105 @@ function parseTagSlugs(value) {
     .split(",")
     .map((slug) => slug.trim())
     .filter(Boolean);
+}
+
+function toTagObjectFromSlug(tagSlug) {
+  const normalizedSlug = slugify(tagSlug);
+  if (!normalizedSlug) {
+    return null;
+  }
+  return {
+    slug: normalizedSlug,
+    name: toTagName(normalizedSlug),
+    visibility: "public"
+  };
+}
+
+function resolveGhostContentBase() {
+  const candidates = [process.env.GHOST_URL, process.env.GHOST_ADMIN_URL]
+    .map((value) => String(value || "").trim())
+    .filter(Boolean);
+
+  for (const candidate of candidates) {
+    const normalized = candidate.replace(/\/+$/, "").replace(/\/ghost$/i, "");
+    if (normalized) {
+      return normalized;
+    }
+  }
+
+  return "";
+}
+
+function getGhostPostSlugFromUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw) {
+    return "";
+  }
+
+  try {
+    const url = new URL(raw);
+    const parts = url.pathname.split("/").filter(Boolean);
+    return slugify(parts.pop() || "");
+  } catch (error) {
+    return "";
+  }
+}
+
+function mapGhostRssItemToPost(item) {
+  const contentHtml = String(item && (item.contentEncoded || item.content || item["content:encoded"]) ? (item.contentEncoded || item.content || item["content:encoded"]) : "").trim();
+  const dateValue = normalizeDate(item && (item.isoDate || item.pubDate) ? (item.isoDate || item.pubDate) : "", new Date().toISOString());
+  const categories = []
+    .concat(item && Array.isArray(item.categories) ? item.categories : [])
+    .concat(item && item.category ? [item.category] : []);
+  const tags = categories
+    .map((value) => toTagObjectFromSlug(String(value || "")))
+    .filter(Boolean);
+  const slug = slugify(
+    (item && item.slug) ||
+      getGhostPostSlugFromUrl(item && item.link ? item.link : "") ||
+      (item && item.guid) ||
+      (item && item.title) ||
+      ""
+  );
+  const title = String(item && item.title ? item.title : "").trim() || "Untitled";
+  const authorName = String(item && item.creator ? item.creator : "").trim() || "Ghost";
+
+  return {
+    id: String(item && (item.guid || item.link || slug) ? (item.guid || item.link || slug) : `ghost-rss:${slug}`),
+    uuid: String(item && (item.guid || item.link || slug) ? (item.guid || item.link || slug) : `ghost-rss:${slug}`),
+    slug: slug || "post",
+    title,
+    html: contentHtml,
+    excerpt: String(item && item.contentSnippet ? item.contentSnippet : "").trim(),
+    feature_image: null,
+    visibility: "public",
+    published_at: dateValue,
+    updated_at: dateValue,
+    tags,
+    primary_author: {
+      name: authorName
+    },
+    authors: [
+      {
+        name: authorName
+      }
+    ]
+  };
+}
+
+async function fetchGhostPostsFromRss(contentBase) {
+  const base = String(contentBase || "").trim().replace(/\/+$/, "");
+  if (!base) {
+    return [];
+  }
+
+  const feedUrl = `${base}/rss/`;
+  const feed = await rssParser.parseURL(feedUrl);
+  const items = Array.isArray(feed && feed.items) ? feed.items : [];
+  const posts = items.map((item) => mapGhostRssItemToPost(item));
+
+  console.log(`[afterword] fetched ${posts.length} Ghost posts via RSS fallback`);
+  return posts;
 }
 
 function slugify(value) {
@@ -429,6 +534,7 @@ function createLocalMarkdownPost(item, options = {}) {
   const html = markdownToSimpleHtml(markdownSource);
   const excerpt = String(data.excerpt || "").trim();
   const featureImage = data.feature_image || data.featureImage || "";
+  const albumwhaleUrl = String(data.albumwhale_url || "").trim();
   const authorName = String(data.author || data.author_name || "Bryan Robb").trim() || "Bryan Robb";
   const albumwhaleOrder = Number.isFinite(Number(data.albumwhale_order)) ? Number(data.albumwhale_order) : null;
   const bookAuthor = String(data.book_author || "").trim() || null;
@@ -441,6 +547,7 @@ function createLocalMarkdownPost(item, options = {}) {
     html,
     excerpt,
     feature_image: featureImage || null,
+    albumwhale_url: albumwhaleUrl || null,
     albumwhale_order: albumwhaleOrder,
     book_author: bookAuthor,
     visibility: "published",
@@ -711,6 +818,17 @@ function getListeningPostScore(post) {
   return score;
 }
 
+function getListeningSourceKey(post) {
+  const explicitSource = String(post && post.albumwhale_url ? post.albumwhale_url : "").trim();
+  if (explicitSource) {
+    return explicitSource;
+  }
+
+  const html = String(post && post.html ? post.html : "");
+  const match = html.match(/https?:\/\/albumwhale\.com\/[^"'\\s<>]+/i);
+  return match ? match[0] : "";
+}
+
 function dedupeListeningPosts(posts) {
   const nonListening = [];
   const listeningByKey = new Map();
@@ -721,11 +839,12 @@ function dedupeListeningPosts(posts) {
       return;
     }
 
+    const sourceKey = getListeningSourceKey(post);
     const dayKey = getPostDayKey(post);
     const titleKey = normalizeTitleKey(post && post.title ? post.title : "");
-    const dedupeKey = `${dayKey}|${titleKey}`;
+    const dedupeKey = sourceKey || `${dayKey}|${titleKey}`;
 
-    if (!dayKey || !titleKey) {
+    if (!sourceKey && (!dayKey || !titleKey)) {
       nonListening.push(post);
       return;
     }
@@ -803,7 +922,7 @@ function isPostNewer(candidate, existing) {
 
 async function fetchNowPosts() {
   if (!nowPostsPromise) {
-    const filter = `status:published+tag:[${INCLUDED_SITE_TAGS.join(",")}]`;
+    const filter = "status:published";
 
     nowPostsPromise = ghostApi.posts
       .browse({
@@ -816,53 +935,58 @@ async function fetchNowPosts() {
         const adminDetails = adminError && adminError.message ? adminError.message : String(adminError);
         console.warn(`[afterword] Ghost Admin API fetch failed; trying Content API fallback. ${adminDetails}`);
 
-        const contentBase = String(process.env.GHOST_URL || "").replace(/\/$/, "");
+        const contentBase = resolveGhostContentBase();
         const contentKey = String(process.env.GHOST_CONTENT_API_KEY || "").trim();
 
-        if (!contentBase || !contentKey) {
-          console.warn("[afterword] Ghost Content API fallback unavailable; missing GHOST_URL or GHOST_CONTENT_API_KEY.");
-          return [];
-        }
+        if (contentBase && contentKey) {
+          try {
+            const params = new URLSearchParams({
+              key: contentKey,
+              filter,
+              include: "tags,authors",
+              formats: "html",
+              limit: "100"
+            });
+            const response = await fetch(`${contentBase}/ghost/api/content/posts/?${params.toString()}`, {
+              method: "GET",
+              headers: {
+                Accept: "application/json"
+              }
+            });
 
-        try {
-          const params = new URLSearchParams({
-            key: contentKey,
-            filter,
-            include: "tags,authors",
-            formats: "html",
-            limit: "100"
-          });
-          const response = await fetch(`${contentBase}/ghost/api/content/posts/?${params.toString()}`, {
-            method: "GET",
-            headers: {
-              Accept: "application/json"
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}`);
             }
-          });
 
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            const payload = await response.json();
+            const posts = Array.isArray(payload && payload.posts) ? payload.posts : [];
+            console.log(`[afterword] fetched ${posts.length} Ghost posts via Content API fallback`);
+            return posts;
+          } catch (contentError) {
+            const contentDetails = contentError && contentError.message ? contentError.message : String(contentError);
+            console.warn(`[afterword] Ghost Content API fallback failed. ${contentDetails}`);
           }
-
-          const payload = await response.json();
-          const posts = Array.isArray(payload && payload.posts) ? payload.posts : [];
-          console.log(`[afterword] fetched ${posts.length} Ghost posts via Content API fallback`);
-          return posts;
-        } catch (contentError) {
-          const contentDetails = contentError && contentError.message ? contentError.message : String(contentError);
-          console.warn(`[afterword] Ghost Content API fallback failed; continuing with local posts only. ${contentDetails}`);
-          return [];
         }
+
+        if (contentBase) {
+          try {
+            return await fetchGhostPostsFromRss(contentBase);
+          } catch (rssError) {
+            const rssDetails = rssError && rssError.message ? rssError.message : String(rssError);
+            console.warn(`[afterword] Ghost RSS fallback failed; continuing with local posts only. ${rssDetails}`);
+            return [];
+          }
+        }
+
+        console.warn("[afterword] Ghost fallback unavailable; missing GHOST_URL and GHOST_ADMIN_URL.");
+        return [];
       });
   }
 
   const posts = await nowPostsPromise;
   const sortedPosts = [...posts].sort(comparePostsDesc);
 
-  console.log(
-    `[afterword] fetched ${sortedPosts.length} Ghost posts for filter ${INCLUDED_SITE_TAGS
-      .map((tag) => `tag:${tag}`)
-      .join(" OR ")}`
-  );
+  console.log(`[afterword] fetched ${sortedPosts.length} Ghost posts for filter ${filter}`);
 
   if (sortedPosts.length > 0) {
     const visibilityCounts = sortedPosts.reduce((acc, post) => {
