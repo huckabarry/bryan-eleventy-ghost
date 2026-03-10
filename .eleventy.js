@@ -10,12 +10,8 @@ const ghostApi = new GhostAdminAPI({
   version: "v5.71"
 });
 
-let nowPostsPromise;
-const rssParser = new RssParser({
-  customFields: {
-    item: [["content:encoded", "contentEncoded"], "creator", "category", "guid"]
-  }
-});
+const GHOST_POST_FILTER = "status:published";
+const STATUS_MAX_CHARACTERS = 500;
 const INCLUDED_SITE_TAGS = [
   "afterword",
   "status",
@@ -27,7 +23,14 @@ const INCLUDED_SITE_TAGS = [
   "photos",
   "now"
 ];
-const STATUS_MAX_CHARACTERS = 500;
+
+let nowPostsPromise;
+
+const rssParser = new RssParser({
+  customFields: {
+    item: [["content:encoded", "contentEncoded"], "creator", "category", "guid"]
+  }
+});
 
 function isUsablePhotoUrl(url) {
   const value = String(url || "");
@@ -59,15 +62,19 @@ function extractAllImages(post) {
     .replace(/<div[^>]*class=["'][^"']*kg-bookmark-card[^"']*["'][\s\S]*?<\/div>/gi, "")
     .replace(/<figure[^>]*class=["'][^"']*kg-embed-card[^"']*["'][\s\S]*?<\/figure>/gi, "")
     .replace(/<div[^>]*class=["'][^"']*kg-embed-card[^"']*["'][\s\S]*?<\/div>/gi, "");
+
   const matches = [];
   const seen = new Set();
-  const imagePattern = /<img(?![^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*>/gi;
+  const imagePattern =
+    /<img(?![^>]*class=["'][^"']*kg-bookmark-(?:thumbnail|icon)[^"']*["'])[^>]+src=["']([^"']+)["'][^>]*>/gi;
+
   let match;
 
   while ((match = imagePattern.exec(cleanedHtml))) {
     const fragment = match[0];
     const classMatch = fragment.match(/\bclass=["']([^"']+)["']/i);
     const classNames = classMatch ? classMatch[1] : "";
+
     if (/(^|\s)(avatar|author|profile|icon)(\s|$)/i.test(classNames)) {
       continue;
     }
@@ -146,11 +153,33 @@ function parseTagSlugs(value) {
     .filter(Boolean);
 }
 
+function slugify(value) {
+  return String(value || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function toTagName(slug) {
+  return String(slug || "")
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 function toTagObjectFromSlug(tagSlug) {
   const normalizedSlug = slugify(tagSlug);
+
   if (!normalizedSlug) {
     return null;
   }
+
   return {
     slug: normalizedSlug,
     name: toTagName(normalizedSlug),
@@ -175,6 +204,7 @@ function resolveGhostContentBase() {
 
 function getGhostPostSlugFromUrl(value) {
   const raw = String(value || "").trim();
+
   if (!raw) {
     return "";
   }
@@ -188,15 +218,40 @@ function getGhostPostSlugFromUrl(value) {
   }
 }
 
+function normalizeDate(value, fallback = new Date(0).toISOString()) {
+  if (!value) {
+    return fallback;
+  }
+
+  const parsed = new Date(value);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return fallback;
+  }
+
+  return parsed.toISOString();
+}
+
 function mapGhostRssItemToPost(item) {
-  const contentHtml = String(item && (item.contentEncoded || item.content || item["content:encoded"]) ? (item.contentEncoded || item.content || item["content:encoded"]) : "").trim();
-  const dateValue = normalizeDate(item && (item.isoDate || item.pubDate) ? (item.isoDate || item.pubDate) : "", new Date().toISOString());
+  const contentHtml = String(
+    item && (item.contentEncoded || item.content || item["content:encoded"])
+      ? item.contentEncoded || item.content || item["content:encoded"]
+      : ""
+  ).trim();
+
+  const dateValue = normalizeDate(
+    item && (item.isoDate || item.pubDate) ? item.isoDate || item.pubDate : "",
+    new Date().toISOString()
+  );
+
   const categories = []
     .concat(item && Array.isArray(item.categories) ? item.categories : [])
     .concat(item && item.category ? [item.category] : []);
+
   const tags = categories
     .map((value) => toTagObjectFromSlug(String(value || "")))
     .filter(Boolean);
+
   const slug = slugify(
     (item && item.slug) ||
       getGhostPostSlugFromUrl(item && item.link ? item.link : "") ||
@@ -204,12 +259,13 @@ function mapGhostRssItemToPost(item) {
       (item && item.title) ||
       ""
   );
+
   const title = String(item && item.title ? item.title : "").trim() || "Untitled";
   const authorName = String(item && item.creator ? item.creator : "").trim() || "Ghost";
 
   return {
-    id: String(item && (item.guid || item.link || slug) ? (item.guid || item.link || slug) : `ghost-rss:${slug}`),
-    uuid: String(item && (item.guid || item.link || slug) ? (item.guid || item.link || slug) : `ghost-rss:${slug}`),
+    id: String(item && (item.guid || item.link || slug) ? item.guid || item.link || slug : `ghost-rss:${slug}`),
+    uuid: String(item && (item.guid || item.link || slug) ? item.guid || item.link || slug : `ghost-rss:${slug}`),
     slug: slug || "post",
     title,
     html: contentHtml,
@@ -219,19 +275,14 @@ function mapGhostRssItemToPost(item) {
     published_at: dateValue,
     updated_at: dateValue,
     tags,
-    primary_author: {
-      name: authorName
-    },
-    authors: [
-      {
-        name: authorName
-      }
-    ]
+    primary_author: { name: authorName },
+    authors: [{ name: authorName }]
   };
 }
 
 async function fetchGhostPostsFromRss(contentBase) {
   const base = String(contentBase || "").trim().replace(/\/+$/, "");
+
   if (!base) {
     return [];
   }
@@ -243,18 +294,6 @@ async function fetchGhostPostsFromRss(contentBase) {
 
   console.log(`[afterword] fetched ${posts.length} Ghost posts via RSS fallback`);
   return posts;
-}
-
-function slugify(value) {
-  return String(value || "")
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s-]/g, " ")
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
 }
 
 function getStatusLabel(post) {
@@ -280,11 +319,13 @@ function isBookPost(post) {
 
 function splitTitleByBy(value) {
   const text = String(value || "").trim();
+
   if (!text) {
     return { title: "", byline: "" };
   }
 
   const match = text.match(/^(.+?)\s+by\s+(.+)$/i);
+
   if (!match) {
     return { title: text, byline: "" };
   }
@@ -308,6 +349,7 @@ function getMediaCardSubtitle(post) {
 
   if (isBookPost(post)) {
     const explicitAuthor = String(post && post.book_author ? post.book_author : "").trim();
+
     if (explicitAuthor) {
       return explicitAuthor;
     }
@@ -322,6 +364,44 @@ function getMediaCardSubtitle(post) {
 function isLocalMarkdownPost(post) {
   const id = String(post && post.id ? post.id : "");
   return id.startsWith("local-");
+}
+
+function decodeHtmlEntities(value) {
+  const text = String(value == null ? "" : value);
+  const namedEntities = {
+    amp: "&",
+    apos: "'",
+    quot: "\"",
+    lt: "<",
+    gt: ">",
+    nbsp: " ",
+    rsquo: "'",
+    lsquo: "'",
+    rdquo: "\"",
+    ldquo: "\"",
+    ndash: "-",
+    mdash: "-"
+  };
+
+  const toCodePoint = (num) => {
+    if (!Number.isInteger(num) || num < 0 || num > 0x10ffff) {
+      return "";
+    }
+
+    try {
+      return String.fromCodePoint(num);
+    } catch (error) {
+      return "";
+    }
+  };
+
+  return text
+    .replace(/&#(\d+);/g, (_, dec) => toCodePoint(Number.parseInt(dec, 10)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => toCodePoint(Number.parseInt(hex, 16)))
+    .replace(/&([a-zA-Z][a-zA-Z0-9]+);/g, (match, name) => {
+      const key = String(name).toLowerCase();
+      return Object.prototype.hasOwnProperty.call(namedEntities, key) ? namedEntities[key] : match;
+    });
 }
 
 function getPlainTextFromHtml(html) {
@@ -378,6 +458,7 @@ function normalizeStatusLengthForCollections(post) {
   }
 
   const bodyLength = getPlainTextFromHtml(post && post.html ? post.html : "").length;
+
   if (bodyLength <= STATUS_MAX_CHARACTERS) {
     return post;
   }
@@ -390,11 +471,13 @@ function normalizeStatusLengthForCollections(post) {
 
 function firstWords(value, count = 7) {
   const text = String(value || "").replace(/\s+/g, " ").trim();
+
   if (!text) {
     return "";
   }
 
   const words = text.split(" ").filter(Boolean);
+
   if (words.length <= count) {
     return words.join(" ");
   }
@@ -408,6 +491,7 @@ function isUntitledLikeTitle(value) {
     .toLowerCase()
     .replace(/^[\(\[\{]\s*/, "")
     .replace(/\s*[\)\]\}]$/, "");
+
   const compact = normalized.replace(/[^a-z0-9]+/g, " ").trim();
 
   return !compact || compact === "untitled" || compact === "no subject" || compact === "nosubject";
@@ -466,27 +550,6 @@ function getCollectionIndex(posts, currentPost) {
   });
 }
 
-function normalizeDate(value, fallback = new Date(0).toISOString()) {
-  if (!value) {
-    return fallback;
-  }
-
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) {
-    return fallback;
-  }
-
-  return parsed.toISOString();
-}
-
-function toTagName(slug) {
-  return String(slug || "")
-    .split("-")
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
-}
-
 function parseLocalPostTags(value, requiredTag) {
   const rawTags = Array.isArray(value)
     ? value
@@ -500,16 +563,19 @@ function parseLocalPostTags(value, requiredTag) {
     .filter(Boolean);
 
   const required = slugify(requiredTag || "");
+
   if (required && !normalized.includes(required)) {
     normalized.unshift(required);
   }
 
   const seen = new Set();
+
   return normalized
     .filter((tag) => {
       if (seen.has(tag)) {
         return false;
       }
+
       seen.add(tag);
       return true;
     })
@@ -518,6 +584,110 @@ function parseLocalPostTags(value, requiredTag) {
       name: toTagName(tagSlug),
       visibility: "public"
     }));
+}
+
+function stripFrontMatter(source) {
+  const text = String(source || "").replace(/\r\n/g, "\n");
+
+  if (!text.startsWith("---\n")) {
+    return text;
+  }
+
+  const end = text.indexOf("\n---\n", 4);
+
+  if (end === -1) {
+    return text;
+  }
+
+  return text.slice(end + 5);
+}
+
+function readLocalMarkdownBody(filePath) {
+  if (!filePath) {
+    return "";
+  }
+
+  try {
+    const source = fs.readFileSync(filePath, "utf8");
+    return stripFrontMatter(source).trim();
+  } catch (error) {
+    console.warn(`[afterword] unable to read local markdown ${filePath}: ${error.message}`);
+    return "";
+  }
+}
+
+function escapeHtml(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function inlineMarkdownToHtml(text) {
+  return escapeHtml(text).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
+    return `<a href="${escapeHtml(url)}">${escapeHtml(label)}</a>`;
+  });
+}
+
+function markdownToSimpleHtml(markdown) {
+  const normalized = String(markdown || "").replace(/\r\n/g, "\n").trim();
+
+  if (!normalized) {
+    return "";
+  }
+
+  const htmlBlocks = [];
+  const paragraphLines = [];
+  const imageOnlyLinePattern = /^!\[([^\]]*)\]\(([^)\s]+)\)(?:!\[([^\]]*)\]\(([^)\s]+)\))*$/;
+  const imagePattern = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
+
+  const flushParagraph = () => {
+    if (!paragraphLines.length) {
+      return;
+    }
+
+    const lineHtml = paragraphLines
+      .map((line) => {
+        return inlineMarkdownToHtml(line).replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, src) => {
+          return `<img src="${escapeHtml(src || "")}" alt="${escapeHtml(alt || "")}">`;
+        });
+      })
+      .join("<br>");
+
+    htmlBlocks.push(`<p>${lineHtml}</p>`);
+    paragraphLines.length = 0;
+  };
+
+  normalized.split("\n").forEach((rawLine) => {
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushParagraph();
+      return;
+    }
+
+    if (imageOnlyLinePattern.test(line)) {
+      flushParagraph();
+
+      let match;
+      while ((match = imagePattern.exec(line)) !== null) {
+        const alt = escapeHtml(match[1] || "");
+        const src = escapeHtml(match[2] || "");
+        htmlBlocks.push(`<p><img src="${src}" alt="${alt}"></p>`);
+      }
+
+      imagePattern.lastIndex = 0;
+      return;
+    }
+
+    paragraphLines.push(rawLine);
+  });
+
+  flushParagraph();
+
+  return htmlBlocks.join("\n");
 }
 
 function createLocalMarkdownPost(item, options = {}) {
@@ -554,14 +724,8 @@ function createLocalMarkdownPost(item, options = {}) {
     published_at: publishedAt,
     updated_at: updatedAt,
     tags: parseLocalPostTags(data.tags, requiredTag),
-    primary_author: {
-      name: authorName
-    },
-    authors: [
-      {
-        name: authorName
-      }
-    ]
+    primary_author: { name: authorName },
+    authors: [{ name: authorName }]
   };
 }
 
@@ -584,141 +748,6 @@ function createLocalBookPost(item) {
     idPrefix: "local-book",
     requiredTag: ""
   });
-}
-
-function readLocalMarkdownBody(filePath) {
-  if (!filePath) {
-    return "";
-  }
-
-  try {
-    const source = fs.readFileSync(filePath, "utf8");
-    return stripFrontMatter(source).trim();
-  } catch (error) {
-    console.warn(`[afterword] unable to read local markdown ${filePath}: ${error.message}`);
-    return "";
-  }
-}
-
-function stripFrontMatter(source) {
-  const text = String(source || "").replace(/\r\n/g, "\n");
-
-  if (!text.startsWith("---\n")) {
-    return text;
-  }
-
-  const end = text.indexOf("\n---\n", 4);
-  if (end === -1) {
-    return text;
-  }
-
-  return text.slice(end + 5);
-}
-
-function escapeHtml(value) {
-  return String(value == null ? "" : value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function decodeHtmlEntities(value) {
-  const text = String(value == null ? "" : value);
-  const namedEntities = {
-    amp: "&",
-    apos: "'",
-    quot: "\"",
-    lt: "<",
-    gt: ">",
-    nbsp: " ",
-    rsquo: "'",
-    lsquo: "'",
-    rdquo: "\"",
-    ldquo: "\"",
-    ndash: "-",
-    mdash: "-"
-  };
-  const toCodePoint = (num) => {
-    if (!Number.isInteger(num) || num < 0 || num > 0x10ffff) {
-      return "";
-    }
-    try {
-      return String.fromCodePoint(num);
-    } catch (error) {
-      return "";
-    }
-  };
-
-  return text
-    .replace(/&#(\d+);/g, (_, dec) => toCodePoint(Number.parseInt(dec, 10)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => toCodePoint(Number.parseInt(hex, 16)))
-    .replace(/&([a-zA-Z][a-zA-Z0-9]+);/g, (match, name) => {
-      const key = String(name).toLowerCase();
-      return Object.prototype.hasOwnProperty.call(namedEntities, key) ? namedEntities[key] : match;
-    });
-}
-
-function inlineMarkdownToHtml(text) {
-  return escapeHtml(text).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
-    return `<a href="${escapeHtml(url)}">${escapeHtml(label)}</a>`;
-  });
-}
-
-function markdownToSimpleHtml(markdown) {
-  const normalized = String(markdown || "").replace(/\r\n/g, "\n").trim();
-  if (!normalized) {
-    return "";
-  }
-
-  const htmlBlocks = [];
-  const paragraphLines = [];
-  const imageOnlyLinePattern = /^!\[([^\]]*)\]\(([^)\s]+)\)(?:!\[([^\]]*)\]\(([^)\s]+)\))*$/;
-  const imagePattern = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
-
-  const flushParagraph = () => {
-    if (!paragraphLines.length) {
-      return;
-    }
-
-    const lineHtml = paragraphLines
-      .map((line) => {
-        return inlineMarkdownToHtml(line).replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, src) => {
-          return `<img src="${escapeHtml(src || "")}" alt="${escapeHtml(alt || "")}">`;
-        });
-      })
-      .join("<br>");
-    htmlBlocks.push(`<p>${lineHtml}</p>`);
-    paragraphLines.length = 0;
-  };
-
-  normalized.split("\n").forEach((rawLine) => {
-    const line = rawLine.trim();
-
-    if (!line) {
-      flushParagraph();
-      return;
-    }
-
-    if (imageOnlyLinePattern.test(line)) {
-      flushParagraph();
-      let match;
-      while ((match = imagePattern.exec(line)) !== null) {
-        const alt = escapeHtml(match[1] || "");
-        const src = escapeHtml(match[2] || "");
-        htmlBlocks.push(`<p><img src="${src}" alt="${alt}"></p>`);
-      }
-      imagePattern.lastIndex = 0;
-      return;
-    }
-
-    paragraphLines.push(rawLine);
-  });
-
-  flushParagraph();
-
-  return htmlBlocks.join("\n");
 }
 
 function mergePostsByLocalSlug(posts) {
@@ -754,17 +783,20 @@ function getPostUpdatedTime(post) {
 
 function comparePostsDesc(a, b) {
   const publishedDiff = getPostPublishedTime(b) - getPostPublishedTime(a);
+
   if (publishedDiff !== 0) {
     return publishedDiff;
   }
 
   const updatedDiff = getPostUpdatedTime(b) - getPostUpdatedTime(a);
+
   if (updatedDiff !== 0) {
     return updatedDiff;
   }
 
   const aListeningOrder = Number.isFinite(Number(a && a.albumwhale_order)) ? Number(a.albumwhale_order) : null;
   const bListeningOrder = Number.isFinite(Number(b && b.albumwhale_order)) ? Number(b.albumwhale_order) : null;
+
   if (
     isListeningPost(a) &&
     isListeningPost(b) &&
@@ -789,20 +821,24 @@ function normalizeTitleKey(value) {
 
 function getPostDayKey(post) {
   const value = String(post && post.published_at ? post.published_at : "").trim();
+
   if (!value) {
     return "";
   }
+
   const date = new Date(value);
+
   if (Number.isNaN(date.getTime())) {
     return "";
   }
+
   return date.toISOString().slice(0, 10);
 }
 
 function getListeningPostScore(post) {
   let score = 0;
-
   const id = String(post && post.id ? post.id : "");
+
   if (id.startsWith("local-listening:")) {
     score += 10;
   }
@@ -820,12 +856,13 @@ function getListeningPostScore(post) {
 
 function getListeningSourceKey(post) {
   const explicitSource = String(post && post.albumwhale_url ? post.albumwhale_url : "").trim();
+
   if (explicitSource) {
     return explicitSource;
   }
 
   const html = String(post && post.html ? post.html : "");
-  const match = html.match(/https?:\/\/albumwhale\.com\/[^"'\\s<>]+/i);
+  const match = html.match(/https?:\/\/albumwhale\.com\/[^"'\s<>]+/i);
   return match ? match[0] : "";
 }
 
@@ -850,6 +887,7 @@ function dedupeListeningPosts(posts) {
     }
 
     const existing = listeningByKey.get(dedupeKey);
+
     if (!existing || getListeningPostScore(post) > getListeningPostScore(existing)) {
       listeningByKey.set(dedupeKey, post);
     }
@@ -860,8 +898,8 @@ function dedupeListeningPosts(posts) {
 
 function getBookPostScore(post) {
   let score = 0;
-
   const id = String(post && post.id ? post.id : "");
+
   if (id.startsWith("local-book:")) {
     score += 10;
   }
@@ -898,6 +936,7 @@ function dedupeBookPosts(posts) {
     }
 
     const existing = booksByKey.get(dedupeKey);
+
     if (!existing || getBookPostScore(post) > getBookPostScore(existing)) {
       booksByKey.set(dedupeKey, post);
     }
@@ -908,11 +947,13 @@ function dedupeBookPosts(posts) {
 
 function isPostNewer(candidate, existing) {
   const publishedDiff = getPostPublishedTime(candidate) - getPostPublishedTime(existing);
+
   if (publishedDiff !== 0) {
     return publishedDiff > 0;
   }
 
   const updatedDiff = getPostUpdatedTime(candidate) - getPostUpdatedTime(existing);
+
   if (updatedDiff !== 0) {
     return updatedDiff > 0;
   }
@@ -922,14 +963,12 @@ function isPostNewer(candidate, existing) {
 
 async function fetchNowPosts() {
   if (!nowPostsPromise) {
-    const filter = "status:published";
-
     nowPostsPromise = ghostApi.posts
       .browse({
         formats: "html",
         include: "tags,authors",
         limit: 100,
-        filter
+        filter: GHOST_POST_FILTER
       })
       .catch(async (adminError) => {
         const adminDetails = adminError && adminError.message ? adminError.message : String(adminError);
@@ -942,11 +981,12 @@ async function fetchNowPosts() {
           try {
             const params = new URLSearchParams({
               key: contentKey,
-              filter,
+              filter: GHOST_POST_FILTER,
               include: "tags,authors",
               formats: "html",
               limit: "100"
             });
+
             const response = await fetch(`${contentBase}/ghost/api/content/posts/?${params.toString()}`, {
               method: "GET",
               headers: {
@@ -986,7 +1026,7 @@ async function fetchNowPosts() {
   const posts = await nowPostsPromise;
   const sortedPosts = [...posts].sort(comparePostsDesc);
 
-  console.log(`[afterword] fetched ${sortedPosts.length} Ghost posts for filter ${filter}`);
+  console.log(`[afterword] fetched ${sortedPosts.length} Ghost posts for filter ${GHOST_POST_FILTER}`);
 
   if (sortedPosts.length > 0) {
     const visibilityCounts = sortedPosts.reduce((acc, post) => {
@@ -1061,12 +1101,14 @@ async function getMergedPosts(collectionApi) {
   const localStatusPosts = getLocalStatusPosts(collectionApi);
   const localListeningPosts = getLocalListeningPosts(collectionApi);
   const localBookPosts = getLocalBookPosts(collectionApi);
+
   const mergedBySlug = mergePostsByLocalSlug([
     ...ghostPostsWithoutListening,
     ...localStatusPosts,
     ...localListeningPosts,
     ...localBookPosts
   ]);
+
   const statusBeforeNormalization = mergedBySlug.filter((post) => postHasTag(post, "status")).length;
   const normalizedPosts = mergedBySlug.map((post) => normalizeStatusLengthForCollections(post));
   const mergedPosts = dedupeBookPosts(dedupeListeningPosts(normalizedPosts)).sort(comparePostsDesc);
@@ -1074,9 +1116,7 @@ async function getMergedPosts(collectionApi) {
   const longStatusCount = Math.max(0, statusBeforeNormalization - statusAfterNormalization);
 
   if (localStatusPosts.length > 0) {
-    console.log(
-      `[afterword] merged ${localStatusPosts.length} local status markdown post(s) from src/status`
-    );
+    console.log(`[afterword] merged ${localStatusPosts.length} local status markdown post(s) from src/status`);
   }
 
   if (localListeningPosts.length > 0) {
@@ -1093,7 +1133,9 @@ async function getMergedPosts(collectionApi) {
 
   if (ghostPosts.length !== ghostPostsWithoutListening.length) {
     console.log(
-      `[afterword] excluded ${ghostPosts.length - ghostPostsWithoutListening.length} Ghost listening/now-playing post(s) in favor of local listening sources`
+      `[afterword] excluded ${
+        ghostPosts.length - ghostPostsWithoutListening.length
+      } Ghost listening/now-playing post(s) in favor of local listening sources`
     );
   }
 
@@ -1109,6 +1151,7 @@ async function getMergedPosts(collectionApi) {
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPlugin(syntaxHighlight);
   eleventyConfig.addPlugin(rssPlugin);
+
   eleventyConfig.addLayoutAlias("base", "layouts/default.njk");
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
 
@@ -1176,9 +1219,7 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("withAnyTagSlugs", (posts, slugs) => {
     const tagSlugs = parseTagSlugs(slugs);
-    return (posts || []).filter((post) =>
-      tagSlugs.some((slug) => postHasTag(post, slug))
-    );
+    return (posts || []).filter((post) => tagSlugs.some((slug) => postHasTag(post, slug)));
   });
 
   eleventyConfig.addFilter("withoutTagSlug", (posts, slug) => {
@@ -1187,9 +1228,7 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("withoutAnyTagSlugs", (posts, slugs) => {
     const tagSlugs = parseTagSlugs(slugs);
-    return (posts || []).filter(
-      (post) => !tagSlugs.some((slug) => postHasTag(post, slug))
-    );
+    return (posts || []).filter((post) => !tagSlugs.some((slug) => postHasTag(post, slug)));
   });
 
   eleventyConfig.addFilter("onlyUntitledPosts", (posts) => {
@@ -1326,6 +1365,10 @@ module.exports = function (eleventyConfig) {
     posts.forEach((post) => {
       (post.tags || []).forEach((tag) => {
         if (!tag || !tag.slug || tag.slug === "now" || tag.visibility === "internal") {
+          return;
+        }
+
+        if (INCLUDED_SITE_TAGS.length && !INCLUDED_SITE_TAGS.includes(tag.slug)) {
           return;
         }
 
