@@ -1,12 +1,12 @@
 ---
 title: "The Midnight Organ Fight by Frightened Rabbit"
-date: 2026-03-15T16:43:55.000Z
+date: 2026-03-15T22:47:23.000Z
 tags:
   - listening
 slug: "2026-03-15-the-midnight-organ-fight-by-frightened-rabbit"
 author: "Bryan Robb"
 albumwhale_url: "https://albumwhale.com/bryan/listening-now#album_68979"
-albumwhale_order: 6
+albumwhale_order: 7
 ---
 
 ![](/assets/listening-images/2026/2026-03-15-the-midnight-organ-fight-by-frightened-rabbit-66727a58.jpg)

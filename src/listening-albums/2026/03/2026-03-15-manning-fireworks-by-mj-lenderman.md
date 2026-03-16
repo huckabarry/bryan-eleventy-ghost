@@ -1,12 +1,12 @@
 ---
 title: "Manning Fireworks by MJ Lenderman"
-date: 2026-03-15T16:43:55.000Z
+date: 2026-03-15T22:47:23.000Z
 tags:
   - listening
 slug: "2026-03-15-manning-fireworks-by-mj-lenderman"
 author: "Bryan Robb"
 albumwhale_url: "https://albumwhale.com/bryan/listening-now#album_70112"
-albumwhale_order: 1
+albumwhale_order: 2
 ---
 
 ![](/assets/listening-images/2026/2026-03-15-manning-fireworks-by-mj-lenderman-5232dcb2.jpg)
