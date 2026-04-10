@@ -9,6 +9,6 @@ albumwhale_url: "https://albumwhale.com/bryan/listening-now#album_69056"
 albumwhale_order: 11
 ---
 
-![](/assets/listening-images/2026/2026-04-09-a-short-history-of-decay-by-nothing-e7a19982.jpg)
+![](/assets/listening-images/2026/2026-04-09-a-short-history-of-decay-by-nothing-145bfc6a.jpg)
 
 Listened on [Album Whale](https://albumwhale.com/bryan/listening-now#album_69056).
