@@ -9,6 +9,6 @@ albumwhale_url: "https://albumwhale.com/bryan/listening-now#album_70112"
 albumwhale_order: 8
 ---
 
-![](/assets/listening-images/2026/2026-04-09-manning-fireworks-by-mj-lenderman-5232dcb2.jpg)
+![](/assets/listening-images/2026/2026-04-09-manning-fireworks-by-mj-lenderman-c96d03fa.jpg)
 
 Listened on [Album Whale](https://albumwhale.com/bryan/listening-now#album_70112).
