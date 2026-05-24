@@ -19,4 +19,4 @@ BookWyrm profile entry: [View](https://bookwyrm.social/user/bryan/generatednote/
 
 ## Reading Log
 
-- 2025-10-28 finished ([source](https://bookwyrm.social/user/bryan/generatednote/8825626))
+- 2025-10-28 finished - bryan finished reading The Death and Life of Great American Cities ([source](https://bookwyrm.social/user/bryan/generatednote/8825626))
