@@ -9,6 +9,6 @@ albumwhale_url: "https://albumwhale.com/bryan/listening-now#album_68569"
 albumwhale_order: 14
 ---
 
-![](/assets/listening-images/2026/2026-04-09-nothing-s-about-to-happen-to-me-by-mitski-cd333785.jpg)
+![](/assets/listening-images/2026/2026-04-09-nothing-s-about-to-happen-to-me-by-mitski-44d30eba.jpg)
 
 Listened on [Album Whale](https://albumwhale.com/bryan/listening-now#album_68569).
