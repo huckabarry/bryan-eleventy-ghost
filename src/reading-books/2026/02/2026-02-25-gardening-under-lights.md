@@ -19,6 +19,6 @@ BookWyrm profile entry: [View](https://bookwyrm.social/user/bryan/generatednote/
 
 ## Reading Log
 
-- 2026-02-25 started - bryan started reading Gardening under lights ([source](https://bookwyrm.social/user/bryan/generatednote/10086981))
+- 2026-02-25 started - Bryan started reading Gardening under lights ([source](https://bookwyrm.social/user/bryan/generatednote/10086981))
 - 2026-02-26 reviewed - Looking forward to implanting many of the suggestions with my garden starts this year. ([source](https://bookwyrm.social/user/bryan/review/10100285/s/excellent-informative-book))
-- 2026-02-26 finished - bryan finished reading Gardening under lights ([source](https://bookwyrm.social/user/bryan/generatednote/10100291))
+- 2026-02-26 finished - Bryan finished reading Gardening under lights ([source](https://bookwyrm.social/user/bryan/generatednote/10100291))

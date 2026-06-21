@@ -19,4 +19,4 @@ BookWyrm profile entry: [View](https://bookwyrm.social/user/bryan/generatednote/
 
 ## Reading Log
 
-- 2025-12-12 finished - bryan finished reading Disorganized Attachment ([source](https://bookwyrm.social/user/bryan/generatednote/9182835))
+- 2025-12-12 finished - Bryan finished reading Disorganized Attachment ([source](https://bookwyrm.social/user/bryan/generatednote/9182835))
