@@ -6,7 +6,7 @@ tags:
 slug: "hello-beautiful"
 author: "Bryan Robb"
 book_author: "Ann Napolitano"
-excerpt: "Finished on 2026-07-13"
+excerpt: "Finished on 2026-06-21"
 bookwyrm_url: "https://bookwyrm.social/user/bryan/reviewrating/12062779"
 book_url: "https://bookwyrm.social/book/930570"
 ---
@@ -19,6 +19,4 @@ BookWyrm profile entry: [View](https://bookwyrm.social/user/bryan/reviewrating/1
 
 ## Reading Log
 
-- 2026-06-21 started - Bryan started reading Hello Beautiful ([source](https://bookwyrm.social/user/bryan/generatednote/11715652))
-- 2026-07-13 finished - This one hit home on several levels. (comment on Hello Beautiful ) ([source](https://bookwyrm.social/user/bryan/comment/12012911))
-- 2026-07-18 reviewed - rated Hello Beautiful : 4 stars ([source](https://bookwyrm.social/user/bryan/reviewrating/12062779))
+- 2026-06-21 finished ([source](https://bookwyrm.social/user/bryan/reviewrating/12062779))

@@ -19,4 +19,4 @@ BookWyrm profile entry: [View](https://bookwyrm.social/user/bryan/generatednote/
 
 ## Reading Log
 
-- 2026-08-09 finished - Bryan finished reading Why Buddhism is True: The Science and Philosophy of Meditation and Enlightenment ([source](https://bookwyrm.social/user/bryan/generatednote/12248083))
+- 2026-08-09 finished ([source](https://bookwyrm.social/user/bryan/generatednote/12248083))
