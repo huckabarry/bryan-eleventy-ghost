@@ -19,4 +19,4 @@ BookWyrm profile entry: [View](https://bookwyrm.social/user/bryan/generatednote/
 
 ## Reading Log
 
-- 2025-12-12 finished - Bryan finished reading Healing Your Attachment Wounds ([source](https://bookwyrm.social/user/bryan/generatednote/9182813))
+- 2025-12-12 finished ([source](https://bookwyrm.social/user/bryan/generatednote/9182813))
